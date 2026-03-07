@@ -127,7 +127,30 @@ const ProfileEdit = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleProfilePicUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    
+    setUploadingPic(true);
+    try {
+      const fileName = `${user.id}/${Date.now()}.${file.name.split('.').pop()}`;
+      const { error: uploadError } = await supabase.storage.from('profile-photos').upload(fileName, file, { upsert: true });
+      if (uploadError) throw uploadError;
+      
+      const { data: { publicUrl } } = supabase.storage.from('profile-photos').getPublicUrl(fileName);
+      
+      const { error: updateError } = await supabase.from('profiles').update({ profile_picture_url: publicUrl }).eq('id', user.id);
+      if (updateError) throw updateError;
+      
+      setProfilePicUrl(publicUrl);
+      toast({ title: "Profile picture updated!" });
+    } catch (error: any) {
+      toast({ title: "Upload failed", description: error.message, variant: "destructive" });
+    } finally {
+      setUploadingPic(false);
+    }
+  };
+
     e.preventDefault();
     if (profileData.phone_number !== originalPhone && !showVerification) {
       toast({ title: "Verify Phone", description: "Please verify your new phone number first.", variant: "destructive" });
