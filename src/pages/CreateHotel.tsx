@@ -22,6 +22,7 @@ import { CountrySelector } from "@/components/creation/CountrySelector";
 import { PhoneInput } from "@/components/creation/PhoneInput";
 import { compressImages } from "@/lib/imageCompression";
 import { OperatingHoursSection } from "@/components/creation/OperatingHoursSection";
+import { ReviewStep } from "@/components/creation/ReviewStep";
 import { GeneralFacilitiesSelector } from "@/components/creation/GeneralFacilitiesSelector";
 import { cn } from "@/lib/utils";
 
@@ -529,6 +530,7 @@ const CreateHotel = () => {
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [showErrors, setShowErrors] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showReview, setShowReview] = useState(false);
 
   const [formData, setFormData] = useState({
     registrationName: "", registrationNumber: "", place: "", country: "",
@@ -983,18 +985,79 @@ const CreateHotel = () => {
           )}
         </Card>
 
-        {/* Submit */}
-        <div className="mb-8">
-          <Button onClick={handleSubmit}
-            className="w-full py-6 rounded-2xl font-black uppercase text-sm text-white"
-            style={{ background: COLORS.TEAL }}
-            disabled={loading}>
-            {loading
-              ? <><Loader2 className="animate-spin h-4 w-4 mr-2" /> Submitting...</>
-              : <><CheckCircle2 className="h-4 w-4 mr-2" />{isAccommodationOnly ? "Publish Listing" : "Submit for Review"}</>
-            }
-          </Button>
-        </div>
+        {/* Review & Submit */}
+        {!showReview ? (
+          <div className="mb-8">
+            <Button onClick={() => {
+              if (!validateAll()) return;
+              if (facilities.some((f) => !f.saved)) {
+                toast({ title: "Unsaved Facility", description: "Please save all facilities before submitting.", variant: "destructive" });
+                return;
+              }
+              setShowReview(true);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+              className="w-full py-6 rounded-2xl font-black uppercase text-sm text-white"
+              style={{ background: COLORS.TEAL }}>
+              <CheckCircle2 className="h-4 w-4 mr-2" /> Review Details
+            </Button>
+          </div>
+        ) : (
+          <>
+            <ReviewStep
+              type="hotel"
+              accentColor={COLORS.TEAL}
+              data={{
+                name: formData.registrationName,
+                registrationName: formData.registrationName,
+                registrationNumber: formData.registrationNumber,
+                place: formData.place,
+                country: formData.country,
+                description: formData.description,
+                email: formData.email,
+                phoneNumber: formData.phoneNumber,
+                openingHours: formData.openingHours,
+                closingHours: formData.closingHours,
+                workingDays: Object.entries(workingDays).filter(([, v]) => v).map(([k]) => k),
+                establishmentType: formData.establishmentType,
+                generalBookingLink: formData.generalBookingLink,
+                generalFacilities,
+                facilities: facilities.filter(f => f.saved).map(f => ({
+                  name: f.name,
+                  price: parseFloat(f.price) || 0,
+                  capacity: parseInt(f.capacity) || null,
+                  amenities: f.amenities,
+                  bookingLink: f.bookingLink,
+                  images: f.previewUrls,
+                })),
+                activities: activities.filter(a => a.saved && a.name.trim()).map(a => ({
+                  name: a.name,
+                  price: parseFloat(a.price) || 0,
+                  images: a.previewUrls,
+                })),
+                latitude: formData.latitude,
+                longitude: formData.longitude,
+                galleryPreviewUrls: galleryPreviews,
+              }}
+              creatorEmail={user?.email}
+            />
+            <div className="flex gap-3 mb-8">
+              <Button onClick={() => setShowReview(false)} variant="outline"
+                className="flex-1 py-6 rounded-2xl font-black uppercase text-sm">
+                ← Edit Details
+              </Button>
+              <Button onClick={handleSubmit}
+                className="flex-1 py-6 rounded-2xl font-black uppercase text-sm text-white"
+                style={{ background: COLORS.TEAL }}
+                disabled={loading}>
+                {loading
+                  ? <><Loader2 className="animate-spin h-4 w-4 mr-2" /> Submitting...</>
+                  : <><CheckCircle2 className="h-4 w-4 mr-2" />{isAccommodationOnly ? "Publish Listing" : "Submit for Review"}</>
+                }
+              </Button>
+            </div>
+          </>
+        )}
 
       </main>
       <MobileBottomBar />

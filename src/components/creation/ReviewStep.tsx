@@ -1,11 +1,14 @@
 import { Card } from "@/components/ui/card";
-import { CheckCircle2, MapPin, Clock, DollarSign, Phone, Mail, User, Calendar, Building, Users, Ticket, Image as ImageIcon } from "lucide-react";
+import { CheckCircle2, MapPin, Clock, DollarSign, Phone, Mail, User, Calendar, Building, Users, Ticket, Image as ImageIcon, Globe, Link as LinkIcon } from "lucide-react";
 
 interface FacilityWithImages {
   name: string;
   price: number;
   capacity?: number | null;
   is_free?: boolean;
+  booking_link?: string;
+  bookingLink?: string;
+  amenities?: string[];
   images?: string[];
 }
 
@@ -23,6 +26,7 @@ interface ReviewStepProps {
     registrationNumber?: string;
     registrationName?: string;
     location?: string;
+    locationName?: string;
     place?: string;
     country?: string;
     description?: string;
@@ -38,15 +42,27 @@ interface ReviewStepProps {
     // Trip/Event specific
     date?: string;
     isFlexibleDate?: boolean;
+    flexibleDurationMonths?: string;
     priceAdult?: string;
     priceChild?: string;
     capacity?: string;
+    tripType?: string;
+    // Hotel specific
+    establishmentType?: string;
+    generalBookingLink?: string;
     // Amenities, facilities, activities
     amenities?: Array<{ name: string } | string>;
+    generalFacilities?: string[];
     facilities?: FacilityWithImages[];
     activities?: ActivityWithImages[];
+    // GPS
+    latitude?: number | null;
+    longitude?: number | null;
+    mapLink?: string;
     // Images count
     imageCount?: number;
+    // Gallery preview URLs
+    galleryPreviewUrls?: string[];
   };
   creatorName?: string;
   creatorEmail?: string;
@@ -89,6 +105,10 @@ export const ReviewStep = ({ type, data, creatorName, creatorEmail, creatorPhone
   const isHotelOrAdventure = type === 'hotel' || type === 'adventure';
   const isTripOrEvent = type === 'trip' || type === 'event';
 
+  const establishmentLabel = data.establishmentType === 'accommodation_only' ? 'Accommodation Only'
+    : data.establishmentType === 'hotel' ? 'Hotel / Resort'
+    : data.establishmentType || undefined;
+
   return (
     <Card className="bg-white rounded-[28px] p-6 shadow-sm border border-slate-100 space-y-6 animate-in fade-in slide-in-from-right-4">
       <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
@@ -114,6 +134,12 @@ export const ReviewStep = ({ type, data, creatorName, creatorEmail, creatorPhone
             <InfoRow label="Registration Number" value={data.registrationNumber} />
           </>
         )}
+        {type === 'hotel' && data.establishmentType && (
+          <InfoRow label="Establishment Type" value={establishmentLabel} />
+        )}
+        {isTripOrEvent && data.tripType && (
+          <InfoRow label="Listing Type" value={data.tripType === 'trip' ? 'Trip / Tour' : 'Event / Sport'} />
+        )}
         {data.description && (
           <div className="col-span-2">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Description</p>
@@ -126,7 +152,11 @@ export const ReviewStep = ({ type, data, creatorName, creatorEmail, creatorPhone
       <Section title="Location" icon={MapPin}>
         <InfoRow label="Country" value={data.country} />
         <InfoRow label="City/Place" value={data.place} />
-        <InfoRow label="Specific Location" value={data.location} fullWidth />
+        {data.location && <InfoRow label="Specific Location" value={data.location} fullWidth />}
+        {data.locationName && <InfoRow label="Location Name" value={data.locationName} fullWidth />}
+        {data.latitude && data.longitude && (
+          <InfoRow label="GPS Coordinates" value={`${data.latitude.toFixed(4)}, ${data.longitude.toFixed(4)}`} fullWidth />
+        )}
       </Section>
 
       {/* Date & Time for Trip/Event */}
@@ -135,6 +165,9 @@ export const ReviewStep = ({ type, data, creatorName, creatorEmail, creatorPhone
           {data.isFlexibleDate ? (
             <>
               <InfoRow label="Date Type" value="Flexible / Open Availability" fullWidth />
+              {data.flexibleDurationMonths && (
+                <InfoRow label="Listing Duration" value={`${data.flexibleDurationMonths} month${data.flexibleDurationMonths === '1' ? '' : 's'}`} />
+              )}
               <InfoRow label="Opening Hours" value={data.openingHours} />
               <InfoRow label="Closing Hours" value={data.closingHours} />
               <InfoRow label="Working Days" value={formatDays(data.workingDays)} fullWidth />
@@ -183,7 +216,31 @@ export const ReviewStep = ({ type, data, creatorName, creatorEmail, creatorPhone
             )}
           </>
         )}
+        {type === 'hotel' && data.generalBookingLink && (
+          <InfoRow label="General Booking Link" value={data.generalBookingLink} fullWidth />
+        )}
       </Section>
+
+      {/* General Facilities / Amenities tags */}
+      {data.generalFacilities && data.generalFacilities.length > 0 && (
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-emerald-50">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+            </div>
+            <h4 className="text-xs font-black uppercase tracking-widest text-slate-500">
+              General Amenities ({data.generalFacilities.length})
+            </h4>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {data.generalFacilities.map((item, i) => (
+              <span key={i} className="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold">
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Facilities - Enhanced with images */}
       {data.facilities && data.facilities.length > 0 && (
@@ -205,7 +262,7 @@ export const ReviewStep = ({ type, data, creatorName, creatorEmail, creatorPhone
                 <div className="flex items-start justify-between mb-2">
                   <div>
                     <p className="font-bold text-slate-700">{facility.name}</p>
-                    <div className="flex items-center gap-2 mt-1">
+                    <div className="flex items-center gap-2 mt-1 flex-wrap">
                       <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
                         facility.is_free || facility.price === 0
                           ? "bg-emerald-100 text-emerald-600"
@@ -218,7 +275,22 @@ export const ReviewStep = ({ type, data, creatorName, creatorEmail, creatorPhone
                           • {facility.capacity} guests
                         </span>
                       )}
+                      {(facility.booking_link || facility.bookingLink) && (
+                        <span className="text-[10px] font-bold text-blue-500 flex items-center gap-1">
+                          <LinkIcon className="h-3 w-3" /> Booking link
+                        </span>
+                      )}
                     </div>
+                    {/* Facility Amenities */}
+                    {facility.amenities && facility.amenities.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {facility.amenities.map((a, j) => (
+                          <span key={j} className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">
+                            {a}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
                 {/* Facility Images */}
@@ -328,8 +400,29 @@ export const ReviewStep = ({ type, data, creatorName, creatorEmail, creatorPhone
         {creatorPhone && <InfoRow label="Phone" value={creatorPhone} />}
       </Section>
 
-      {/* Images */}
-      {data.imageCount && data.imageCount > 0 && (
+      {/* Gallery Preview */}
+      {data.galleryPreviewUrls && data.galleryPreviewUrls.length > 0 && (
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg" style={{ backgroundColor: `${accentColor}15` }}>
+              <ImageIcon className="h-4 w-4" style={{ color: accentColor }} />
+            </div>
+            <h4 className="text-xs font-black uppercase tracking-widest text-slate-500">
+              Gallery ({data.galleryPreviewUrls.length} images)
+            </h4>
+          </div>
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {data.galleryPreviewUrls.map((url, i) => (
+              <div key={i} className="w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
+                <img src={url} alt={`Gallery ${i + 1}`} className="w-full h-full object-cover" />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Images count fallback */}
+      {(!data.galleryPreviewUrls || data.galleryPreviewUrls.length === 0) && data.imageCount && data.imageCount > 0 && (
         <div className="pt-4 border-t border-slate-100">
           <p className="text-xs font-bold text-green-600 flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4" />
