@@ -24,6 +24,7 @@ import { QuickNavigationBar } from "@/components/detail/QuickNavigationBar";
 import { GeneralFacilitiesDisplay } from "@/components/detail/GeneralFacilitiesDisplay";
 import { DetailMapSection } from "@/components/detail/DetailMapSection";
 import { TealLoader } from "@/components/ui/teal-loader";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const AdventurePlaceDetail = () => {
   const { slug } = useParams();

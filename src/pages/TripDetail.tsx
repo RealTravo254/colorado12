@@ -20,6 +20,7 @@ import { useRealtimeItemAvailability } from "@/hooks/useRealtimeBookings";
 import { Header } from "@/components/Header";
 import { DetailMapSection } from "@/components/detail/DetailMapSection";
 import { TealLoader } from "@/components/ui/teal-loader";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { ImageGalleryModal } from "@/components/detail/ImageGalleryModal";
 
 const COLORS = {
