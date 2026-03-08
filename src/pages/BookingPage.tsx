@@ -42,16 +42,22 @@ const BookingPage = () => {
       console.log('Payment success callback:', reference, bookingData);
       setPaymentReference(reference);
       setCompletedBookingData(bookingData);
+      setIsVerifying(false);
       setIsCompleted(true);
       setIsProcessing(false);
       setShowSuccessDialog(true);
     },
+    onVerifying: () => {
+      setIsVerifying(true);
+    },
     onError: (error) => {
       toast({ title: "Payment Error", description: error, variant: "destructive" });
       setIsProcessing(false);
+      setIsVerifying(false);
     },
     onClose: () => {
       setIsProcessing(false);
+      setIsVerifying(false);
     },
   });
 
