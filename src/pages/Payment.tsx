@@ -186,7 +186,7 @@ export default function Payment() {
               </div>
               <div>
                 <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Available Balance</p>
-                <p className="text-2xl font-black text-destructive">KES {stats.withdrawableBalance.toLocaleString()}</p>
+                <p className="text-2xl font-black text-destructive">{formatPrice(stats.withdrawableBalance)}</p>
               </div>
             </div>
             <Button onClick={() => setShowWithdrawDialog(true)} disabled={stats.withdrawableBalance <= 0} size="sm"
