@@ -5,6 +5,7 @@ import { getReferralTrackingId } from "@/lib/referralUtils";
 
 interface PaystackPopupOptions {
   onSuccess?: (reference: string, bookingData: any) => void;
+  onVerifying?: () => void;
   onError?: (error: string) => void;
   onClose?: () => void;
 }
