@@ -4,7 +4,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "@/contexts/AuthContext";
 import { AccountSheet } from "@/components/AccountSheet";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { TealLoader } from "@/components/ui/teal-loader";

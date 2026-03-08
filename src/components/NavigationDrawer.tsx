@@ -156,7 +156,7 @@ export const NavigationDrawer = ({ onClose }: NavigationDrawerProps) => {
       {/* Footer & Transparency Note */}
       <div className="p-6 border-t border-slate-50 dark:border-gray-900 bg-slate-50/30 dark:bg-gray-900/30">
         <p className="text-[10px] leading-relaxed text-slate-400 dark:text-slate-500 mb-4 text-center">
-          <span className="font-black text-slate-500 dark:text-slate-400">TRANSPARENCY:</span> RealTravo may earn a commission for some bookings. This is paid by the property and <span className="text-[#008080] font-bold">is never added to your final cost</span>.
+          <span className="font-black text-slate-500 dark:text-slate-400">{t('drawer.transparency')}</span> {t('drawer.transparencyText')} <span className="text-[#008080] font-bold">{t('drawer.transparencyHighlight')}</span>.
         </p>
         <div className="text-center">
           <span className="text-[9px] font-bold text-slate-300 uppercase tracking-[0.3em]">
