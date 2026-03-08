@@ -131,25 +131,25 @@ export const NavigationDrawer = ({ onClose }: NavigationDrawerProps) => {
         </div>
 
         <ul className="space-y-1">
-          <p className="px-4 text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Main Menu</p>
-          <NavItem icon={Home} label="Home" path="/" />
-          <NavItem icon={Ticket} label="My Bookings" path="/bookings" isProtected />
-          <NavItem icon={Heart} label="Wishlist" path="/saved" isProtected />
+          <p className="px-4 text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">{t('drawer.mainMenu')}</p>
+          <NavItem icon={Home} label={t('nav.home')} path="/" />
+          <NavItem icon={Ticket} label={t('nav.myBookings')} path="/bookings" isProtected />
+          <NavItem icon={Heart} label={t('nav.wishlist')} path="/saved" isProtected />
           
           <div className="h-4" />
-          <p className="px-4 text-[9px] font-black text-[#008080] uppercase tracking-[0.2em] mb-2">Explore Categories</p>
-          <NavItem icon={Trophy} label="Events & Sports" path="/category/events" />
-          <NavItem icon={Map} label="Trips & Tours" path="/category/trips" />
-          <NavItem icon={Mountain} label="Adventure Places" path="/category/campsite" />
-          <NavItem icon={Building2} label="Accommodation Only" path="/category/accommodation" />
-          <NavItem icon={Bed} label="Hotel" path="/category/hotels" />
+          <p className="px-4 text-[9px] font-black text-[#008080] uppercase tracking-[0.2em] mb-2">{t('drawer.exploreCategories')}</p>
+          <NavItem icon={Trophy} label={t('drawer.eventsAndSports')} path="/category/events" />
+          <NavItem icon={Map} label={t('drawer.tripsAndTours')} path="/category/trips" />
+          <NavItem icon={Mountain} label={t('drawer.adventurePlaces')} path="/category/campsite" />
+          <NavItem icon={Building2} label={t('drawer.accommodationOnly')} path="/category/accommodation" />
+          <NavItem icon={Bed} label={t('drawer.hotel')} path="/category/hotels" />
 
           <div className="h-4" />
-          <p className="px-4 text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Support & Legal</p>
-          <NavItem icon={Phone} label="Contact" path="/contact" />
-          <NavItem icon={Info} label="About" path="/about" />
-          <NavItem icon={FileText} label="Terms" path="/terms-of-service" />
-          <NavItem icon={Shield} label="Privacy" path="/privacy-policy" />
+          <p className="px-4 text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">{t('drawer.supportLegal')}</p>
+          <NavItem icon={Phone} label={t('drawer.contact')} path="/contact" />
+          <NavItem icon={Info} label={t('drawer.about')} path="/about" />
+          <NavItem icon={FileText} label={t('drawer.terms')} path="/terms-of-service" />
+          <NavItem icon={Shield} label={t('drawer.privacy')} path="/privacy-policy" />
         </ul>
       </nav>
       
