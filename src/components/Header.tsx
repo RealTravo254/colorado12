@@ -8,6 +8,7 @@ import { NavigationDrawer } from "./NavigationDrawer";
 import { Link, useNavigate } from "react-router-dom";
 import { NotificationBell } from "./NotificationBell";
 import { AccountSheet } from "./AccountSheet";
+import { ThemeToggle } from "./ThemeToggle";
 
 export interface HeaderProps {
   onSearchClick?: () => void;
