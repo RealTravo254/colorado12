@@ -23,6 +23,7 @@ import { compressImages } from "@/lib/imageCompression";
 import { FacilityActivityImageEditor } from "@/components/edit/FacilityActivityImageEditor";
 import { GeneralFacilitiesSelector } from "@/components/creation/GeneralFacilitiesSelector";
 import { FacilityAmenitiesInput } from "@/components/creation/FacilityAmenitiesInput";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 interface FacilityWithImages {
   name: string;
