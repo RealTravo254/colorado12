@@ -63,28 +63,13 @@ const LANGUAGES = [
   { code: "he", name: "עברית" },
 ];
 
-// CurrencyConverter removed
-  const [rates, setRates] = useState<Record<string, number>>({});
-  const [baseCurrency, setBaseCurrency] = useState("USD");
-  const [targetCurrency, setTargetCurrency] = useState("KES");
-  const [amount, setAmount] = useState("1");
-  const [loading, setLoading] = useState(true);
-  const [lastUpdated, setLastUpdated] = useState("");
-
-  // Auto-detect user's country and set local currency as target
-  useEffect(() => {
-    const detectCountry = async () => {
-      try {
-        const res = await fetch("https://ipapi.co/json/");
-        const data = await res.json();
-        const countryCode = data.country_code;
+export const Footer = ({ className = "" }: { className?: string }) => {
   const { t, i18n } = useTranslation();
   const [language, setLanguage] = useState(i18n.language || "en");
 
   const handleLanguageChange = (lang: string) => {
     setLanguage(lang);
     i18n.changeLanguage(lang);
-    // Set RTL direction for Arabic and Hebrew
     document.documentElement.dir = (lang === "ar" || lang === "he") ? "rtl" : "ltr";
   };
 
