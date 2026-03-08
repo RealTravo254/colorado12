@@ -119,7 +119,7 @@ const Bookings = () => {
   return (
     <div className="relative flex min-h-full flex-col bg-background">
       <main className={isEmbeddedInSheet ? "flex-1 px-4 pt-4 pb-20" : "flex-1 px-4 pt-8 pb-32"}>
-        <div className="max-w-xl mx-auto w-full">
+        <div className="w-full">{/* Full container width */}
           
           <header className="mb-8">
             <h1 className="text-2xl font-black uppercase tracking-tighter text-foreground">My Bookings</h1>
