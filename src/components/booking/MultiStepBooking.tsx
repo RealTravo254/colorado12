@@ -10,6 +10,7 @@ import { useSearchParams } from "react-router-dom";
  import { cn } from "@/lib/utils";
  import { useAuth } from "@/contexts/AuthContext";
  import { supabase } from "@/integrations/supabase/client";
+ import { useCurrency } from "@/contexts/CurrencyContext";
  
  export interface BookingFormData {
    visit_date: string;
