@@ -13,6 +13,7 @@ import { WithdrawalDialog } from "@/components/referral/WithdrawalDialog";
 import { WithdrawalDetailsSection } from "@/components/payment/WithdrawalDetailsSection";
 import { SEOHead } from "@/components/SEOHead";
 import { generateReferralLink } from "@/lib/referralUtils";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 export default function Payment() {
   const navigate = useNavigate();
