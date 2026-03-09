@@ -76,7 +76,7 @@ const BookingPage = () => {
       if (type === "trip" || type === "event") {
         const result = await supabase
           .from("trips")
-          .select("id,name,location,place,country,image_url,date,is_custom_date,is_flexible_date,slot_limit_type,price,price_child,available_tickets,description,activities,phone_number,email,created_by,opening_hours,closing_hours,days_opened,type,approval_status,is_hidden")
+          .select("id,name,location,place,country,image_url,date,is_custom_date,is_flexible_date,slot_limit_type,price,price_child,available_tickets,description,activities,phone_number,email,created_by,opening_hours,closing_hours,days_opened,type,approval_status,is_hidden,approval_status,is_hidden")
           .eq("id", id)
           .single();
         data = result.data;
@@ -84,7 +84,7 @@ const BookingPage = () => {
       } else if (type === "adventure_place" || type === "adventure") {
         const result = await supabase
           .from("adventure_places")
-          .select("id,name,location,place,country,image_url,description,amenities,facilities,activities,phone_numbers,email,opening_hours,closing_hours,days_opened,entry_fee,entry_fee_type,available_slots,created_by")
+          .select("id,name,location,place,country,image_url,description,amenities,facilities,activities,phone_numbers,email,opening_hours,closing_hours,days_opened,entry_fee,entry_fee_type,,approval_status,is_hiddenavailable_slots,created_by")
           .eq("id", id)
           .single();
         data = result.data;
