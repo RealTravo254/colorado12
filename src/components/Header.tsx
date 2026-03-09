@@ -17,25 +17,6 @@ export interface HeaderProps {
   __fromLayout?: boolean;
 }
 
-const LogoWithFallback = () => {
-  const [loaded, setLoaded] = useState(false);
-  return (
-    <div className="h-8 w-8 rounded-full shadow-sm border border-border bg-muted flex items-center justify-center overflow-hidden relative">
-      {!loaded && (
-        <span className="font-bold text-lg italic leading-none" style={{ background: "linear-gradient(to right, #1a365d, #2b6cb0, #4fd1c5)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>R</span>
-      )}
-      <img 
-        src="/fulllogo.png" 
-        alt="Logo" 
-        loading="eager" 
-        fetchPriority="high" 
-        className={`h-full w-full object-contain p-1 absolute inset-0 ${loaded ? 'opacity-100' : 'opacity-0'}`}
-        onLoad={() => setLoaded(true)}
-      />
-    </div>
-  );
-};
-
 export const Header = ({ onSearchClick, showSearchIcon = true, className, __fromLayout }: HeaderProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
