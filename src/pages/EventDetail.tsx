@@ -15,6 +15,7 @@ import { ReviewSection } from "@/components/ReviewSection";
 import { useSavedItems } from "@/hooks/useSavedItems";
 import { trackReferralClick } from "@/lib/referralUtils";
 import { getShareLink } from "@/lib/shareUtils";
+import { extractIdFromSlug } from "@/lib/slugUtils";
 import { useBookingSubmit, BookingFormData } from "@/hooks/useBookingSubmit";
 import { useRealtimeItemAvailability } from "@/hooks/useRealtimeBookings";
 import { DetailNavBar } from "@/components/detail/DetailNavBar"; 
