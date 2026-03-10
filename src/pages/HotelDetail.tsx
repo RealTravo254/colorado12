@@ -30,7 +30,6 @@ import { Footer } from "@/components/Footer";
 
 const HotelDetail = () => {
   const { slug } = useParams();
-  // ✅ slug IS the id — matches EventDetail pattern exactly
   const id = slug ?? null;
   const navigate = useNavigate();
   const goBack = useSafeBack();
@@ -74,7 +73,8 @@ const HotelDetail = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     if (id) {
-      Promise.all([fetchHotel(), fetchLiveRating()]);
+      fetchHotel();
+      fetchLiveRating();
     }
     const urlParams = new URLSearchParams(window.location.search);
     const refSlug = urlParams.get("ref");
@@ -124,27 +124,40 @@ const HotelDetail = () => {
   const fetchHotel = async () => {
     if (!id) return;
     try {
-      // Step 1: match on id column
-      let { data } = await supabase
+      let data: any = null;
+
+      // Step 1: Try slug column first (friendly slugs from CreateHotel always land here)
+      const slugRes = await supabase
         .from("hotels")
         .select("*")
-        .eq("id", id)
-        .maybeSingle() as { data: any };
+        .eq("slug", id)
+        .maybeSingle();
 
-      // Step 2: fallback to slug column
-      if (!data) {
-        const res = await supabase
-          .from("hotels")
-          .select("*")
-          .eq("slug", id)
-          .maybeSingle() as { data: any };
-        if (res.data) data = res.data;
+      if (slugRes.data) {
+        data = slugRes.data;
       }
 
-      if (!data) throw new Error("Not found");
+      // Step 2: Fallback — try id column (handles legacy UUID-based routes)
+      if (!data) {
+        const idRes = await supabase
+          .from("hotels")
+          .select("*")
+          .eq("id", id)
+          .maybeSingle();
+
+        if (idRes.data) data = idRes.data;
+      }
+
+      if (!data) {
+        toast({ title: "Hotel not found", variant: "destructive" });
+        navigate("/");
+        return;
+      }
+
       setHotel(data);
     } catch (error) {
-      toast({ title: "Hotel not found", variant: "destructive" });
+      console.error("fetchHotel error:", error);
+      toast({ title: "Failed to load hotel", variant: "destructive" });
       navigate("/");
     } finally {
       setLoading(false);
@@ -153,14 +166,28 @@ const HotelDetail = () => {
 
   const fetchLiveRating = async () => {
     if (!id) return;
-    const { data } = await supabase
-      .from("reviews")
-      .select("rating")
-      .eq("item_id", id)
-      .eq("item_type", "hotel");
-    if (data && data.length > 0) {
-      const avg = data.reduce((acc, curr) => acc + curr.rating, 0) / data.length;
-      setLiveRating({ avg: parseFloat(avg.toFixed(1)), count: data.length });
+    try {
+      // Try fetching by slug → get real id first, then query reviews
+      const slugRes = await supabase
+        .from("hotels")
+        .select("id")
+        .eq("slug", id)
+        .maybeSingle();
+
+      const resolvedId = slugRes.data?.id ?? id;
+
+      const { data } = await supabase
+        .from("reviews")
+        .select("rating")
+        .eq("item_id", resolvedId)
+        .eq("item_type", "hotel");
+
+      if (data && data.length > 0) {
+        const avg = data.reduce((acc, curr) => acc + curr.rating, 0) / data.length;
+        setLiveRating({ avg: parseFloat(avg.toFixed(1)), count: data.length });
+      }
+    } catch (error) {
+      console.error("fetchLiveRating error:", error);
     }
   };
 
