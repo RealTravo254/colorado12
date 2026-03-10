@@ -96,7 +96,7 @@ const ListingCardComponent = ({
 
   const subtitle = useMemo(() => {
     if (activities && activities.length > 0) {
-      const names = activities.slice(0, 3).map((a: any) => typeof a === 'string' ? a : a.name);
+      const names = activities.slice(0, 2).map((a: any) => typeof a === 'string' ? a : a.name).filter(Boolean);
       return names.join(' • ');
     }
     return null;
@@ -219,9 +219,9 @@ const ListingCardComponent = ({
           {formattedName}
         </h3>
 
-        {/* Subtitle: activities */}
+        {/* Subtitle: activities - only show if they fit */}
         {subtitle && (
-          <p className="line-clamp-1 text-[11px] text-muted-foreground">
+          <p className="line-clamp-1 text-[11px] text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap">
             {subtitle}
           </p>
         )}
