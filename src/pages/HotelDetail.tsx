@@ -15,14 +15,12 @@ import Autoplay from "embla-carousel-autoplay";
 import { ReviewSection } from "@/components/ReviewSection";
 import { FacilitiesGrid, ActivitiesGrid } from "@/components/detail/FacilityActivityCards";
 import { useSavedItems } from "@/hooks/useSavedItems";
-import { extractIdFromSlug } from "@/lib/slugUtils";
 import { useGeolocation, calculateDistance } from "@/hooks/useGeolocation";
 import { trackReferralClick } from "@/lib/referralUtils";
 import { getShareLink } from "@/lib/shareUtils";
 import { DetailNavBar } from "@/components/detail/DetailNavBar";
 import { ImageGalleryModal } from "@/components/detail/ImageGalleryModal";
 import { QuickNavigationBar } from "@/components/detail/QuickNavigationBar";
-// AmenitiesSection removed - using only GeneralFacilitiesDisplay with icons
 import { GeneralFacilitiesDisplay } from "@/components/detail/GeneralFacilitiesDisplay";
 import { DetailMapSection } from "@/components/detail/DetailMapSection";
 import { TealLoader } from "@/components/ui/teal-loader";
@@ -32,7 +30,8 @@ import { Footer } from "@/components/Footer";
 
 const HotelDetail = () => {
   const { slug } = useParams();
-  const id = slug ? extractIdFromSlug(slug) : null;
+  // ✅ Use slug directly as id — no extractIdFromSlug needed
+  const id = slug ?? null;
   const navigate = useNavigate();
   const goBack = useSafeBack();
   const { toast } = useToast();
@@ -77,7 +76,6 @@ const HotelDetail = () => {
 
   useEffect(() => {
     if (id) {
-      // Fetch hotel and rating in parallel
       Promise.all([fetchHotel(), fetchLiveRating()]);
     }
     const urlParams = new URLSearchParams(window.location.search);
@@ -99,7 +97,6 @@ const HotelDetail = () => {
       const now = new Date();
       const currentDay = now.toLocaleString('en-us', { weekday: 'long' }).toLowerCase();
       
-      // Check if open 24 hours
       if (hotel.opening_hours === "00:00" && hotel.closing_hours === "23:59") {
         const days = Array.isArray(hotel.days_opened) 
           ? hotel.days_opened.map((d: string) => d.toLowerCase()) 
@@ -135,14 +132,14 @@ const HotelDetail = () => {
   const fetchHotel = async () => {
     if (!id) return;
     try {
-      // Step 1: exact match on id
+      // ✅ Step 1: match on id column (works for both old UUIDs and new friendly slugs)
       let { data } = await supabase
         .from("hotels")
         .select("*")
         .eq("id", id)
         .maybeSingle() as { data: any };
 
-      // Step 2: fallback to slug column
+      // ✅ Step 2: fallback — match on slug column
       if (!data) {
         const res = await supabase
           .from("hotels")
@@ -170,10 +167,8 @@ const HotelDetail = () => {
   };
 
   if (loading) return <TealLoader />;
-
   if (!hotel) return null;
 
-  // Collect all images: gallery + facility images + activity images
   const facilityImages = (Array.isArray(hotel.facilities) ? hotel.facilities : [])
     .flatMap((f: any) => (Array.isArray(f.images) ? f.images : []));
   const activityImages = (Array.isArray(hotel.activities) ? hotel.activities : [])
@@ -219,7 +214,6 @@ const HotelDetail = () => {
       <div className="max-w-6xl mx-auto md:px-4 md:pt-3">
         {/* Mobile Carousel View */}
         <div className="relative w-full h-[45vh] bg-slate-900 overflow-hidden md:rounded-3xl md:hidden">
-          {/* Action Buttons - Overlaid on Gallery */}
           <div className="absolute top-4 left-0 right-0 px-3 z-50 flex justify-between items-center">
             <Button 
               onClick={goBack}
@@ -227,7 +221,6 @@ const HotelDetail = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-
             <Button 
               onClick={() => id && handleSaveItem(id, "hotel")} 
               className={`rounded-full w-10 h-10 p-0 border-none shadow-lg backdrop-blur-sm transition-all ${
@@ -247,25 +240,23 @@ const HotelDetail = () => {
               ))}
             </CarouselContent>
           </Carousel>
-          {/* Mobile See All Gallery Button */}
           {allImages.length > 1 && (
             <ImageGalleryModal images={allImages} name={hotel.name} />
           )}
           <div className="absolute bottom-6 left-0 w-full px-4 z-20">
             <div className="bg-gradient-to-r from-black/70 via-black/50 to-transparent rounded-2xl p-4 max-w-xl">
               <div className="flex flex-wrap gap-2 mb-2">
-                   {isAccommodationOnly && (
-                     <Badge className="bg-purple-500 text-white border-none px-2 py-0.5 text-[9px] font-black uppercase rounded-full flex items-center gap-1 shadow-lg">
-                       Accommodation Faciities.
-                     </Badge>
-                   )}
-                   {!isAccommodationOnly && (
-                     <Badge className="bg-amber-400 text-black border-none px-2 py-0.5 text-[9px] font-black uppercase rounded-full flex items-center gap-1 shadow-lg">
-                       <Star className="h-3 w-3 fill-current" />
-                       {liveRating.avg > 0 ? liveRating.avg : "New"}
-                     </Badge>
-                   )}
-z
+                {isAccommodationOnly && (
+                  <Badge className="bg-purple-500 text-white border-none px-2 py-0.5 text-[9px] font-black uppercase rounded-full flex items-center gap-1 shadow-lg">
+                    Accommodation
+                  </Badge>
+                )}
+                {!isAccommodationOnly && (
+                  <Badge className="bg-amber-400 text-black border-none px-2 py-0.5 text-[9px] font-black uppercase rounded-full flex items-center gap-1 shadow-lg">
+                    <Star className="h-3 w-3 fill-current" />
+                    {liveRating.avg > 0 ? liveRating.avg : "New"}
+                  </Badge>
+                )}
               </div>
               <h1 className="text-2xl font-black text-white uppercase tracking-tighter leading-none mb-2">{hotel.name}</h1>
               <div className="flex items-center gap-1 text-white">
@@ -280,7 +271,6 @@ z
 
         {/* Desktop Grid View */}
         <div className="hidden md:block relative">
-          {/* Action Buttons - Overlaid on Gallery */}
           <div className="absolute top-6 left-6 right-6 z-50 flex justify-between items-center">
             <Button 
               onClick={goBack} 
@@ -288,7 +278,6 @@ z
             >
               <ArrowLeft className="h-6 w-6" />
             </Button>
-
             <Button 
               onClick={() => id && handleSaveItem(id, "hotel")} 
               className={`rounded-full w-12 h-12 p-0 border-none shadow-lg backdrop-blur-sm transition-all ${
@@ -299,11 +288,9 @@ z
             </Button>
           </div>
 
-          {/* Image Grid Layout */}
           <div className="grid grid-cols-4 gap-2 h-[500px]">
             {allImages.length > 0 ? (
               <>
-                {/* Main Large Image - Takes 2 columns and full height */}
                 <div className="col-span-2 row-span-2 rounded-3xl overflow-hidden relative group">
                   <img 
                     src={allImages[0]} 
@@ -311,14 +298,12 @@ z
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                  
-                  {/* Hotel Info Overlay */}
                   <div className="absolute bottom-6 left-6 right-6 z-20">
                     <div className="space-y-3">
                       <div className="flex flex-wrap gap-2">
                         {isAccommodationOnly && (
                           <Badge className="bg-purple-500 text-white border-none px-3 py-1 text-[10px] font-black uppercase rounded-full shadow-lg">
-                            Accommodation Facilities.
+                            Accommodation
                           </Badge>
                         )}
                         {!isAccommodationOnly && (
@@ -329,7 +314,7 @@ z
                         )}
                         <Badge className={`${isOpenNow ? "bg-emerald-500" : "bg-red-500"} text-white border-none px-3 py-1 text-[10px] font-black uppercase rounded-full flex items-center gap-1.5`}>
                           <Circle className={`h-2.5 w-2.5 fill-current ${isOpenNow ? "animate-pulse" : ""}`} />
-                          {isOpenNow ? "open now" : ""}
+                          {isOpenNow ? "open now" : "closed"}
                         </Badge>
                       </div>
                       <h1 className="text-3xl font-black text-white uppercase tracking-tighter leading-none">{hotel.name}</h1>
@@ -343,7 +328,6 @@ z
                   </div>
                 </div>
 
-                {/* Top Right Image */}
                 {allImages[1] && (
                   <div className="col-span-2 rounded-3xl overflow-hidden relative group">
                     <img 
@@ -354,7 +338,6 @@ z
                   </div>
                 )}
 
-                {/* Bottom Right - 3 Small Images */}
                 <div className="col-span-2 grid grid-cols-3 gap-2">
                   {allImages.slice(2, 5).map((img, idx) => (
                     <div key={idx} className="rounded-2xl overflow-hidden relative group">
@@ -367,7 +350,6 @@ z
                   ))}
                 </div>
 
-                {/* See All Button */}
                 <ImageGalleryModal images={allImages} name={hotel.name} />
               </>
             ) : (
@@ -388,7 +370,7 @@ z
         />
       </div>
 
-      {/* 3. MAIN BODY */}
+      {/* MAIN BODY */}
       <main className="container px-4 mt-6 relative z-30 max-w-6xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-[1.8fr,1fr] gap-4">
           <div className="space-y-4">
@@ -402,7 +384,7 @@ z
               )}
             </section>
 
-            {/* Operating Hours - Mobile Only (below description) */}
+            {/* Operating Hours - Mobile Only */}
             <div className="md:hidden">
               <OperatingHoursInfo />
             </div>
@@ -435,7 +417,7 @@ z
               </div>
             )}
 
-            {/* Mobile Booking Card - Below Activities */}
+            {/* Mobile Booking Card */}
             <div className="bg-white rounded-[32px] p-6 shadow-xl border border-slate-100 lg:hidden">
               <div className="flex justify-between items-start mb-6">
                 <div>
@@ -452,15 +434,15 @@ z
                   )}
                 </div>
                 <div className="text-right">
-                    {!isAccommodationOnly && (
-                      <>
-                        <div className="flex items-center gap-1 text-amber-500 font-black text-lg">
-                            <Star className="h-4 w-4 fill-current" />
-                            <span>{liveRating.avg || "0"}</span>
-                        </div>
-                        <p className="text-[9px] font-black text-slate-400 uppercase">{liveRating.count} reviews</p>
-                      </>
-                    )}
+                  {!isAccommodationOnly && (
+                    <>
+                      <div className="flex items-center gap-1 text-amber-500 font-black text-lg">
+                        <Star className="h-4 w-4 fill-current" />
+                        <span>{liveRating.avg || "0"}</span>
+                      </div>
+                      <p className="text-[9px] font-black text-slate-400 uppercase">{liveRating.count} reviews</p>
+                    </>
+                  )}
                 </div>
               </div>
               {isAccommodationOnly && hotel.general_booking_link ? (
@@ -480,36 +462,36 @@ z
               )}
               <div className="grid grid-cols-3 gap-3 mt-4">
                 <UtilityButton 
-                   icon={<Navigation className="h-5 w-5" />} 
-                   label="Map" 
-                   onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${hotel.name}, ${hotel.location}`)}`, "_blank")} 
+                  icon={<Navigation className="h-5 w-5" />} 
+                  label="Map" 
+                  onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${hotel.name}, ${hotel.location}`)}`, "_blank")} 
                 />
                 <UtilityButton 
-                   icon={<Copy className="h-5 w-5" />} 
-                   label="Copy" 
-                   onClick={async () => {
-                     const link = getShareLink(id!, "hotel", hotel.name, hotel.location);
-                     await navigator.clipboard.writeText(link);
-                     toast({ title: "Link Copied!" });
-                   }} 
+                  icon={<Copy className="h-5 w-5" />} 
+                  label="Copy" 
+                  onClick={async () => {
+                    const link = getShareLink(id!, "hotel", hotel.name, hotel.location);
+                    await navigator.clipboard.writeText(link);
+                    toast({ title: "Link Copied!" });
+                  }} 
                 />
                 <UtilityButton 
-                   icon={<Share2 className="h-5 w-5" />} 
-                   label="Share" 
-                   onClick={async () => {
-                     const link = getShareLink(id!, "hotel", hotel.name, hotel.location);
-                     if (navigator.share) {
-                       try { await navigator.share({ title: hotel.name, url: link }); } catch (e) {}
-                     } else {
-                       await navigator.clipboard.writeText(link);
-                       toast({ title: "Link Copied!" });
-                     }
-                   }} 
+                  icon={<Share2 className="h-5 w-5" />} 
+                  label="Share" 
+                  onClick={async () => {
+                    const link = getShareLink(id!, "hotel", hotel.name, hotel.location);
+                    if (navigator.share) {
+                      try { await navigator.share({ title: hotel.name, url: link }); } catch (e) {}
+                    } else {
+                      await navigator.clipboard.writeText(link);
+                      toast({ title: "Link Copied!" });
+                    }
+                  }} 
                 />
               </div>
             </div>
 
-            {/* Contact Section - Mobile (for quick nav link) */}
+            {/* Contact Section - Mobile */}
             <div id="contact-section" className="lg:hidden">
               {(hotel.phone_numbers?.length > 0 || hotel.email) && (
                 <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 space-y-3">
@@ -538,94 +520,94 @@ z
           {/* Desktop Sidebar */}
           <div className="hidden lg:block">
             <div className="sticky top-24 bg-white rounded-[40px] p-8 shadow-2xl border border-slate-100 space-y-6">
-                <div className="text-center">
-                  <p className="text-xs font-black uppercase text-slate-400 mb-1">Starting from/Fee</p>
-                  {startingPrice > 0 ? (
-                    <div className="space-y-1">
-                      <h3 className="text-xl font-bold text-destructive">{formatPrice(startingPrice)}</h3>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase">per adult</p>
-                    </div>
-                  ) : (
-                    <h3 className="text-xl font-bold text-emerald-600 mb-2">Free Entry</h3>
-                  )}
-                  {!isAccommodationOnly && (
-                    <div className="flex items-center justify-center gap-1.5 text-amber-500 font-black mt-2">
-                      <Star className="h-4 w-4 fill-current" />
-                      <span className="text-lg">{liveRating.avg || "0"}</span>
-                    </div>
-                  )}
-                </div>
-
-                <OperatingHoursInfo />
-
-                {isAccommodationOnly && hotel.general_booking_link ? (
-                  <ExternalBookingButton
-                    url={hotel.general_booking_link}
-                    className="w-full py-8 rounded-3xl text-lg font-black uppercase tracking-widest bg-gradient-to-r from-[#FF7F50] to-[#FF4E50] border-none shadow-xl hover:scale-[1.02] transition-transform active:scale-95"
-                  >
-                    Reserve Now
-                  </ExternalBookingButton>
+              <div className="text-center">
+                <p className="text-xs font-black uppercase text-slate-400 mb-1">Starting from / Fee</p>
+                {startingPrice > 0 ? (
+                  <div className="space-y-1">
+                    <h3 className="text-xl font-bold text-destructive">{formatPrice(startingPrice)}</h3>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase">per adult</p>
+                  </div>
                 ) : (
-                  <Button 
-                    onClick={() => navigate(`/booking/hotel/${hotel.id}`)}
-                    className="w-full py-8 rounded-3xl text-lg font-black uppercase tracking-widest bg-gradient-to-r from-[#FF7F50] to-[#FF4E50] border-none shadow-xl hover:scale-[1.02] transition-transform active:scale-95"
-                  >
-                    Reserve Now
-                  </Button>
+                  <h3 className="text-xl font-bold text-emerald-600 mb-2">Free Entry</h3>
                 )}
-
-                <div className="grid grid-cols-3 gap-3">
-                  <UtilityButton 
-                     icon={<Navigation className="h-5 w-5" />} 
-                     label="Map" 
-                     onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${hotel.name}, ${hotel.location}`)}`, "_blank")} 
-                  />
-                  <UtilityButton 
-                     icon={<Copy className="h-5 w-5" />} 
-                     label="Copy" 
-                     onClick={async () => {
-                       const link = getShareLink(id!, "hotel", hotel.name, hotel.location);
-                       await navigator.clipboard.writeText(link);
-                       toast({ title: "Copied!" });
-                     }} 
-                  />
-                  <UtilityButton 
-                     icon={<Share2 className="h-5 w-5" />} 
-                     label="Share" 
-                     onClick={async () => {
-                       const link = getShareLink(id!, "hotel", hotel.name, hotel.location);
-                       if (navigator.share) {
-                         try { await navigator.share({ title: hotel.name, url: link }); } catch (e) {}
-                       } else {
-                         await navigator.clipboard.writeText(link);
-                         toast({ title: "Link Copied!" });
-                       }
-                     }} 
-                  />
-                </div>
-
-                {/* Contact Section */}
-                {(hotel.phone_numbers?.length > 0 || hotel.email) && (
-                  <div className="space-y-3 pt-4 border-t border-slate-100">
-                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Contact</h3>
-                    {hotel.phone_numbers?.map((phone: string, idx: number) => (
-                      <a key={idx} href={`tel:${phone}`} className="flex items-center gap-3 text-slate-600 hover:text-[#008080] transition-colors">
-                        <div className="p-2 rounded-lg bg-slate-50">
-                          <Phone className="h-4 w-4 text-[#008080]" />
-                        </div>
-                        <span className="text-xs font-bold uppercase tracking-tight">{phone}</span>
-                      </a>
-                    ))}
-                    {hotel.email && (
-                      <a href={`mailto:${hotel.email}`} className="flex items-center gap-3 text-slate-600 hover:text-[#008080] transition-colors">
-                        <div className="p-2 rounded-lg bg-slate-50">
-                          <Mail className="h-4 w-4 text-[#008080]" />
-                        </div>
-                        <span className="text-xs font-bold tracking-tight">{hotel.email}</span>
-                      </a>
-                    )}
+                {!isAccommodationOnly && (
+                  <div className="flex items-center justify-center gap-1.5 text-amber-500 font-black mt-2">
+                    <Star className="h-4 w-4 fill-current" />
+                    <span className="text-lg">{liveRating.avg || "0"}</span>
                   </div>
                 )}
+              </div>
+
+              <OperatingHoursInfo />
+
+              {isAccommodationOnly && hotel.general_booking_link ? (
+                <ExternalBookingButton
+                  url={hotel.general_booking_link}
+                  className="w-full py-8 rounded-3xl text-lg font-black uppercase tracking-widest bg-gradient-to-r from-[#FF7F50] to-[#FF4E50] border-none shadow-xl hover:scale-[1.02] transition-transform active:scale-95"
+                >
+                  Reserve Now
+                </ExternalBookingButton>
+              ) : (
+                <Button 
+                  onClick={() => navigate(`/booking/hotel/${hotel.id}`)}
+                  className="w-full py-8 rounded-3xl text-lg font-black uppercase tracking-widest bg-gradient-to-r from-[#FF7F50] to-[#FF4E50] border-none shadow-xl hover:scale-[1.02] transition-transform active:scale-95"
+                >
+                  Reserve Now
+                </Button>
+              )}
+
+              <div className="grid grid-cols-3 gap-3">
+                <UtilityButton 
+                  icon={<Navigation className="h-5 w-5" />} 
+                  label="Map" 
+                  onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${hotel.name}, ${hotel.location}`)}`, "_blank")} 
+                />
+                <UtilityButton 
+                  icon={<Copy className="h-5 w-5" />} 
+                  label="Copy" 
+                  onClick={async () => {
+                    const link = getShareLink(id!, "hotel", hotel.name, hotel.location);
+                    await navigator.clipboard.writeText(link);
+                    toast({ title: "Copied!" });
+                  }} 
+                />
+                <UtilityButton 
+                  icon={<Share2 className="h-5 w-5" />} 
+                  label="Share" 
+                  onClick={async () => {
+                    const link = getShareLink(id!, "hotel", hotel.name, hotel.location);
+                    if (navigator.share) {
+                      try { await navigator.share({ title: hotel.name, url: link }); } catch (e) {}
+                    } else {
+                      await navigator.clipboard.writeText(link);
+                      toast({ title: "Link Copied!" });
+                    }
+                  }} 
+                />
+              </div>
+
+              {/* Contact Section */}
+              {(hotel.phone_numbers?.length > 0 || hotel.email) && (
+                <div className="space-y-3 pt-4 border-t border-slate-100">
+                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Contact</h3>
+                  {hotel.phone_numbers?.map((phone: string, idx: number) => (
+                    <a key={idx} href={`tel:${phone}`} className="flex items-center gap-3 text-slate-600 hover:text-[#008080] transition-colors">
+                      <div className="p-2 rounded-lg bg-slate-50">
+                        <Phone className="h-4 w-4 text-[#008080]" />
+                      </div>
+                      <span className="text-xs font-bold uppercase tracking-tight">{phone}</span>
+                    </a>
+                  ))}
+                  {hotel.email && (
+                    <a href={`mailto:${hotel.email}`} className="flex items-center gap-3 text-slate-600 hover:text-[#008080] transition-colors">
+                      <div className="p-2 rounded-lg bg-slate-50">
+                        <Mail className="h-4 w-4 text-[#008080]" />
+                      </div>
+                      <span className="text-xs font-bold tracking-tight">{hotel.email}</span>
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -660,7 +642,6 @@ z
         </div>
       </main>
       <Footer />
-      {/* External booking now opens in new tab with loading spinner */}
     </div>
   );
 };

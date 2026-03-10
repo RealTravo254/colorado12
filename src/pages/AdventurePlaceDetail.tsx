@@ -15,7 +15,6 @@ import Autoplay from "embla-carousel-autoplay";
 import { ReviewSection } from "@/components/ReviewSection";
 import { FacilitiesGrid, ActivitiesGrid } from "@/components/detail/FacilityActivityCards";
 import { useSavedItems } from "@/hooks/useSavedItems";
-import { extractIdFromSlug } from "@/lib/slugUtils";
 import { useGeolocation, calculateDistance } from "@/hooks/useGeolocation";
 import { trackReferralClick } from "@/lib/referralUtils";
 import { getShareLink } from "@/lib/shareUtils";
@@ -30,7 +29,8 @@ import { Footer } from "@/components/Footer";
 
 const AdventurePlaceDetail = () => {
   const { slug } = useParams();
-  const id = slug ? extractIdFromSlug(slug) : null;
+  // ✅ Use slug directly as id — no extractIdFromSlug needed
+  const id = slug ?? null;
   const navigate = useNavigate();
   const goBack = useSafeBack();
   const { toast } = useToast();
@@ -121,14 +121,14 @@ const AdventurePlaceDetail = () => {
   const fetchPlace = async () => {
     if (!id) return;
     try {
-      // Step 1: exact match on id column (works for both UUID and legacy friendly IDs)
+      // ✅ Step 1: match on id column (works for both old UUIDs and new friendly slugs)
       let { data } = await supabase
         .from("adventure_places")
         .select("*")
         .eq("id", id)
         .maybeSingle() as { data: any };
 
-      // Step 2: fallback to slug column (new listings store friendly slug separately)
+      // ✅ Step 2: fallback — match on slug column
       if (!data) {
         const res = await supabase
           .from("adventure_places")
@@ -403,7 +403,7 @@ const AdventurePlaceDetail = () => {
           <div className="hidden lg:block">
             <div className="sticky top-24 bg-white rounded-[40px] p-8 shadow-2xl border border-slate-100 space-y-6">
               <div className="text-center">
-                <p className="text-xs font-black uppercase text-slate-400 mb-1">Starting from/Entrtace Fee</p>
+                <p className="text-xs font-black uppercase text-slate-400 mb-1">Starting from / Entrance Fee</p>
                 {place.entry_fee && place.entry_fee > 0 ? (
                   <div className="space-y-1">
                     <h3 className="text-xl font-bold text-destructive">{formatPrice(Number(place.entry_fee))}</h3>
