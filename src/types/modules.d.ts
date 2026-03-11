@@ -14,16 +14,64 @@ declare module 'leaflet/dist/images/marker-shadow.png' {
   export default src;
 }
 
-declare module 'react-i18next';
-declare module 'i18next';
-declare module 'i18next-browser-languagedetector';
-declare module 'mapbox-gl';
-declare module 'qrcode.react';
-declare module 'leaflet';
-declare module '@capacitor/core';
-declare module '@capacitor/push-notifications';
-declare module 'jspdf';
-declare module 'jspdf-autotable';
-declare module 'embla-carousel-autoplay';
-declare module '@yudiel/react-qr-scanner';
-declare module 'vite-plugin-pwa';
+declare module 'react-i18next' {
+  export function useTranslation(): { t: (key: string, options?: any) => string; i18n: any };
+  export const initReactI18next: any;
+  export const Trans: any;
+}
+declare module 'i18next' {
+  const i18n: any;
+  export default i18n;
+}
+declare module 'i18next-browser-languagedetector' {
+  const LanguageDetector: any;
+  export default LanguageDetector;
+}
+declare module 'mapbox-gl' {
+  export class Map { constructor(options: any); remove(): void; on(event: string, handler: any): void; resize(): void; fitBounds(bounds: any, options?: any): void; }
+  export class Marker { constructor(options?: any); setLngLat(lnglat: any): Marker; addTo(map: Map): Marker; remove(): void; getElement(): HTMLElement; }
+  export class LngLatBounds { constructor(); extend(lnglat: any): LngLatBounds; }
+  export let accessToken: string;
+  const mapboxgl: any;
+  export default mapboxgl;
+}
+declare module 'qrcode.react' {
+  import { ForwardRefExoticComponent, RefAttributes } from 'react';
+  export const QRCodeCanvas: ForwardRefExoticComponent<any & RefAttributes<HTMLCanvasElement>>;
+  export const QRCodeSVG: any;
+}
+declare module 'leaflet' {
+  const L: any;
+  export = L;
+}
+declare module '@capacitor/core' {
+  export const Capacitor: { isNativePlatform(): boolean; getPlatform(): string; };
+}
+declare module '@capacitor/push-notifications' {
+  export const PushNotifications: any;
+}
+declare module 'jspdf' {
+  export default class jsPDF {
+    constructor(options?: any);
+    setFontSize(size: number): void;
+    setTextColor(...args: any[]): void;
+    text(text: string, x: number, y: number, options?: any): void;
+    getNumberOfPages(): number;
+    setPage(page: number): void;
+    save(filename: string): void;
+    internal: any;
+    addImage(...args: any[]): void;
+  }
+}
+declare module 'jspdf-autotable' {
+  export default function autoTable(doc: any, options: any): void;
+}
+declare module 'embla-carousel-autoplay' {
+  export default function Autoplay(options?: any): any;
+}
+declare module '@yudiel/react-qr-scanner' {
+  export const Scanner: any;
+}
+declare module 'vite-plugin-pwa' {
+  export function VitePWA(options?: any): any;
+}
