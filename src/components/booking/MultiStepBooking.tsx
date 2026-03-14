@@ -627,13 +627,17 @@ import { useSearchParams } from "react-router-dom";
                        }}
                        onClick={() => toggleActivity(activity)}
                      >
-                       <div className="flex justify-between items-center">
-                         <div>
-                           <p className="font-medium">{activity.name}</p>
-                           <p className="text-sm text-muted-foreground">
-                             {formatPrice(activity.price)} per person
-                           </p>
-                         </div>
+                      <div className="flex items-center gap-3">
+                          {activity.images?.[0] && (
+                            <img src={activity.images[0]} alt={activity.name} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
+                          )}
+                          <div className="flex-1 flex justify-between items-center">
+                          <div>
+                            <p className="font-medium">{activity.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {formatPrice(activity.price)} per person
+                            </p>
+                          </div>
                          {isSelected && (
                            <div
                              className="flex items-center gap-2"
