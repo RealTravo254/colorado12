@@ -2,11 +2,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { Images, Calendar, CheckCircle2 } from "lucide-react";
+import { Images, Calendar, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { ExternalBookingButton } from "./ExternalBookingDialog";
 import { FacilityAmenitiesDialog } from "./FacilityAmenitiesDialog";
+
+const ITEMS_PER_PAGE = 10;
 
 interface FacilityWithImages {
   name: string;
@@ -44,7 +46,6 @@ export const FacilityImageCard = ({
   
   const handleReserve = () => {
     if (useExternalLink && facility.bookingLink) {
-      // Opens in new tab with loading spinner via ExternalBookingButton
       window.open(facility.bookingLink, "_blank", "noopener,noreferrer");
     } else {
       navigate(`/booking/${itemType}/${itemId}?facility=${encodeURIComponent(facility.name)}&skipToFacility=true`);
@@ -117,7 +118,6 @@ export const FacilityImageCard = ({
         </div>
       </div>
 
-      {/* Full Gallery Dialog */}
       <Dialog open={showGallery} onOpenChange={setShowGallery}>
         <DialogContent className="max-w-3xl p-0 overflow-hidden">
           <DialogHeader className="p-4 border-b">
@@ -142,9 +142,6 @@ export const FacilityImageCard = ({
         </DialogContent>
       </Dialog>
 
-      {/* External booking handled inline via ExternalBookingButton */}
-
-      {/* Amenities Dialog */}
       {hasAmenities && (
         <FacilityAmenitiesDialog
           open={showAmenities}
@@ -154,6 +151,67 @@ export const FacilityImageCard = ({
         />
       )}
     </>
+  );
+};
+
+// Pagination controls component
+const PaginationControls = ({ 
+  currentPage, 
+  totalPages, 
+  totalItems,
+  onPageChange, 
+  onViewAll,
+  showingAll
+}: { 
+  currentPage: number; 
+  totalPages: number; 
+  totalItems: number;
+  onPageChange: (page: number) => void; 
+  onViewAll: () => void;
+  showingAll: boolean;
+}) => {
+  if (totalItems <= ITEMS_PER_PAGE && !showingAll) return null;
+
+  return (
+    <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
+      <div className="flex items-center gap-2">
+        {!showingAll && totalPages > 1 && (
+          <>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="h-8 w-8 p-0 rounded-lg"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="text-xs text-muted-foreground font-bold">
+              {currentPage} / {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="h-8 w-8 p-0 rounded-lg"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </>
+        )}
+      </div>
+      {totalItems > ITEMS_PER_PAGE && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onViewAll}
+          className="text-xs font-bold h-8"
+        >
+          {showingAll ? `Show Less` : `View All (${totalItems})`}
+        </Button>
+      )}
+    </div>
   );
 };
 
@@ -174,9 +232,17 @@ export const FacilitiesGrid = ({
 }: FacilitiesGridProps) => {
   const [showAllGallery, setShowAllGallery] = useState(false);
   const [selectedFacilityImages, setSelectedFacilityImages] = useState<{ name: string; images: string[] } | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showAll, setShowAll] = useState(false);
+
   const paidFacilities = facilities.filter(f => f.price > 0 || !f.is_free);
   
   if (paidFacilities.length === 0) return null;
+
+  const totalPages = Math.ceil(paidFacilities.length / ITEMS_PER_PAGE);
+  const displayedFacilities = showAll 
+    ? paidFacilities 
+    : paidFacilities.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   const handleSeeAllImages = (facility: FacilityWithImages) => {
     if (facility.images && facility.images.length > 0) {
@@ -192,7 +258,7 @@ export const FacilitiesGrid = ({
           Facilities & Rooms
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {paidFacilities.map((facility, idx) => (
+          {displayedFacilities.map((facility, idx) => (
             <div key={idx} className="relative">
               <FacilityImageCard
                 facility={facility}
@@ -213,6 +279,14 @@ export const FacilitiesGrid = ({
             </div>
           ))}
         </div>
+        <PaginationControls
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={paidFacilities.length}
+          onPageChange={setCurrentPage}
+          onViewAll={() => { setShowAll(!showAll); setCurrentPage(1); }}
+          showingAll={showAll}
+        />
       </section>
 
       <Dialog open={showAllGallery} onOpenChange={setShowAllGallery}>
@@ -267,17 +341,33 @@ export const ActivitiesGrid = ({
   itemType,
   accentColor = "#FF7F50" 
 }: ActivitiesGridProps) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showAll, setShowAll] = useState(false);
+
   const paidActivities = activities.filter(a => a.price > 0 || !a.is_free);
   if (paidActivities.length === 0) return null;
+
+  const totalPages = Math.ceil(paidActivities.length / ITEMS_PER_PAGE);
+  const displayedActivities = showAll
+    ? paidActivities
+    : paidActivities.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   return (
     <section className="bg-background rounded-3xl p-6 shadow-sm border border-border">
       <h2 className="text-[11px] font-black uppercase tracking-widest mb-4 text-muted-foreground">Activities</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {paidActivities.map((activity, idx) => (
+        {displayedActivities.map((activity, idx) => (
           <ActivityImageCard key={idx} activity={activity} itemId={itemId} itemType={itemType} accentColor={accentColor} />
         ))}
       </div>
+      <PaginationControls
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={paidActivities.length}
+        onPageChange={setCurrentPage}
+        onViewAll={() => { setShowAll(!showAll); setCurrentPage(1); }}
+        showingAll={showAll}
+      />
     </section>
   );
 };
