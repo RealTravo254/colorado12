@@ -351,8 +351,8 @@ const Index = () => {
 
   useEffect(() => {
     const ctrl = () => {
-      if (window.scrollY > 200) { setIsSearchVisible(false); setShowSearchIcon(true); }
-      else { setIsSearchVisible(true); setShowSearchIcon(false); }
+      if (window.scrollY > 200) { setIsSearchVisible(false); setShowSearchIcon(true); setScrolledPastHero(true); }
+      else { setIsSearchVisible(true); setShowSearchIcon(false); setScrolledPastHero(false); }
     };
     window.addEventListener("scroll", ctrl);
     return () => window.removeEventListener("scroll", ctrl);
