@@ -451,13 +451,13 @@ const Index = () => {
           className="fixed top-0 left-0 right-0 z-[100] md:hidden flex items-center justify-between px-4 pointer-events-none"
           style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 10px)', paddingBottom: '10px' }}
         >
-          {/* Left: Menu icon — pill bg appears on scroll */}
+          {/* Left: Menu icon — pill bg always visible */}
           <div
-            className="pointer-events-auto rounded-xl transition-all duration-200"
+            className="pointer-events-auto rounded-xl"
             style={{
-              backgroundColor: scrolledPastHero ? 'rgba(0,0,0,0.65)' : 'transparent',
-              backdropFilter: scrolledPastHero ? 'blur(14px)' : 'none',
-              WebkitBackdropFilter: scrolledPastHero ? 'blur(14px)' : 'none',
+              backgroundColor: 'rgba(0,0,0,0.65)',
+              backdropFilter: 'blur(14px)',
+              WebkitBackdropFilter: 'blur(14px)',
             }}
           >
             <Sheet open={isIndexDrawerOpen} onOpenChange={setIsIndexDrawerOpen}>
@@ -475,13 +475,13 @@ const Index = () => {
             </Sheet>
           </div>
 
-          {/* Right: Notification bell — pill bg appears on scroll */}
+          {/* Right: Notification bell — pill bg always visible */}
           <div
-            className="pointer-events-auto rounded-xl transition-all duration-200 [&_button]:h-9 [&_button]:w-9 [&_button]:text-white"
+            className="pointer-events-auto rounded-xl [&_button]:h-9 [&_button]:w-9 [&_button]:text-white"
             style={{
-              backgroundColor: scrolledPastHero ? 'rgba(0,0,0,0.65)' : 'transparent',
-              backdropFilter: scrolledPastHero ? 'blur(14px)' : 'none',
-              WebkitBackdropFilter: scrolledPastHero ? 'blur(14px)' : 'none',
+              backgroundColor: 'rgba(0,0,0,0.65)',
+              backdropFilter: 'blur(14px)',
+              WebkitBackdropFilter: 'blur(14px)',
             }}
           >
             <NotificationBell />
