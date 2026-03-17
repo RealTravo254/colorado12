@@ -439,23 +439,29 @@ const Index = () => {
         }}
       />
 
-      {/* ─── Fixed mobile top bar on scroll ─────────────────────────────── */}
+      {/* ─── Fixed mobile top bar on scroll (pill style like DetailNavBar) ── */}
       {scrolledPastHero && !isSearchFocused && (
-        <div className="fixed top-0 left-0 right-0 z-[100] md:hidden flex items-center justify-between px-4 py-2 transition-all duration-200"
-          style={{ backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)' }}
-        >
-          <Sheet open={isIndexDrawerOpen} onOpenChange={setIsIndexDrawerOpen}>
-            <SheetTrigger asChild>
-              <button className="h-10 w-10 rounded-xl flex items-center justify-center text-white hover:bg-white/20 transition-all active:scale-90" aria-label="Open Menu">
-                <Menu className="h-7 w-7 stroke-[2.5]" />
-              </button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-full sm:w-72 p-0 h-screen border-none">
-              <NavigationDrawer onClose={() => setIsIndexDrawerOpen(false)} />
-            </SheetContent>
-          </Sheet>
-          <div className="[&_button]:text-white [&_button]:h-10 [&_button]:w-10">
-            <NotificationBell />
+        <div className="fixed top-0 left-0 right-0 z-[100] md:hidden" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+          <div className="mx-3 mt-3">
+            <div
+              className="flex items-center justify-between px-3 py-2.5 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12),0_1px_0_rgba(255,255,255,0.1)_inset] border border-white/10"
+              style={{ backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
+            >
+              <Sheet open={isIndexDrawerOpen} onOpenChange={setIsIndexDrawerOpen}>
+                <SheetTrigger asChild>
+                  <button className="h-9 w-9 rounded-xl flex items-center justify-center text-white hover:bg-white/20 transition-all active:scale-95" aria-label="Open Menu">
+                    <Menu className="h-5 w-5 stroke-[2.5]" />
+                  </button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-full sm:w-72 p-0 h-screen border-none">
+                  <NavigationDrawer onClose={() => setIsIndexDrawerOpen(false)} />
+                </SheetContent>
+              </Sheet>
+              <span className="text-[11px] font-black uppercase tracking-[0.12em] text-white truncate">RealTravo</span>
+              <div className="[&_button]:text-white [&_button]:h-9 [&_button]:w-9">
+                <NotificationBell />
+              </div>
+            </div>
           </div>
         </div>
       )}
