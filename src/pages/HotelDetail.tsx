@@ -525,6 +525,7 @@ const HotelDetail = () => {
           )}
         </div>
       </div>
+    </div>
   );
 };
 
