@@ -56,7 +56,7 @@ export const Header = ({ onSearchClick, showSearchIcon = true, className, __from
             </SheetContent>
           </Sheet>
           <Link to="/" className="flex items-center gap-2 group ml-1">
-            <span className="font-bold text-lg tracking-tight italic text-white">RealTravo</span>
+            <span className="font-bold text-lg tracking-tight italic text-white hidden md:inline">RealTravo</span>
           </Link>
         </div>
 

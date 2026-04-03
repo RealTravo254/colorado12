@@ -503,7 +503,28 @@ const HotelDetail = () => {
         </div>
       </main>
       <Footer />
-    </div>
+
+      {/* Fixed bottom reserve bar on mobile */}
+      <div className="fixed bottom-0 left-0 right-0 z-[100] md:hidden bg-white border-t border-slate-200 shadow-[0_-4px_20px_rgb(0,0,0,0.08)]"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+        <div className="flex items-center justify-between px-4 py-3">
+          <div>
+            {startingPrice > 0 ? (
+              <div className="flex items-baseline gap-1">
+                <span className="text-[9px] font-bold text-slate-400 uppercase mr-1">From</span>
+                <span className="text-base font-bold text-destructive">{formatPrice(startingPrice)}</span>
+              </div>
+            ) : (
+              <span className="text-sm font-semibold text-emerald-600">Free Entry</span>
+            )}
+          </div>
+          {isAccommodationOnly && hotel.general_booking_link ? (
+            <ExternalBookingButton url={hotel.general_booking_link} className="px-6 py-5 rounded-xl text-xs font-black uppercase tracking-widest text-white border-none bg-gradient-to-r from-[#FF7F50] to-[#FF4E50]">Reserve</ExternalBookingButton>
+          ) : (
+            <Button onClick={() => navigate(`/booking/hotel/${hotel.id}`)} className="px-6 py-5 rounded-xl text-xs font-black uppercase tracking-widest text-white border-none bg-gradient-to-r from-[#FF7F50] to-[#FF4E50]">Reserve</Button>
+          )}
+        </div>
+      </div>
   );
 };
 
