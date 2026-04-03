@@ -366,12 +366,9 @@ const Index = () => {
   const handleSearchIconClick = () => { navigate('/explore'); };
 
   const handleMyLocationTap = useCallback(() => {
-    if (permissionDenied) { setShowLocationDialog(true); return; }
     if (!position && !locationLoading) forceRequestLocation();
     setListingViewMode('my_location');
-  }, [position, locationLoading, permissionDenied, forceRequestLocation]);
-
-  useEffect(() => { if (permissionDenied && listingViewMode === 'my_location') setShowLocationDialog(true); }, [permissionDenied, listingViewMode]);
+  }, [position, locationLoading, forceRequestLocation]);
 
   // ─── Display items with filtering ─────────────────────────────────────────
   const getDisplayItems = useCallback((items: any[], sortedByRating: any[], isTripsOrEvents = false) => {
