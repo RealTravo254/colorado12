@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Clock, X, TrendingUp, Plane, Hotel, Tent, Landmark, ArrowLeft, Calendar, Search as SearchIcon, MapPin, Loader2, Sparkles } from "lucide-react";
+import { Clock, X, TrendingUp, Plane, Hotel, Tent, Landmark, Home, Calendar, Search as SearchIcon, MapPin, Loader2, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getSessionId } from "@/lib/sessionManager";
 import { Input } from "@/components/ui/input";
@@ -231,7 +231,7 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
           <div className="flex items-center gap-3">
             {showBackButton && (
               <Button variant="ghost" size="icon" onClick={onBack} className="rounded-full bg-white shadow-sm border border-slate-100 hover:text-[#008080]">
-                <ArrowLeft className="h-5 w-5" />
+                <Home className="h-5 w-5" />
               </Button>
             )}
             <div className="relative flex-1 group">

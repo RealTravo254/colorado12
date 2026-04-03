@@ -9,7 +9,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { SearchBarWithSuggestions } from "@/components/SearchBarWithSuggestions";
 import { useSearchFocus } from "@/components/PageLayout";
 import { ListingCard } from "@/components/ListingCard";
-import { Calendar, Hotel, Tent, Compass, MapPin, ChevronLeft, ChevronRight, Loader2, Navigation, Home, Heart, Ticket, Trophy, Star } from "lucide-react";
+import { Calendar, Hotel, Tent, Compass, MapPin, ChevronLeft, ChevronRight, Loader2, Navigation, Home, Heart, Ticket, Trophy, Star, Search as SearchIcon } from "lucide-react";
 import {
   AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -105,7 +105,6 @@ const CATEGORIES = [
   { icon: Hotel, title: "Hotels", path: "/category/hotels", color: "hsl(220, 70%, 50%)", bgClass: "bg-blue-600" },
   { icon: Calendar, title: "Trips", path: "/category/trips", color: "hsl(25, 90%, 50%)", bgClass: "bg-orange-500" },
   { icon: Compass, title: "Events", path: "/category/events", color: "hsl(340, 75%, 50%)", bgClass: "bg-rose-600" },
-  { icon: Home, title: "Stays", path: "/category/accommodation", color: "hsl(270, 60%, 50%)", bgClass: "bg-purple-600" },
 ];
 
 // ─── Quick navigation cards (above footer) ───────────────────────────────────
@@ -364,7 +363,7 @@ const Index = () => {
     return () => window.removeEventListener("scroll", ctrl);
   }, []);
 
-  const handleSearchIconClick = () => { setIsSearchVisible(true); setShowSearchIcon(false); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  const handleSearchIconClick = () => { navigate('/explore'); };
 
   const handleMyLocationTap = useCallback(() => {
     if (permissionDenied) { setShowLocationDialog(true); return; }
@@ -475,16 +474,32 @@ const Index = () => {
             </Sheet>
           </div>
 
-          {/* Right: Notification bell — pill bg always visible */}
-          <div
-            className="pointer-events-auto rounded-xl [&_button]:h-9 [&_button]:w-9 [&_button]:text-white"
-            style={{
-              backgroundColor: 'rgba(0,0,0,0.65)',
-              backdropFilter: 'blur(14px)',
-              WebkitBackdropFilter: 'blur(14px)',
-            }}
-          >
-            <NotificationBell />
+          {/* Right: Search icon + Notification bell */}
+          <div className="flex items-center gap-2 pointer-events-auto">
+            {showSearchIcon && (
+              <button
+                onClick={handleSearchIconClick}
+                className="h-9 w-9 rounded-xl flex items-center justify-center text-white transition-all active:scale-95"
+                style={{
+                  backgroundColor: 'rgba(0,0,0,0.65)',
+                  backdropFilter: 'blur(14px)',
+                  WebkitBackdropFilter: 'blur(14px)',
+                }}
+                aria-label="Search"
+              >
+                <SearchIcon className="h-5 w-5" />
+              </button>
+            )}
+            <div
+              className="rounded-xl [&_button]:h-9 [&_button]:w-9 [&_button]:text-white"
+              style={{
+                backgroundColor: 'rgba(0,0,0,0.65)',
+                backdropFilter: 'blur(14px)',
+                WebkitBackdropFilter: 'blur(14px)',
+              }}
+            >
+              <NotificationBell />
+            </div>
           </div>
         </div>
       )}
@@ -529,7 +544,7 @@ const Index = () => {
           {/* Category pills */}
           <div className="absolute bottom-3 left-0 right-0 z-10">
             <div className="container mx-auto px-4 md:px-6">
-              <div className="grid grid-cols-5 gap-2 w-full">
+              <div className="grid grid-cols-4 gap-2 w-full">
                 {CATEGORIES.map((cat) => (
                   <button
                     key={cat.title}

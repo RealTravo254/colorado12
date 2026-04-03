@@ -76,6 +76,7 @@ const HotelGuide = lazy(() => import("./pages/HotelGuide"));
 const PaymentHistory = lazy(() => import("./pages/PaymentHistory"));
 const AdminPaymentVerification = lazy(() => import("./pages/AdminPaymentVerification"));
 const AccountsOverview = lazy(() => import("./pages/admin/AccountsOverview"));
+const Explore = lazy(() => import("./pages/Explore"));
 
 
 const queryClient = new QueryClient({
@@ -122,6 +123,7 @@ const App = () => {
                 <div className="w-full">
                   <Routes>
                     <Route path="/" element={<Index />} />
+                    <Route path="/explore" element={<Explore />} />
                     <Route path="/saved" element={<Saved />} />
                     <Route path="/bookings" element={<Bookings />} />
                     <Route path="/contact" element={<Contact />} />
