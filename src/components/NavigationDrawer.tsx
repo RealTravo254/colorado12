@@ -148,8 +148,10 @@ export const NavigationDrawer = ({ onClose }: NavigationDrawerProps) => {
         <ul className="space-y-1">
           <p className="px-4 text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">{t('drawer.mainMenu')}</p>
           <NavItem icon={Home} label={t('nav.home')} path="/" />
+          <NavItem icon={Globe} label="Explore" path="/explore" />
           <NavItem icon={Ticket} label={t('nav.myBookings')} path="/bookings" isProtected />
           <NavItem icon={Heart} label={t('nav.wishlist')} path="/saved" isProtected />
+          <NavItem icon={Building2} label="Become a Host" path="/become-host" isProtected />
           
           <div className="h-4" />
           <p className="px-4 text-[9px] font-black text-[#008080] uppercase tracking-[0.2em] mb-2">{t('drawer.exploreCategories')}</p>

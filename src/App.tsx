@@ -123,6 +123,7 @@ const App = () => {
                 <div className="w-full">
                   <Routes>
                     <Route path="/" element={<Index />} />
+                    <Route path="/explore" element={<Explore />} />
                     <Route path="/saved" element={<Saved />} />
                     <Route path="/bookings" element={<Bookings />} />
                     <Route path="/contact" element={<Contact />} />
