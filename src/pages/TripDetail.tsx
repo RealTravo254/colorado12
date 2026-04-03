@@ -419,7 +419,30 @@ const TripDetail = () => {
         </div>
       </main>
       <Footer />
-      <MobileBottomBar />
+
+      {/* Fixed bottom reserve bar on mobile */}
+      <div className="fixed bottom-0 left-0 right-0 z-[100] md:hidden bg-white border-t border-slate-200 shadow-[0_-4px_20px_rgb(0,0,0,0.08)]"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+        <div className="flex items-center justify-between px-4 py-3">
+          <div>
+            <div className="flex items-baseline gap-1">
+              <span className="text-base font-bold text-destructive">{formatPrice(event.price)}</span>
+              <span className="text-[9px] font-bold text-slate-400 uppercase">/ adult</span>
+            </div>
+            {event.price_child != null && (
+              <div className="text-[10px] font-bold text-slate-500">Child: {formatPrice(event.price_child || 0)}</div>
+            )}
+          </div>
+          <Button
+            onClick={() => navigate(`/booking/trip/${event.id}`)}
+            disabled={!canBook}
+            className="px-6 py-5 rounded-xl text-xs font-black uppercase tracking-widest text-white border-none"
+            style={{ background: !canBook ? "#cbd5e1" : `linear-gradient(135deg, ${COLORS.CORAL_LIGHT} 0%, ${COLORS.CORAL} 100%)` }}
+          >
+            {isSoldOut ? "Fully Booked" : isExpired ? "Expired" : "Reserve"}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
