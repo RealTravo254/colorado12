@@ -256,17 +256,17 @@ const AdventurePlaceDetail = () => {
             </CarouselContent>
           </Carousel>
           {allImages.length > 1 && <ImageGalleryModal images={allImages} name={place.name} />}
-          <div className="absolute bottom-6 left-0 w-full px-4 z-20">
-            <div className="bg-gradient-to-r from-black/70 via-black/50 to-transparent rounded-2xl p-4 max-w-xl">
-              <div className="flex flex-wrap gap-2 mb-2">
-                <Badge className="bg-amber-400 text-black border-none px-2 py-0.5 text-[9px] font-black uppercase rounded-full flex items-center gap-1 shadow-lg">
-                  <Star className="h-3 w-3 fill-current" />{liveRating.avg > 0 ? liveRating.avg : "—"}
+          <div className="absolute bottom-4 left-0 w-full px-4 z-20">
+            <div className="bg-gradient-to-r from-black/70 via-black/50 to-transparent rounded-xl p-3 max-w-md">
+              <div className="flex flex-wrap gap-1.5 mb-1.5">
+                <Badge className="bg-amber-400 text-black border-none px-2 py-0.5 text-[8px] font-black uppercase rounded-full flex items-center gap-1 shadow-lg">
+                  <Star className="h-2.5 w-2.5 fill-current" />{liveRating.avg > 0 ? liveRating.avg : "—"}
                 </Badge>
               </div>
-              <h1 className="text-2xl font-black text-white uppercase tracking-tighter leading-none mb-2">{place.name}</h1>
+              <h1 className="text-lg font-black text-white uppercase tracking-tighter leading-none mb-1">{place.name}</h1>
               <div className="flex items-center gap-1 text-white">
-                <MapPin className="h-3.5 w-3.5" />
-                <span className="text-xs font-bold uppercase truncate">{[place.place, place.location, place.country].filter(Boolean).join(", ")}</span>
+                <MapPin className="h-3 w-3" />
+                <span className="text-[10px] font-bold uppercase truncate">{[place.place, place.location, place.country].filter(Boolean).join(", ")}</span>
               </div>
             </div>
           </div>
