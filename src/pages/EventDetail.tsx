@@ -426,9 +426,6 @@ const EventDetail = () => {
           itemType="event"
         />
 
-        <div className="mt-16">
-          <SimilarItems currentItemId={event.id} itemType="trip" location={event.location} country={event.country} />
-        </div>
       </main>
       <Footer />
 

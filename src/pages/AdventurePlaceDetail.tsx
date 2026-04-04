@@ -657,7 +657,7 @@ const AdventurePlaceDetail = () => {
           itemType="adventure"
         />
 
-        <SimilarItems currentItemId={resolvedId} itemType="adventure" country={place.country} />
+        
       </main>
       <Footer />
 

@@ -497,10 +497,6 @@ const HotelDetail = () => {
           />
         )}
 
-        <div className="mt-12">
-          <h2 className="text-xl font-black uppercase tracking-tighter mb-6">Explore Similar Stays</h2>
-          <SimilarItems currentItemId={hotel.id} itemType="hotel" country={hotel.country} />
-        </div>
       </main>
       <Footer />
 
