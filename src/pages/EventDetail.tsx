@@ -92,6 +92,7 @@ const EventDetail = () => {
 
       for (const candidate of candidates) {
         if (data) break;
+        // Try by id with type=event
         const idRes = await supabase
           .from("trips")
           .select(SELECT_FIELDS)
@@ -100,6 +101,7 @@ const EventDetail = () => {
           .maybeSingle() as { data: any };
         if (idRes.data) { data = idRes.data; break; }
 
+        // Try by slug with type=event
         const slugRes = await supabase
           .from("trips")
           .select(SELECT_FIELDS)
@@ -107,6 +109,22 @@ const EventDetail = () => {
           .eq("type", "event")
           .maybeSingle() as { data: any };
         if (slugRes.data) { data = slugRes.data; break; }
+
+        // Fallback: try by id without type filter (event may have been saved with different type)
+        const fallbackRes = await supabase
+          .from("trips")
+          .select(SELECT_FIELDS)
+          .eq("id", candidate)
+          .maybeSingle() as { data: any };
+        if (fallbackRes.data) { data = fallbackRes.data; break; }
+
+        // Fallback: try by slug without type filter
+        const fallbackSlugRes = await supabase
+          .from("trips")
+          .select(SELECT_FIELDS)
+          .eq("slug", candidate)
+          .maybeSingle() as { data: any };
+        if (fallbackSlugRes.data) { data = fallbackSlugRes.data; break; }
       }
 
       if (!data) throw new Error("Not found");
