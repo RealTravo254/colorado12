@@ -38,6 +38,12 @@ const StyledInput = ({ className = "", isInvalid = false, ...props }: React.Comp
 
 interface WorkingDays { Mon: boolean; Tue: boolean; Wed: boolean; Thu: boolean; Fri: boolean; Sat: boolean; Sun: boolean; }
 
+const EVENT_CATEGORIES = [
+  "Roadtrips", "Music Events", "Children Events", "Pool Party", "Outdoor",
+  "Cultural Events", "Food", "Training", "Dancing Events", "Educational",
+  "Religious Events", "Night Parties", "Charity Events", "Others"
+];
+
 const STEP_NAMES = ["Basic Info", "Date & Pricing", "Contact & Photos", "Schedule", "Review"];
 
 const CreateTripEvent = () => {
