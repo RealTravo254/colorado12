@@ -172,45 +172,24 @@ const CategoryDetail = () => {
     return sorted;
   }, [items, position, ratings, category]);
 
-  const applyFilters = useCallback((itemsToFilter: any[], query: string, filters: FilterValues) => {
+  const applyFilters = useCallback((itemsToFilter: any[], query: string) => {
     let result = [...itemsToFilter];
     if (query) {
+      const q = query.toLowerCase();
       result = result.filter(item => 
-        item.name?.toLowerCase().includes(query.toLowerCase()) || 
-        item.location?.toLowerCase().includes(query.toLowerCase())
+        item.name?.toLowerCase().includes(q) || 
+        item.location?.toLowerCase().includes(q) ||
+        item.place?.toLowerCase().includes(q) ||
+        item.country?.toLowerCase().includes(q)
       );
-    }
-    if (filters.location) {
-      const loc = filters.location.toLowerCase();
-      result = result.filter(item => 
-        item.location?.toLowerCase().includes(loc) ||
-        item.place?.toLowerCase().includes(loc) ||
-        item.country?.toLowerCase().includes(loc)
-      );
-    }
-    // Filter by date range if provided
-    if (filters.dateFrom || filters.dateTo) {
-      result = result.filter(item => {
-        // For trips/events with specific dates
-        if (item.date) {
-          const itemDate = new Date(item.date);
-          if (filters.dateFrom && itemDate < filters.dateFrom) return false;
-          if (filters.dateTo && itemDate > filters.dateTo) return false;
-        }
-        // For flexible date items or items without dates, include them
-        if (item.is_flexible_date) return true;
-        // For hotels/adventure places, they're generally always available
-        if (!item.date) return true;
-        return true;
-      });
     }
     return result;
   }, []);
 
   useEffect(() => {
-    const filtered = applyFilters(sortedItems, searchQuery, activeFilters);
+    const filtered = applyFilters(sortedItems, searchQuery);
     setFilteredItems(filtered);
-  }, [sortedItems, searchQuery, activeFilters, applyFilters]);
+  }, [sortedItems, searchQuery, applyFilters]);
 
   if (!config) return <div className="p-10 text-center">Category not found</div>;
 
@@ -229,25 +208,15 @@ const CategoryDetail = () => {
           <SearchBarWithSuggestions 
             value={searchQuery} 
             onChange={setSearchQuery} 
-            onSubmit={() => setFilteredItems(applyFilters(sortedItems, searchQuery, activeFilters))} 
+            onSubmit={() => setFilteredItems(applyFilters(sortedItems, searchQuery))} 
             onFocus={() => setIsSearchFocused(true)} 
             onBlur={() => setIsSearchFocused(false)} 
             onBack={() => { setIsSearchFocused(false); setSearchQuery(""); }} 
-            showBackButton={isSearchFocused} 
+            showBackButton={isSearchFocused}
+            categoryType={category === "events" ? "events" : undefined}
           />
         </div>
       </div>
-
-      {!isSearchFocused && (
-        <div className="bg-background/95 backdrop-blur-sm border-b relative z-40">
-          <div className="container px-4 py-2">
-            <FilterBar 
-              type={config?.filterType || "trips-events"} 
-              onApplyFilters={setActiveFilters}
-            />
-          </div>
-        </div>
-      )}
 
       <main className={cn("container px-4 py-6 transition-opacity duration-200", isSearchFocused && "pointer-events-none opacity-20")}>
         {/* FIXED GRID: 
