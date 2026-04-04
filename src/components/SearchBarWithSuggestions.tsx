@@ -334,18 +334,18 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
 
                   {trendingSearches.length > 0 && (
                     <div>
-                      <div className="flex items-center gap-2 px-5 py-3">
-                        <TrendingUp className="h-4 w-4 text-[#FF7F50]" />
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Trending Destinations</p>
+                       <div className="flex items-center gap-2 px-5 py-3">
+                        <TrendingUp className="h-4 w-4 text-secondary" />
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Trending Destinations</p>
                       </div>
                       {trendingSearches.slice(0, 5).map((item, index) => (
                         <button 
                           key={index} 
                           onClick={() => { onChange(item.query); saveToHistory(item.query); onSubmit(); setShowSuggestions(false); }} 
-                          className="w-full px-5 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors group text-left rounded-[20px]"
+                          className="w-full px-5 py-4 flex items-center justify-between hover:bg-muted transition-colors group text-left rounded-[20px]"
                         >
-                          <span className="text-sm font-black text-slate-700 uppercase tracking-tight group-hover:text-primary">{item.query}</span>
-                          <span className="text-[10px] font-bold text-slate-300 uppercase tracking-tighter">{item.search_count} explores</span>
+                          <span className="text-sm font-black text-foreground uppercase tracking-tight group-hover:text-primary">{item.query}</span>
+                          <span className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-tighter">{item.search_count} explores</span>
                         </button>
                       ))}
                     </div>
