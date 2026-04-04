@@ -88,7 +88,7 @@ const ScrollSection = memo(({ title, viewAllPath, accentColor, children, scrollR
         >
           {loading || !hasItems ? (
             [...Array(4)].map((_, i) => (
-              <div key={i} className="flex-shrink-0 w-[72vw] sm:w-[280px] md:w-[320px] snap-start">
+              <div key={i} className="flex-shrink-0 w-[44vw] sm:w-[220px] md:w-[240px] snap-start">
                 <ListingSkeleton />
               </div>
             ))
