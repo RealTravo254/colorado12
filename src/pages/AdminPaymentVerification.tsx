@@ -24,7 +24,7 @@ const COLORS = {
   SOFT_GRAY: "#F8F9FA"
 };
 
-const ITEMS_PER_PAGE = 20;
+const ITEMS_PER_PAGE = 20; 
 
 interface BankDetail {
   id: string;
