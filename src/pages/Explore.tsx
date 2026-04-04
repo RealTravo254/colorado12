@@ -5,6 +5,7 @@ import { SearchBarWithSuggestions } from "@/components/SearchBarWithSuggestions"
 import { ListingCard } from "@/components/ListingCard";
 import { ListingSkeleton } from "@/components/ui/listing-skeleton";
 import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
 import { useRatings, sortByRating } from "@/hooks/useRatings";
 import { useGeolocation, calculateDistance } from "@/hooks/useGeolocation";
 import { useRealtimeBookings } from "@/hooks/useRealtimeBookings";
