@@ -536,43 +536,66 @@ const AdventurePlaceDetail = () => {
 
           {/* Desktop sidebar */}
           <div className="hidden lg:block">
-            <div className="sticky top-24 bg-white rounded-[40px] p-8 shadow-2xl border border-slate-100 space-y-6">
-              <div className="text-center">
-                <p className="text-xs font-black uppercase text-slate-400 mb-1">Starting from / Entrance Fee</p>
+            <div className="sticky top-24 bg-white rounded-2xl p-6 shadow-lg border border-slate-200 space-y-5">
+              <div>
+                <p className="text-xs text-slate-500">From</p>
                 {place.entry_fee && place.entry_fee > 0 ? (
-                  <div className="space-y-1">
-                    <h3 className="text-xl font-bold text-destructive">{formatPrice(Number(place.entry_fee))}</h3>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase">per adult</p>
-                    {place.child_entry_fee !== undefined && (
-                      <p className="text-sm font-bold text-slate-500">Child: {formatPrice(Number(place.child_entry_fee || 0))}</p>
-                    )}
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-black text-slate-900">{formatPrice(Number(place.entry_fee))}</span>
+                    <span className="text-sm text-slate-500">per person</span>
                   </div>
                 ) : (
-                  <h3 className="text-lg font-normal text-emerald-600 mb-2">Free Entry</h3>
+                  <span className="text-xl font-bold text-emerald-600">Free Entry</span>
                 )}
-                <div className="flex items-center justify-center gap-1.5 text-amber-500 font-black mt-2">
-                  <Star className="h-4 w-4 fill-current" />
-                  <span className="text-lg">{liveRating.avg || "0"}</span>
-                </div>
+                {place.child_entry_fee !== undefined && place.child_entry_fee > 0 && (
+                  <p className="text-sm text-slate-600 mt-1">Child: {formatPrice(Number(place.child_entry_fee))}</p>
+                )}
               </div>
-
-              <OperatingHoursInfo />
 
               <Button
                 onClick={() => navigate(`/booking/adventure_place/${resolvedId}`)}
-                className="w-full py-7 rounded-3xl text-lg font-black uppercase tracking-widest bg-gradient-to-r from-[#FF7F50] to-[#FF4E50] border-none shadow-xl transition-all active:scale-95"
+                className="w-full py-6 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-700 border-none shadow-md"
               >
-                Reserve Now
+                Check availability
               </Button>
 
-              <div className="grid grid-cols-3 gap-3">
+              {/* Trust badges */}
+              <div className="space-y-3 pt-3 border-t border-slate-100">
+                <div className="flex items-start gap-2">
+                  <div className="h-5 w-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Circle className="h-3 w-3 text-emerald-600 fill-emerald-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-slate-800">Free cancellation</p>
+                    <p className="text-[11px] text-slate-500">Cancel in advance for a full refund</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <div className="h-5 w-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Circle className="h-3 w-3 text-emerald-600 fill-emerald-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-slate-800">Reserve now & pay later</p>
+                    <p className="text-[11px] text-slate-500">Keep your plans flexible — book your spot and pay nothing today</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Rating */}
+              <div className="flex items-center gap-2 pt-3 border-t border-slate-100">
+                <Star className="h-5 w-5 fill-slate-800 text-slate-800" />
+                <span className="text-lg font-black text-slate-900">{liveRating.avg || "0"}</span>
+                <span className="text-xs text-slate-500">({liveRating.count} reviews)</span>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2 pt-3 border-t border-slate-100">
                 <UtilityButton
-                  icon={<Navigation className="h-5 w-5" />}
+                  icon={<Navigation className="h-4 w-4" />}
                   label="Map"
                   onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place.name}, ${place.location}`)}`, "_blank")}
                 />
                 <UtilityButton
-                  icon={<Copy className="h-5 w-5" />}
+                  icon={<Copy className="h-4 w-4" />}
                   label="Copy"
                   onClick={async () => {
                     const link = getShareLink(resolvedId, "adventure_place", place.name, place.location);
@@ -581,7 +604,7 @@ const AdventurePlaceDetail = () => {
                   }}
                 />
                 <UtilityButton
-                  icon={<Share2 className="h-5 w-5" />}
+                  icon={<Share2 className="h-4 w-4" />}
                   label="Share"
                   onClick={async () => {
                     const link = getShareLink(resolvedId, "adventure_place", place.name, place.location);
@@ -596,18 +619,18 @@ const AdventurePlaceDetail = () => {
               </div>
 
               {(place.phone_numbers?.length > 0 || place.email) && (
-                <div className="space-y-3 pt-4 border-t border-slate-100">
-                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Contact</h3>
+                <div className="space-y-2 pt-3 border-t border-slate-100">
+                  <h3 className="text-xs font-bold text-slate-500">Contact</h3>
                   {place.phone_numbers?.map((phone: string, idx: number) => (
-                    <a key={idx} href={`tel:${phone}`} className="flex items-center gap-3 text-slate-600 hover:text-[#008080] transition-colors">
-                      <div className="p-2 rounded-lg bg-slate-50"><Phone className="h-4 w-4 text-[#008080]" /></div>
-                      <span className="text-xs font-bold uppercase tracking-tight">{phone}</span>
+                    <a key={idx} href={`tel:${phone}`} className="flex items-center gap-2 text-slate-600 hover:text-teal-600 transition-colors">
+                      <Phone className="h-4 w-4" />
+                      <span className="text-sm">{phone}</span>
                     </a>
                   ))}
                   {place.email && (
-                    <a href={`mailto:${place.email}`} className="flex items-center gap-3 text-slate-600 hover:text-[#008080] transition-colors">
-                      <div className="p-2 rounded-lg bg-slate-50"><Mail className="h-4 w-4 text-[#008080]" /></div>
-                      <span className="text-xs font-bold tracking-tight">{place.email}</span>
+                    <a href={`mailto:${place.email}`} className="flex items-center gap-2 text-slate-600 hover:text-teal-600 transition-colors">
+                      <Mail className="h-4 w-4" />
+                      <span className="text-sm">{place.email}</span>
                     </a>
                   )}
                 </div>
