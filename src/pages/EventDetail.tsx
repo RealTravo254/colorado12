@@ -25,6 +25,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { ImageGalleryModal } from "@/components/detail/ImageGalleryModal";
 import { Footer } from "@/components/Footer";
 
+// Event detail page – shows a single event from the trips table
 const COLORS = {
   TEAL: "#008080",
   CORAL: "#FF7F50",
