@@ -375,6 +375,47 @@ const CreateTripEvent = () => {
                   </div>
                 </div>
               </Card>
+
+              {/* Inclusions & Exclusions - for fixed date trips and events */}
+              {(!formData.is_custom_date || formData.type === "event") && (
+                <Card className="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 space-y-6">
+                  <h2 className="text-xs font-black uppercase tracking-widest" style={{ color: COLORS.TEAL }}>What's Included & Excluded</h2>
+                  
+                  {/* Inclusions */}
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">✓ Inclusions</Label>
+                    <div className="flex gap-2">
+                      <StyledInput value={newInclusion} onChange={(e) => setNewInclusion(e.target.value)} placeholder="e.g. Transport, Meals, Guide" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (newInclusion.trim()) { setInclusions([...inclusions, newInclusion.trim()]); setNewInclusion(""); } } }} />
+                      <Button type="button" onClick={() => { if (newInclusion.trim()) { setInclusions([...inclusions, newInclusion.trim()]); setNewInclusion(""); } }} className="rounded-xl shrink-0" style={{ background: COLORS.TEAL }}>Add</Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {inclusions.map((item, i) => (
+                        <span key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">
+                          ✓ {item}
+                          <button type="button" onClick={() => setInclusions(inclusions.filter((_, idx) => idx !== i))} className="hover:text-red-500"><X className="h-3 w-3" /></button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Exclusions */}
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">✗ Exclusions</Label>
+                    <div className="flex gap-2">
+                      <StyledInput value={newExclusion} onChange={(e) => setNewExclusion(e.target.value)} placeholder="e.g. Personal expenses, Insurance" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (newExclusion.trim()) { setExclusions([...exclusions, newExclusion.trim()]); setNewExclusion(""); } } }} />
+                      <Button type="button" onClick={() => { if (newExclusion.trim()) { setExclusions([...exclusions, newExclusion.trim()]); setNewExclusion(""); } }} className="rounded-xl shrink-0 bg-slate-600 hover:bg-slate-700">Add</Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {exclusions.map((item, i) => (
+                        <span key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 text-red-600 text-xs font-bold border border-red-200">
+                          ✗ {item}
+                          <button type="button" onClick={() => setExclusions(exclusions.filter((_, idx) => idx !== i))} className="hover:text-red-800"><X className="h-3 w-3" /></button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </Card>
+              )}
             </>
           )}
 
