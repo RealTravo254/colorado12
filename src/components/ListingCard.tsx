@@ -1,5 +1,5 @@
 import React, { useState, memo, useCallback, useMemo, useEffect, useRef } from "react";
-import { MapPin, Star, Calendar, Ticket, ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { MapPin, Star, Calendar, Ticket, ChevronLeft, ChevronRight, Clock, Heart } from "lucide-react";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
