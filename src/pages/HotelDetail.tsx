@@ -8,7 +8,7 @@ import {
   MapPin, Clock, ArrowLeft,
   Heart, Star, Circle, Calendar, Share2, Copy, Navigation, Phone, Mail
 } from "lucide-react";
-import { SimilarItems } from "@/components/SimilarItems";
+
 import { useToast } from "@/hooks/use-toast";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
@@ -497,10 +497,6 @@ const HotelDetail = () => {
           />
         )}
 
-        <div className="mt-12">
-          <h2 className="text-xl font-black uppercase tracking-tighter mb-6">Explore Similar Stays</h2>
-          <SimilarItems currentItemId={hotel.id} itemType="hotel" country={hotel.country} />
-        </div>
       </main>
       <Footer />
 

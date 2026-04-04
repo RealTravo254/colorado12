@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { SimilarItems } from "@/components/SimilarItems";
+
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { ReviewSection } from "@/components/ReviewSection";
@@ -50,7 +50,7 @@ const ReviewHeader = ({ event }: { event: any }) => (
   </div>
 );
 
-const SELECT_FIELDS = "id,name,location,place,country,image_url,gallery_images,images,date,is_custom_date,price,price_child,available_tickets,description,activities,phone_number,email,created_by,type,opening_hours,closing_hours,days_opened,map_link,is_flexible_date,inclusions,exclusions";
+const SELECT_FIELDS = "id,name,location,place,country,image_url,gallery_images,images,date,is_custom_date,price,price_child,available_tickets,description,activities,phone_number,email,created_by,type,opening_hours,closing_hours,days_opened,map_link,is_flexible_date,inclusions,exclusions,allow_children";
 
 const TripDetail = () => {
   const { slug: rawSlug } = useParams();
@@ -395,7 +395,13 @@ const TripDetail = () => {
                 </div>
                 <div className="flex justify-between text-xs font-bold uppercase tracking-tight">
                   <span className="text-slate-400">Child (Under 12)</span>
-                  <span className="text-slate-700">{formatPrice(event.price_child || 0)}</span>
+                  <span className="text-slate-700">
+                    {event.allow_children === false ? (
+                      <span className="text-red-500">Not Available</span>
+                    ) : (
+                      formatPrice(event.price_child || 0)
+                    )}
+                  </span>
                 </div>
               </div>
 
@@ -443,9 +449,6 @@ const TripDetail = () => {
           itemType="trip"
         />
 
-        <div className="mt-16">
-          <SimilarItems currentItemId={event.id} itemType="trip" location={event.location} country={event.country} />
-        </div>
       </main>
       <Footer />
 

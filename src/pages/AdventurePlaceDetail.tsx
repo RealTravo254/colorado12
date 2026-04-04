@@ -8,7 +8,7 @@ import {
   MapPin, Clock, ArrowLeft, 
   Heart, Star, Circle, Calendar, Share2, Copy, Navigation, AlertCircle, Phone, Mail
 } from "lucide-react";
-import { SimilarItems } from "@/components/SimilarItems";
+
 import { useToast } from "@/hooks/use-toast";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
@@ -657,7 +657,7 @@ const AdventurePlaceDetail = () => {
           itemType="adventure"
         />
 
-        <SimilarItems currentItemId={resolvedId} itemType="adventure" country={place.country} />
+        
       </main>
       <Footer />
 

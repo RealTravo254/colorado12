@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { SimilarItems } from "@/components/SimilarItems";
+
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { ReviewSection } from "@/components/ReviewSection";
@@ -50,7 +50,7 @@ const ReviewHeader = ({ event }: { event: any }) => (
   </div>
 );
 
-const SELECT_FIELDS = "id,name,location,place,country,image_url,gallery_images,images,date,is_custom_date,price,price_child,available_tickets,description,activities,phone_number,email,created_by,type,opening_hours,closing_hours,map_link,is_flexible_date,inclusions,exclusions,event_category";
+const SELECT_FIELDS = "id,name,location,place,country,image_url,gallery_images,images,date,is_custom_date,price,price_child,available_tickets,description,activities,phone_number,email,created_by,type,opening_hours,closing_hours,map_link,is_flexible_date,inclusions,exclusions,event_category,allow_children";
 
 const EventDetail = () => {
   const { slug: rawSlug } = useParams();
@@ -92,6 +92,7 @@ const EventDetail = () => {
 
       for (const candidate of candidates) {
         if (data) break;
+        // Try by id with type=event
         const idRes = await supabase
           .from("trips")
           .select(SELECT_FIELDS)
@@ -100,6 +101,7 @@ const EventDetail = () => {
           .maybeSingle() as { data: any };
         if (idRes.data) { data = idRes.data; break; }
 
+        // Try by slug with type=event
         const slugRes = await supabase
           .from("trips")
           .select(SELECT_FIELDS)
@@ -107,6 +109,22 @@ const EventDetail = () => {
           .eq("type", "event")
           .maybeSingle() as { data: any };
         if (slugRes.data) { data = slugRes.data; break; }
+
+        // Fallback: try by id without type filter (event may have been saved with different type)
+        const fallbackRes = await supabase
+          .from("trips")
+          .select(SELECT_FIELDS)
+          .eq("id", candidate)
+          .maybeSingle() as { data: any };
+        if (fallbackRes.data) { data = fallbackRes.data; break; }
+
+        // Fallback: try by slug without type filter
+        const fallbackSlugRes = await supabase
+          .from("trips")
+          .select(SELECT_FIELDS)
+          .eq("slug", candidate)
+          .maybeSingle() as { data: any };
+        if (fallbackSlugRes.data) { data = fallbackSlugRes.data; break; }
       }
 
       if (!data) throw new Error("Not found");
@@ -378,7 +396,13 @@ const EventDetail = () => {
                 </div>
                 <div className="flex justify-between text-xs font-bold uppercase tracking-tight">
                   <span className="text-slate-400">Child (Under 12)</span>
-                  <span className="text-slate-700">{formatPrice(event.price_child || 0)}</span>
+                  <span className="text-slate-700">
+                    {event.allow_children === false ? (
+                      <span className="text-red-500">Not Available</span>
+                    ) : (
+                      formatPrice(event.price_child || 0)
+                    )}
+                  </span>
                 </div>
               </div>
 
@@ -426,9 +450,6 @@ const EventDetail = () => {
           itemType="event"
         />
 
-        <div className="mt-16">
-          <SimilarItems currentItemId={event.id} itemType="trip" location={event.location} country={event.country} />
-        </div>
       </main>
       <Footer />
 
