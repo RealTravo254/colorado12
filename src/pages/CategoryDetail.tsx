@@ -22,7 +22,6 @@ const CategoryDetail = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [items, setItems] = useState<any[]>([]);
   const [filteredItems, setFilteredItems] = useState<any[]>([]);
-  const [activeFilters, setActiveFilters] = useState<FilterValues>({});
   const { savedItems, handleSave } = useSavedItems();
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
