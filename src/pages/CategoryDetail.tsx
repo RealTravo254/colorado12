@@ -4,7 +4,6 @@ import { Header } from "@/components/Header";
 import { SearchBarWithSuggestions } from "@/components/SearchBarWithSuggestions";
 import { useSearchFocus } from "@/components/PageLayout";
 import { ListingCard } from "@/components/ListingCard";
-import { FilterBar, FilterValues } from "@/components/FilterBar";
 import { TealLoader } from "@/components/ui/teal-loader";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
