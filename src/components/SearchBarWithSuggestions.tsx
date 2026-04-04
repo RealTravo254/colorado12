@@ -360,7 +360,7 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
                   {isSearching && (
                     <div className="p-10 flex flex-col items-center justify-center gap-3">
                       <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                      <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">Searching...</span>
+                      <span className="text-muted-foreground text-xs font-bold uppercase tracking-widest">Searching...</span>
                     </div>
                   )}
 
