@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search as SearchIcon, SlidersHorizontal, MapPin, Compass, Calendar, Tent, Trophy, X } from "lucide-react";
+import { SearchBarWithSuggestions } from "@/components/SearchBarWithSuggestions";
 import { ListingCard } from "@/components/ListingCard";
 import { ListingSkeleton } from "@/components/ui/listing-skeleton";
 import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
 import { useRatings, sortByRating } from "@/hooks/useRatings";
 import { useGeolocation, calculateDistance } from "@/hooks/useGeolocation";
 import { useRealtimeBookings } from "@/hooks/useRealtimeBookings";
@@ -24,6 +26,7 @@ const Explore = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [listings, setListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const { position } = useGeolocation();
 
   const allItemIds = useMemo(() => listings.map(l => l.id), [listings]);
@@ -108,61 +111,53 @@ const Explore = () => {
       {/* Search header */}
       <div className="sticky top-0 z-50 bg-primary shadow-md">
         <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center gap-2">
-            <button onClick={() => navigate(-1)} className="text-primary-foreground p-1">
-              <X className="h-5 w-5" />
-            </button>
-            <div className="flex-1 relative">
-              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                placeholder="Search places, events, activities..."
-                className="pl-9 pr-4 h-10 rounded-full bg-background border-none text-sm"
-                autoFocus
-              />
-            </div>
-            <Button onClick={handleSearch} size="sm" variant="secondary" className="rounded-full h-10 px-4 font-bold text-xs">
-              Search
-            </Button>
-          </div>
+          <SearchBarWithSuggestions
+            value={searchQuery}
+            onChange={setSearchQuery}
+            onSubmit={handleSearch}
+            onFocus={() => setIsSearchFocused(true)}
+            onBlur={() => setIsSearchFocused(false)}
+            onBack={() => { setIsSearchFocused(false); setSearchQuery(""); navigate(-1); }}
+            showBackButton={true}
+          />
         </div>
 
         {/* Filter tabs */}
-        <div className="container mx-auto px-4 pb-2">
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide">
-            {FILTER_TABS.map(tab => {
-              const Icon = tab.icon;
-              const isActive = activeFilter === tab.key;
-              return (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveFilter(tab.key)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-all ${
-                    isActive
-                      ? "bg-primary-foreground text-primary shadow-sm"
-                      : "bg-primary-foreground/20 text-primary-foreground/90 hover:bg-primary-foreground/30"
-                  }`}
-                >
-                  <Icon className="h-3.5 w-3.5" />
-                  {tab.label}
-                </button>
-              );
-            })}
+        {!isSearchFocused && (
+          <div className="container mx-auto px-4 pb-2">
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+              {FILTER_TABS.map(tab => {
+                const Icon = tab.icon;
+                const isActive = activeFilter === tab.key;
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveFilter(tab.key)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-all ${
+                      isActive
+                        ? "bg-primary-foreground text-primary shadow-sm"
+                        : "bg-primary-foreground/20 text-primary-foreground/90 hover:bg-primary-foreground/30"
+                    }`}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Results */}
-      <main className="flex-1 container mx-auto px-4 py-4 pb-24 md:pb-8">
+      <main className={cn("flex-1 container mx-auto px-4 py-4 pb-24 md:pb-8 transition-opacity duration-200", isSearchFocused && "pointer-events-none opacity-20")}>
         <p className="text-xs text-muted-foreground mb-3 font-medium">
           {searchQuery ? `Results for "${searchQuery}"` : `${filteredListings.length} listings`}
           {activeFilter !== "all" && ` in ${FILTER_TABS.find(t => t.key === activeFilter)?.label}`}
         </p>
 
         {loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
             {[...Array(8)].map((_, i) => <ListingSkeleton key={i} />)}
           </div>
         ) : filteredListings.length === 0 ? (
@@ -172,7 +167,7 @@ const Explore = () => {
             <p className="text-muted-foreground/60 text-xs mt-1">Try a different search or filter</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
             {filteredListings.map((listing, index) => {
               const ratingData = ratings.get(listing.id);
               const isTripsOrEvents = listing.type === "TRIP" || listing.type === "EVENT";
