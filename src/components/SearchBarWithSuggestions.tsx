@@ -230,12 +230,12 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
         <div ref={wrapperRef} className="relative w-full max-w-4xl mx-auto" style={{ isolation: 'isolate' }}>
           <div className="flex items-center gap-3">
             {showBackButton && (
-              <Button variant="ghost" size="icon" onClick={onBack} className="rounded-full bg-white shadow-sm border border-slate-100 hover:bg-white hover:text-primary">
+              <Button variant="ghost" size="icon" onClick={onBack} className="rounded-full bg-card shadow-sm border border-border hover:bg-muted hover:text-primary">
                 <Home className="h-5 w-5" />
               </Button>
             )}
             <div className="relative flex-1 group">
-              <SearchIcon className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 z-10 group-focus-within:text-primary transition-colors" />
+              <SearchIcon className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10 group-focus-within:text-primary transition-colors" />
               <Input
                 type="text"
                 placeholder="Where to next? Search countries, experiences, stays..."
@@ -243,12 +243,11 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
                 onChange={(e) => { onChange(e.target.value); setShowSuggestions(true); }}
                 onKeyDown={handleKeyPress}
                 onFocus={() => { setShowSuggestions(true); onFocus?.(); }}
-                className="pl-14 pr-32 h-10 md:h-16 text-sm md:text-base rounded-full border-none shadow-xl bg-white focus-visible:ring-2 focus-visible:ring-primary placeholder:text-slate-400 placeholder:font-medium transition-all"
+                className="pl-14 pr-32 h-10 md:h-16 text-sm md:text-base rounded-full border-2 border-border shadow-md bg-card text-foreground focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary placeholder:text-muted-foreground placeholder:font-medium transition-all"
               />
               <Button
                 onClick={() => { saveToHistory(value); onSubmit(); setShowSuggestions(false); }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-7 md:h-12 px-4 md:px-6 text-[10px] md:text-xs font-black uppercase tracking-widest text-white shadow-lg transition-transform active:scale-95 border-none"
-                style={{ background: `linear-gradient(135deg, ${COLORS.CORAL_LIGHT} 0%, ${COLORS.CORAL} 100%)` }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-7 md:h-12 px-4 md:px-6 text-[10px] md:text-xs font-black uppercase tracking-widest bg-primary hover:bg-primary-dark text-primary-foreground shadow-lg transition-transform active:scale-95 border-none"
               >
                 Search
               </Button>
