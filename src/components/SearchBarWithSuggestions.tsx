@@ -311,12 +311,12 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
 
                   {searchHistory.length > 0 && (
                     <div className="mb-4">
-                      <div className="flex items-center justify-between px-5 py-3">
+                       <div className="flex items-center justify-between px-5 py-3">
                         <div className="flex items-center gap-2">
                           <Clock className="h-4 w-4 text-primary" />
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Recent</p>
+                          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Recent</p>
                         </div>
-                        <button onClick={(e) => { e.stopPropagation(); clearHistory(); }} className="text-[10px] font-black uppercase text-[#FF7F50] hover:underline">Clear</button>
+                        <button onClick={(e) => { e.stopPropagation(); clearHistory(); }} className="text-[10px] font-black uppercase text-destructive hover:underline">Clear</button>
                       </div>
                       <div className="flex flex-wrap gap-2 px-4">
                         {searchHistory.map((item, i) => (
