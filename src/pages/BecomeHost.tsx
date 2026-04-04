@@ -21,6 +21,7 @@ const COLORS = {
 };
 
 type HostType = 'guide' | 'campsite' | 'company';
+type HostingCategory = 'guide' | 'campsite' | 'company' | null;
 
 const BecomeHost = () => {
   const { user } = useAuth();
