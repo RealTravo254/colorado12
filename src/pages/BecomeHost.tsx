@@ -35,6 +35,7 @@ const BecomeHost = () => {
   const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
   const [hasCompany, setHasCompany] = useState(false);
   const [companyStatus, setCompanyStatus] = useState<string | null>(null);
+  const [hostingCategory, setHostingCategory] = useState<HostingCategory>(null);
 
   useEffect(() => {
     if (!user) {
