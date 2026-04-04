@@ -394,14 +394,14 @@ const Index = () => {
     const today = new Date().toISOString().split('T')[0];
     const isOutdated = item.date && !item.is_flexible_date && item.date < today;
     return (
-      <div key={item.id} className="flex-shrink-0 w-[72vw] sm:w-[280px] md:w-[320px] snap-start">
+      <div key={item.id} className="flex-shrink-0 w-[44vw] sm:w-[220px] md:w-[240px] snap-start">
         <ListingCard
           id={item.id} type={type as any} name={item.name}
           imageUrl={item.image_url} location={item.location} country={item.country}
           price={item.price || item.entry_fee || 0} date={item.date || ""}
           isCustomDate={item.is_custom_date} isFlexibleDate={item.is_flexible_date}
           isOutdated={isOutdated}
-          onSave={handleSave} isSaved={savedItems.has(item.id)}
+          isSaved={savedItems.has(item.id)}
           hidePrice={opts.hidePrice ?? false}
           showBadge={true} priority={index === 0}
           activities={item.activities} distance={itemDistance}
@@ -411,6 +411,8 @@ const Index = () => {
           bookedTickets={opts.isTrip ? bookingStats[item.id] || 0 : undefined}
           description={item.description}
           categoryColor={opts.categoryColor}
+          galleryImages={item.gallery_images}
+          images={item.images}
         />
       </div>
     );
