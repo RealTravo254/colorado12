@@ -280,23 +280,24 @@ const ListingCardComponent = ({
       {/* ── Content below image ── */}
       <div className="flex flex-col gap-1 p-2.5 min-w-0">
         {/* Title */}
-        <h3 className="line-clamp-2 text-xs font-bold leading-snug text-foreground group-hover:text-primary transition-colors">
+        <h3 className="line-clamp-2 text-xs font-bold leading-snug text-slate-900">
           {formattedName}
         </h3>
+
+        {/* Location */}
+        <div className="flex items-center gap-1 text-slate-500">
+          <MapPin className="h-2.5 w-2.5 flex-shrink-0" />
+          <span className="text-[10px] font-medium truncate capitalize">{locationString.toLowerCase()}</span>
+        </div>
 
         {/* Price */}
         {!hidePrice && price != null && price > 0 && (
           <PriceText price={price} isUnavailable={isUnavailable} type={type} />
         )}
 
-        {/* Subtitle / activities */}
-        {subtitle && (
-          <p className="line-clamp-1 text-[10px] text-muted-foreground">{subtitle}</p>
-        )}
-
         {/* Date row */}
         {(date || isFlexibleDate) && (
-          <div className="flex items-center gap-0.5 text-muted-foreground">
+          <div className="flex items-center gap-0.5 text-slate-500">
             <Calendar className="h-2.5 w-2.5" />
             <span className="text-[9px] font-medium">
               {isFlexibleDate ? 'Flexible' : new Date(date!).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
@@ -304,30 +305,16 @@ const ListingCardComponent = ({
           </div>
         )}
 
-        {/* Location */}
-        <div className="flex items-center gap-1 text-muted-foreground">
-          <MapPin className="h-2.5 w-2.5 flex-shrink-0 text-primary/60" />
-          <span className="text-[10px] font-medium truncate capitalize">{locationString.toLowerCase()}</span>
-        </div>
-
-        {/* Bottom row - rating + tickets */}
-        <div className="flex items-center gap-1.5 pt-1 mt-auto border-t border-border/50">
-          {avgRating != null && avgRating > 0 && (
-            <div className="flex items-center gap-0.5 flex-shrink-0">
-              <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400" />
-              <span className="text-[10px] font-bold text-foreground">{avgRating.toFixed(1)}</span>
-              {reviewCount != null && reviewCount > 0 && (
-                <span className="text-[8px] text-muted-foreground">({reviewCount})</span>
-              )}
-            </div>
-          )}
-
-          {tracksAvailability && availableTickets > 0 && !isUnavailable && !fewSlotsRemaining && (
-            <span className="text-[8px] font-semibold text-primary flex-shrink-0">
-              <Ticket className="inline h-2.5 w-2.5 mr-0.5" />{remainingTickets}
-            </span>
-          )}
-        </div>
+        {/* Bottom row - rating */}
+        {avgRating != null && avgRating > 0 && (
+          <div className="flex items-center gap-0.5 pt-0.5">
+            <Star className="h-2.5 w-2.5 fill-slate-800 text-slate-800" />
+            <span className="text-[10px] font-bold text-slate-800">{avgRating.toFixed(1)}</span>
+            {reviewCount != null && reviewCount > 0 && (
+              <span className="text-[8px] text-slate-500">({reviewCount})</span>
+            )}
+          </div>
+        )}
       </div>
     </Card>
   );
