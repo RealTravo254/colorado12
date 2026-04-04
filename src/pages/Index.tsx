@@ -696,7 +696,7 @@ const Index = () => {
                     const dist = a.latitude && a.longitude && position ? calculateDistance(position.latitude, position.longitude, a.latitude, a.longitude) : undefined;
                     const rd = ratings.get(item.id);
                     return (
-                      <div key={item.id} className="flex-shrink-0 w-[72vw] sm:w-[280px] md:w-[320px] snap-start">
+                      <div key={item.id} className="flex-shrink-0 w-[44vw] sm:w-[220px] md:w-[240px] snap-start">
                         <ListingCard
                           id={item.id} type={a.type || 'ADVENTURE PLACE'}
                           name={item.name} imageUrl={a.image_url} location={a.location} country={a.country}
