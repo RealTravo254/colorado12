@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Compass, Calendar, Tent, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
+import { Compass, Calendar, Tent, MapPin, ChevronLeft, ChevronRight, Navigation } from "lucide-react";
 import { SearchBarWithSuggestions } from "@/components/SearchBarWithSuggestions";
 import { ListingCard } from "@/components/ListingCard";
 import { ListingSkeleton } from "@/components/ui/listing-skeleton";
 import { supabase } from "@/integrations/supabase/client";
+import { useSavedItems } from "@/hooks/useSavedItems";
 import { cn } from "@/lib/utils";
 import { useRatings, sortByRating } from "@/hooks/useRatings";
 import { useGeolocation, calculateDistance } from "@/hooks/useGeolocation";
@@ -17,6 +18,7 @@ const FILTER_TABS = [
   { key: "adventure", label: "Adventures", icon: Tent },
   { key: "trip", label: "Trips", icon: MapPin },
   { key: "event", label: "Events", icon: Calendar },
+  { key: "guided", label: "Guided Tours", icon: Navigation },
 ];
 
 const ITEMS_PER_PAGE = 12;
@@ -29,6 +31,7 @@ const Explore = () => {
   const [loading, setLoading] = useState(true);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const { savedItems, handleSave } = useSavedItems();
   const { position } = useGeolocation();
 
   const allItemIds = useMemo(() => listings.map(l => l.id), [listings]);
@@ -38,11 +41,15 @@ const Explore = () => {
   const sortedListings = useMemo(() => sortByRating(listings, ratings, position, calculateDistance), [listings, ratings, position]);
 
   const filteredListings = useMemo(() => {
-    if (activeFilter === "all") return sortedListings;
+    if (activeFilter === "all") {
+      // Exclude flexible trips from "all" - they only appear under "guided"
+      return sortedListings.filter(l => !(l.type === "TRIP" && l.is_flexible_date));
+    }
     return sortedListings.filter(l => {
       if (activeFilter === "adventure") return l.type === "ADVENTURE PLACE";
-      if (activeFilter === "trip") return l.type === "TRIP";
+      if (activeFilter === "trip") return l.type === "TRIP" && !l.is_flexible_date;
       if (activeFilter === "event") return l.type === "EVENT";
+      if (activeFilter === "guided") return l.type === "TRIP" && l.is_flexible_date;
       return true;
     });
   }, [sortedListings, activeFilter]);
@@ -246,7 +253,8 @@ const Explore = () => {
                     imageUrl={listing.image_url} price={listing.price || listing.entry_fee || 0}
                     date={listing.date} isCustomDate={listing.is_custom_date}
                     isFlexibleDate={listing.is_flexible_date} isOutdated={isOutdated}
-                    isSaved={false}
+                    isSaved={savedItems.has(listing.id)}
+                    onSave={handleSave}
                     availableTickets={isTripsOrEvents ? listing.available_tickets : undefined}
                     bookedTickets={isTripsOrEvents ? bookingStats[listing.id] || 0 : undefined}
                     showBadge={true} priority={index < 4}

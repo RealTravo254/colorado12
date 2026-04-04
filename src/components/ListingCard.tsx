@@ -1,5 +1,5 @@
 import React, { useState, memo, useCallback, useMemo, useEffect, useRef } from "react";
-import { MapPin, Star, Calendar, Ticket, ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { MapPin, Star, Calendar, Ticket, ChevronLeft, ChevronRight, Clock, Heart } from "lucide-react";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -61,7 +61,7 @@ export interface ListingCardProps {
 
 const ListingCardComponent = ({
   id, type, name, imageUrl, location, price, date,
-  isOutdated = false, activities,
+  isOutdated = false, activities, onSave, isSaved = false,
   availableTickets = 0, bookedTickets = 0,
   priority = false, compact = false, avgRating, reviewCount, place,
   isFlexibleDate = false, hidePrice = false, description, categoryColor,
@@ -174,7 +174,7 @@ const ListingCardComponent = ({
     >
       {/* Image Slideshow */}
       <div
-        className="relative w-full overflow-hidden aspect-[3/4] sm:aspect-[4/3]"
+        className="relative w-full overflow-hidden aspect-[1/1] sm:aspect-[4/3]"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
@@ -222,14 +222,18 @@ const ListingCardComponent = ({
           )}
         </div>
 
-        {/* Extra images count badge */}
-        {allSlideImages.length > 1 && (
-          <div className="absolute top-2 right-2 z-20">
-            <span className="text-[9px] font-bold text-white bg-black/50 backdrop-blur-sm px-1.5 py-0.5 rounded-md">
-              +{allSlideImages.length - 1}
-            </span>
-          </div>
-        )}
+        {/* Save button */}
+        <div className="absolute top-2 right-2 z-20">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onSave?.(id, type);
+            }}
+            className="h-7 w-7 rounded-full bg-white/80 backdrop-blur-sm shadow flex items-center justify-center transition-all hover:bg-white active:scale-90"
+          >
+            <Heart className={cn("h-3.5 w-3.5", isSaved ? "fill-red-500 text-red-500" : "text-slate-600")} />
+          </button>
+        </div>
 
         {/* Navigation arrows (desktop only, on hover) */}
         {allSlideImages.length > 1 && (
