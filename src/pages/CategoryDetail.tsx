@@ -241,7 +241,6 @@ const CategoryDetail = () => {
                     isCustomDate={item.is_custom_date}
                     isFlexibleDate={item.is_flexible_date}
                     isOutdated={item.isOutdated}
-                    onSave={handleSave} 
                     isSaved={savedItems.has(item.id)}
                     availableTickets={isTripsOrEvents ? item.available_tickets : undefined}
                     bookedTickets={isTripsOrEvents ? bookingStats[item.id] || 0 : undefined}
@@ -249,6 +248,8 @@ const CategoryDetail = () => {
                     avgRating={ratingData?.avgRating}
                     reviewCount={ratingData?.reviewCount}
                     description={item.description}
+                    galleryImages={item.gallery_images}
+                    images={item.images}
                   />
                 </div>
               );
