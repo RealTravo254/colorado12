@@ -554,50 +554,7 @@ const Index = () => {
       {/* Remove focused search - navigates to explore instead */}
 
       <main className="w-full">
-        {/* ─── Search results ────────────────────────────────────────────── */}
-        {isSearchFocused && (
-          <div className="container mx-auto px-4 md:px-6 mt-6 pb-20 md:pb-8">
-            <h2 className="text-lg md:text-xl font-bold mb-5 text-foreground">
-              {searchQuery ? t('sections.searchResults') : t('sections.allListings')}
-            </h2>
-            {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {[...Array(6)].map((_, i) => <ListingSkeleton key={i} />)}
-              </div>
-            ) : sortedListings.length === 0 ? (
-              <div className="text-center py-16">
-                <p className="text-muted-foreground text-sm">{t('sections.noResults')}</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {sortedListings.map((listing, index) => {
-                  const itemDistance = position && listing.latitude && listing.longitude ? calculateDistance(position.latitude, position.longitude, listing.latitude, listing.longitude) : undefined;
-                  const ratingData = ratings.get(listing.id);
-                  const isTripsOrEvents = listing.type === "TRIP" || listing.type === "EVENT";
-                  const today = new Date().toISOString().split('T')[0];
-                  const isOutdated = listing.date && !listing.is_flexible_date && listing.date < today;
-                  return (
-                    <ListingCard
-                      key={listing.id} id={listing.id} type={listing.type}
-                      name={listing.name} location={listing.location} country={listing.country}
-                      imageUrl={listing.image_url} price={listing.price || listing.entry_fee || 0}
-                      date={listing.date} isCustomDate={listing.is_custom_date}
-                      isFlexibleDate={listing.is_flexible_date} isOutdated={isOutdated}
-                      isSaved={savedItems.has(listing.id)} onSave={() => handleSave(listing.id, listing.type)}
-                      availableTickets={isTripsOrEvents ? listing.available_tickets : undefined}
-                      bookedTickets={isTripsOrEvents ? bookingStats[listing.id] || 0 : undefined}
-                      showBadge={true} priority={index < 4}
-                      hidePrice={listing.type === "ADVENTURE PLACE"}
-                      activities={listing.activities} distance={itemDistance}
-                      avgRating={ratingData?.avgRating} reviewCount={ratingData?.reviewCount}
-                      description={listing.description}
-                    />
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        )}
+        {/* Search results removed - uses /explore page now */}
 
         {/* ─── Browse sections ───────────────────────────────────────────── */}
         <div className={`w-full ${isSearchFocused ? 'hidden' : ''}`}>
