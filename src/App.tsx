@@ -150,7 +150,7 @@ const App = () => {
                     <Route path="/admin/referral-settings" element={<AdminReferralSettings />} />
                     <Route path="/become-host" element={<BecomeHost />} />
                     <Route path="/create-trip" element={<CreateTripEvent />} />
-                    <Route path="/create-hotel" element={<CreateHotel />} />
+                    {/* Create hotel route removed */}
                     <Route path="/create-adventure" element={<CreateAdventure />} />
                     <Route path="/create-attraction" element={<CreateAdventure />} />
                     <Route path="/host/item/:itemType/:id" element={<HostItemDetail />} />
