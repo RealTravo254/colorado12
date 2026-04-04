@@ -256,7 +256,7 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
 
           {showSuggestions && (
             <div 
-              className="absolute left-0 right-0 top-full mt-3 bg-white border border-slate-100 rounded-[32px] shadow-2xl max-h-[70vh] md:max-h-[500px] overflow-y-auto z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
+              className="absolute left-0 right-0 top-full mt-3 bg-card border border-border rounded-[32px] shadow-2xl max-h-[70vh] md:max-h-[500px] overflow-y-auto z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
             >
               {/* History / Trending / Most Popular Section (Shown when input is empty) */}
               {!value.trim() && (
