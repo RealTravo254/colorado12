@@ -56,7 +56,13 @@ const CreateTripEvent = () => {
     map_link: "", is_custom_date: false, type: "trip" as "trip" | "event",
     latitude: null as number | null, longitude: null as number | null,
     opening_hours: "00:00", closing_hours: "23:59", flexible_duration_months: "3",
+    event_category: "" as string,
   });
+
+  const [inclusions, setInclusions] = useState<string[]>([]);
+  const [exclusions, setExclusions] = useState<string[]>([]);
+  const [newInclusion, setNewInclusion] = useState("");
+  const [newExclusion, setNewExclusion] = useState("");
 
   const [workingDays, setWorkingDays] = useState<WorkingDays>({ Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: true, Sun: true });
   const [galleryImages, setGalleryImages] = useState<File[]>([]);
