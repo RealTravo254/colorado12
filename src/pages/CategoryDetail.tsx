@@ -180,7 +180,8 @@ const CategoryDetail = () => {
         item.name?.toLowerCase().includes(q) || 
         item.location?.toLowerCase().includes(q) ||
         item.place?.toLowerCase().includes(q) ||
-        item.country?.toLowerCase().includes(q)
+        item.country?.toLowerCase().includes(q) ||
+        item.event_category?.toLowerCase().includes(q)
       );
     }
     return result;
