@@ -551,22 +551,7 @@ const Index = () => {
         </div>
       )}
 
-      {/* ─── Focused search bar ────────────────────────────────────────────── */}
-      {isSearchFocused && (
-        <div className="sticky top-0 z-50 bg-background p-4 border-b shadow-sm">
-          <div className="container px-4 mx-auto">
-            <SearchBarWithSuggestions
-              value={searchQuery} onChange={setSearchQuery}
-              onSubmit={() => { if (searchQuery.trim()) fetchAllData(searchQuery); }}
-              onSuggestionSearch={q => { setSearchQuery(q); fetchAllData(q); }}
-              onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => {}}
-              onBack={() => { setIsSearchFocused(false); setSearchQuery(""); fetchAllData(); }}
-              showBackButton={true}
-            />
-          </div>
-        </div>
-      )}
+      {/* Remove focused search - navigates to explore instead */}
 
       <main className="w-full">
         {/* ─── Search results ────────────────────────────────────────────── */}
