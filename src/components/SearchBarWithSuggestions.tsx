@@ -294,11 +294,11 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
                           <button
                             key={item.id}
                             onClick={() => handleSuggestionClick(item)}
-                            className="w-full p-3 flex gap-4 hover:bg-slate-50 transition-all group text-left rounded-[24px]"
+                            className="w-full p-3 flex gap-4 hover:bg-muted transition-all group text-left rounded-[24px]"
                           >
                             <div className="flex-1 flex flex-col justify-center min-w-0">
-                              <h4 className="font-black text-slate-800 uppercase tracking-tight text-sm truncate">{item.name}</h4>
-                              <div className="flex items-center gap-1 text-slate-400">
+                              <h4 className="font-black text-foreground uppercase tracking-tight text-sm truncate">{item.name}</h4>
+                              <div className="flex items-center gap-1 text-muted-foreground">
                                 <MapPin className="h-3 w-3" />
                                 <span className="text-[10px] font-bold uppercase truncate">{item.location || item.country}</span>
                               </div>
