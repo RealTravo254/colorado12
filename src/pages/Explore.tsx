@@ -39,11 +39,15 @@ const Explore = () => {
   const sortedListings = useMemo(() => sortByRating(listings, ratings, position, calculateDistance), [listings, ratings, position]);
 
   const filteredListings = useMemo(() => {
-    if (activeFilter === "all") return sortedListings;
+    if (activeFilter === "all") {
+      // Exclude flexible trips from "all" - they only appear under "guided"
+      return sortedListings.filter(l => !(l.type === "TRIP" && l.is_flexible_date));
+    }
     return sortedListings.filter(l => {
       if (activeFilter === "adventure") return l.type === "ADVENTURE PLACE";
-      if (activeFilter === "trip") return l.type === "TRIP";
+      if (activeFilter === "trip") return l.type === "TRIP" && !l.is_flexible_date;
       if (activeFilter === "event") return l.type === "EVENT";
+      if (activeFilter === "guided") return l.type === "TRIP" && l.is_flexible_date;
       return true;
     });
   }, [sortedListings, activeFilter]);
