@@ -17,6 +17,7 @@ const FILTER_TABS = [
   { key: "adventure", label: "Adventures", icon: Tent },
   { key: "trip", label: "Trips", icon: MapPin },
   { key: "event", label: "Events", icon: Calendar },
+  { key: "guided", label: "Guided Tours", icon: Navigation },
 ];
 
 const ITEMS_PER_PAGE = 12;
