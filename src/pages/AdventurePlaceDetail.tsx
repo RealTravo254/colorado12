@@ -281,16 +281,16 @@ const AdventurePlaceDetail = () => {
                 <div className="col-span-2 row-span-2 rounded-3xl overflow-hidden relative group">
                   <img src={allImages[0]} alt={place.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                  <div className="absolute bottom-6 left-6 right-6 z-20 space-y-3">
-                    <div className="flex flex-wrap gap-2">
-                      <Badge className="bg-amber-400 text-black border-none px-3 py-1 text-[10px] font-black uppercase rounded-full flex items-center gap-1.5 shadow-lg">
-                        <Star className="h-3.5 w-3.5 fill-current" />{liveRating.avg > 0 ? liveRating.avg : "—"}
+                  <div className="absolute bottom-4 left-4 right-4 z-20 space-y-1.5">
+                    <div className="flex flex-wrap gap-1.5">
+                      <Badge className="bg-amber-400 text-black border-none px-2 py-0.5 text-[9px] font-black uppercase rounded-full flex items-center gap-1 shadow-lg">
+                        <Star className="h-3 w-3 fill-current" />{liveRating.avg > 0 ? liveRating.avg : "—"}
                       </Badge>
                     </div>
-                    <h1 className="text-3xl font-black text-white uppercase tracking-tighter leading-none">{place.name}</h1>
-                    <div className="flex items-center gap-2 text-white">
-                      <MapPin className="h-4 w-4" />
-                      <span className="text-sm font-bold uppercase">{[place.place, place.location, place.country].filter(Boolean).join(", ")}</span>
+                    <h1 className="text-xl font-black text-white uppercase tracking-tighter leading-none">{place.name}</h1>
+                    <div className="flex items-center gap-1.5 text-white">
+                      <MapPin className="h-3.5 w-3.5" />
+                      <span className="text-xs font-bold uppercase">{[place.place, place.location, place.country].filter(Boolean).join(", ")}</span>
                     </div>
                   </div>
                 </div>
