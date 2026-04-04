@@ -25,6 +25,7 @@ const Explore = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [listings, setListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const { position } = useGeolocation();
 
   const allItemIds = useMemo(() => listings.map(l => l.id), [listings]);
