@@ -285,9 +285,9 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
                   {/* Most Popular Section */}
                   {mostPopular.length > 0 && (
                     <div className="mb-4">
-                      <div className="flex items-center gap-2 px-5 py-3">
-                        <Sparkles className="h-4 w-4 text-[#FF7F50]" />
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Most Popular</p>
+                       <div className="flex items-center gap-2 px-5 py-3">
+                        <Sparkles className="h-4 w-4 text-primary" />
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Most Popular</p>
                       </div>
                       <div className="space-y-1">
                         {mostPopular.slice(0, 5).map((item) => (
