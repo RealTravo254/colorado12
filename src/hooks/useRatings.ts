@@ -22,7 +22,7 @@ export const useRatings = (itemIds: string[]) => {
         const { data, error } = await supabase
           .from("reviews")
           .select("item_id, rating")
-          .in("item_id", itemIds);
+          .in("item_id", validIds);
 
         if (error) {
           console.error("Error fetching ratings:", error);
