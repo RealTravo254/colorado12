@@ -26,6 +26,7 @@ interface SearchBarProps {
   onBlur?: () => void;
   onBack?: () => void;
   showBackButton?: boolean;
+  categoryType?: "events" | undefined;
 }
 
 interface SearchResult {
@@ -50,7 +51,7 @@ interface TrendingSearch {
   search_count: number;
 }
 
-export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchBarProps>(({ value, onChange, onSubmit, onSuggestionSearch, onFocus, onBlur, onBack, showBackButton = false }, _ref) => {
+export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchBarProps>(({ value, onChange, onSubmit, onSuggestionSearch, onFocus, onBlur, onBack, showBackButton = false, categoryType }, _ref) => {
   const { user } = useAuth();
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
@@ -262,6 +263,27 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
               {/* History / Trending / Most Popular Section (Shown when input is empty) */}
               {!value.trim() && (
                 <div className="p-2 min-h-[100px]">
+                  {/* Event Category Quick Filters */}
+                  {categoryType === "events" && (
+                    <div className="mb-4">
+                      <div className="flex items-center gap-2 px-5 py-3">
+                        <Calendar className="h-4 w-4 text-[#008080]" />
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Event Types</p>
+                      </div>
+                      <div className="flex flex-wrap gap-2 px-4">
+                        {["Roadtrips", "Music Events", "Pool Party", "Outdoor", "Cultural Events", "Night Parties", "Food", "Dancing Events"].map((cat) => (
+                          <Badge
+                            key={cat}
+                            onClick={() => { onChange(cat); setShowSuggestions(false); onSubmit(); }}
+                            className="cursor-pointer bg-[#008080]/10 hover:bg-[#008080]/20 text-[#008080] border border-[#008080]/20 py-2 px-3 rounded-xl text-[10px] font-bold transition-colors"
+                          >
+                            {cat}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Most Popular Section - Always shown first on focus */}
                   {mostPopular.length > 0 && (
                     <div className="mb-4">

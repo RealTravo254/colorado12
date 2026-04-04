@@ -50,7 +50,7 @@ const ReviewHeader = ({ event }: { event: any }) => (
   </div>
 );
 
-const SELECT_FIELDS = "id,name,location,place,country,image_url,gallery_images,images,date,is_custom_date,price,price_child,available_tickets,description,activities,phone_number,email,created_by,type,opening_hours,closing_hours,days_opened,map_link,is_flexible_date";
+const SELECT_FIELDS = "id,name,location,place,country,image_url,gallery_images,images,date,is_custom_date,price,price_child,available_tickets,description,activities,phone_number,email,created_by,type,opening_hours,closing_hours,days_opened,map_link,is_flexible_date,inclusions,exclusions";
 
 const TripDetail = () => {
   const { slug: rawSlug } = useParams();
@@ -321,6 +321,35 @@ const TripDetail = () => {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {/* Inclusions & Exclusions */}
+            {((event.inclusions && event.inclusions.length > 0) || (event.exclusions && event.exclusions.length > 0)) && (
+              <div className="bg-white rounded-[28px] p-7 shadow-sm border border-slate-100">
+                <h2 className="text-xl font-black uppercase tracking-tight mb-5" style={{ color: COLORS.TEAL }}>Package Details</h2>
+                <div className="space-y-4">
+                  {event.inclusions?.length > 0 && (
+                    <div>
+                      <p className="text-[10px] font-black uppercase text-emerald-600 tracking-widest mb-3">✓ What's Included</p>
+                      <div className="flex flex-wrap gap-2">
+                        {event.inclusions.map((item: string, i: number) => (
+                          <span key={i} className="px-4 py-2 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">✓ {item}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {event.exclusions?.length > 0 && (
+                    <div>
+                      <p className="text-[10px] font-black uppercase text-red-500 tracking-widest mb-3">✗ Not Included</p>
+                      <div className="flex flex-wrap gap-2">
+                        {event.exclusions.map((item: string, i: number) => (
+                          <span key={i} className="px-4 py-2 rounded-xl bg-red-50 text-red-600 text-xs font-bold border border-red-200">✗ {item}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

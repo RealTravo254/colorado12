@@ -613,11 +613,11 @@ const Index = () => {
         <div className={`w-full ${isSearchFocused ? 'hidden' : ''}`}>
 
           {/* View toggle */}
-          <div className="container mx-auto px-4 md:px-6 pt-4 pb-2 md:pt-5 md:pb-3">
-            <div className="flex items-center gap-1 bg-muted rounded-full p-1 w-fit">
+          <div className="container mx-auto px-4 md:px-6 pt-3 pb-1 md:pt-4 md:pb-2">
+            <div className="flex items-center gap-0.5 bg-muted rounded-full p-0.5 w-fit">
               <button
                 onClick={() => setListingViewMode('top_destinations')}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
+                className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all ${
                   listingViewMode === 'top_destinations'
                     ? 'bg-primary text-primary-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
@@ -627,13 +627,13 @@ const Index = () => {
               </button>
               <button
                 onClick={!locationLoading ? handleMyLocationTap : undefined}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 ${
+                className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all flex items-center gap-1 ${
                   listingViewMode === 'my_location'
                     ? 'bg-primary text-primary-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
                 } ${locationLoading ? 'opacity-70 cursor-wait' : ''}`}
               >
-                {locationLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <MapPin className="h-3 w-3" />}
+                {locationLoading ? <Loader2 className="h-2.5 w-2.5 animate-spin" /> : <MapPin className="h-2.5 w-2.5" />}
                 {locationLoading ? t('sections.finding') : t('sections.nearMe')}
               </button>
             </div>

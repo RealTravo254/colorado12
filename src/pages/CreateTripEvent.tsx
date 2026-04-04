@@ -38,6 +38,12 @@ const StyledInput = ({ className = "", isInvalid = false, ...props }: React.Comp
 
 interface WorkingDays { Mon: boolean; Tue: boolean; Wed: boolean; Thu: boolean; Fri: boolean; Sat: boolean; Sun: boolean; }
 
+const EVENT_CATEGORIES = [
+  "Roadtrips", "Music Events", "Children Events", "Pool Party", "Outdoor",
+  "Cultural Events", "Food", "Training", "Dancing Events", "Educational",
+  "Religious Events", "Night Parties", "Charity Events", "Others"
+];
+
 const STEP_NAMES = ["Basic Info", "Date & Pricing", "Contact & Photos", "Schedule", "Review"];
 
 const CreateTripEvent = () => {
@@ -56,7 +62,13 @@ const CreateTripEvent = () => {
     map_link: "", is_custom_date: false, type: "trip" as "trip" | "event",
     latitude: null as number | null, longitude: null as number | null,
     opening_hours: "00:00", closing_hours: "23:59", flexible_duration_months: "3",
+    event_category: "" as string,
   });
+
+  const [inclusions, setInclusions] = useState<string[]>([]);
+  const [exclusions, setExclusions] = useState<string[]>([]);
+  const [newInclusion, setNewInclusion] = useState("");
+  const [newExclusion, setNewExclusion] = useState("");
 
   const [workingDays, setWorkingDays] = useState<WorkingDays>({ Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: true, Sun: true });
   const [galleryImages, setGalleryImages] = useState<File[]>([]);
@@ -209,7 +221,10 @@ const CreateTripEvent = () => {
         days_opened: daysOpened.length > 0 ? daysOpened : null,
         created_by: user.id, approval_status: approvalStatusSchema.parse("pending"),
         flexible_end_date: flexibleEndDate,
-      }]);
+        inclusions: inclusions.length > 0 ? inclusions : null,
+        exclusions: exclusions.length > 0 ? exclusions : null,
+        event_category: formData.type === 'event' ? (formData.event_category || null) : null,
+      } as any]);
 
       if (error) throw error;
       toast({ title: "Success!", description: `Ref: ${friendlySlug} — Submitted for approval.`, duration: 5000 });
@@ -257,6 +272,26 @@ const CreateTripEvent = () => {
                 </div>
               </Card>
 
+              {/* Event Category Selector */}
+              {formData.type === "event" && (
+                <Card className="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 space-y-4">
+                  <h2 className="text-xs font-black uppercase tracking-widest" style={{ color: COLORS.TEAL }}>Event Category *</h2>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {EVENT_CATEGORIES.map((cat) => (
+                      <button key={cat} type="button" onClick={() => setFormData({...formData, event_category: cat})}
+                        className={`p-3 rounded-xl text-center transition-all font-bold text-xs uppercase tracking-tight ${formData.event_category === cat ? 'bg-[#008080] text-white shadow-lg' : 'bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100'}`}>
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                  {formData.event_category === "Others" && (
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Specify Event Type</Label>
+                      <StyledInput value={formData.event_category === "Others" ? "" : formData.event_category} onChange={(e) => setFormData({...formData, event_category: e.target.value || "Others"})} placeholder="e.g. Yoga Retreat" />
+                    </div>
+                  )}
+                </Card>
+              )}
               <Card className="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 space-y-6">
                 <h2 className="text-xs font-black uppercase tracking-widest" style={{ color: COLORS.TEAL }}>Experience Details</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -340,6 +375,47 @@ const CreateTripEvent = () => {
                   </div>
                 </div>
               </Card>
+
+              {/* Inclusions & Exclusions - for fixed date trips and events */}
+              {(!formData.is_custom_date || formData.type === "event") && (
+                <Card className="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 space-y-6">
+                  <h2 className="text-xs font-black uppercase tracking-widest" style={{ color: COLORS.TEAL }}>What's Included & Excluded</h2>
+                  
+                  {/* Inclusions */}
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">✓ Inclusions</Label>
+                    <div className="flex gap-2">
+                      <StyledInput value={newInclusion} onChange={(e) => setNewInclusion(e.target.value)} placeholder="e.g. Transport, Meals, Guide" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (newInclusion.trim()) { setInclusions([...inclusions, newInclusion.trim()]); setNewInclusion(""); } } }} />
+                      <Button type="button" onClick={() => { if (newInclusion.trim()) { setInclusions([...inclusions, newInclusion.trim()]); setNewInclusion(""); } }} className="rounded-xl shrink-0" style={{ background: COLORS.TEAL }}>Add</Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {inclusions.map((item, i) => (
+                        <span key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">
+                          ✓ {item}
+                          <button type="button" onClick={() => setInclusions(inclusions.filter((_, idx) => idx !== i))} className="hover:text-red-500"><X className="h-3 w-3" /></button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Exclusions */}
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">✗ Exclusions</Label>
+                    <div className="flex gap-2">
+                      <StyledInput value={newExclusion} onChange={(e) => setNewExclusion(e.target.value)} placeholder="e.g. Personal expenses, Insurance" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (newExclusion.trim()) { setExclusions([...exclusions, newExclusion.trim()]); setNewExclusion(""); } } }} />
+                      <Button type="button" onClick={() => { if (newExclusion.trim()) { setExclusions([...exclusions, newExclusion.trim()]); setNewExclusion(""); } }} className="rounded-xl shrink-0 bg-slate-600 hover:bg-slate-700">Add</Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {exclusions.map((item, i) => (
+                        <span key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 text-red-600 text-xs font-bold border border-red-200">
+                          ✗ {item}
+                          <button type="button" onClick={() => setExclusions(exclusions.filter((_, idx) => idx !== i))} className="hover:text-red-800"><X className="h-3 w-3" /></button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </Card>
+              )}
             </>
           )}
 
