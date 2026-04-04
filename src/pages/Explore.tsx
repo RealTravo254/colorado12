@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Compass, Calendar, Tent, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
+import { Compass, Calendar, Tent, MapPin, ChevronLeft, ChevronRight, Navigation } from "lucide-react";
 import { SearchBarWithSuggestions } from "@/components/SearchBarWithSuggestions";
 import { ListingCard } from "@/components/ListingCard";
 import { ListingSkeleton } from "@/components/ui/listing-skeleton";
