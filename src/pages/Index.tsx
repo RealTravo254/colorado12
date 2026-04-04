@@ -491,7 +491,7 @@ const Index = () => {
 
       {/* ─── Hero ──────────────────────────────────────────────────────────── */}
       {!isSearchFocused && (
-        <div ref={searchRef} className="relative w-full h-[52vh] md:h-[44vh] overflow-hidden">
+        <div ref={searchRef} className="relative w-full h-[44vh] md:h-[38vh] overflow-hidden">
           <div className="absolute inset-0 bg-foreground/80" />
           <picture>
             <source srcSet="/images/hero-background.webp" type="image/webp" />
