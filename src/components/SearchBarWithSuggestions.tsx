@@ -51,7 +51,7 @@ interface TrendingSearch {
   search_count: number;
 }
 
-export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchBarProps>(({ value, onChange, onSubmit, onSuggestionSearch, onFocus, onBlur, onBack, showBackButton = false }, _ref) => {
+export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchBarProps>(({ value, onChange, onSubmit, onSuggestionSearch, onFocus, onBlur, onBack, showBackButton = false, categoryType }, _ref) => {
   const { user } = useAuth();
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
