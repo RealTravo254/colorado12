@@ -174,7 +174,7 @@ const ListingCardComponent = ({
     >
       {/* Image Slideshow */}
       <div
-        className="relative w-full overflow-hidden aspect-[3/4] sm:aspect-[4/3]"
+        className="relative w-full overflow-hidden aspect-[1/1] sm:aspect-[4/3]"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
