@@ -110,50 +110,42 @@ const Explore = () => {
       {/* Search header */}
       <div className="sticky top-0 z-50 bg-primary shadow-md">
         <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center gap-2">
-            <button onClick={() => navigate(-1)} className="text-primary-foreground p-1">
-              <X className="h-5 w-5" />
-            </button>
-            <div className="flex-1 relative">
-              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                placeholder="Search places, events, activities..."
-                className="pl-9 pr-4 h-10 rounded-full bg-background border-none text-sm"
-                autoFocus
-              />
-            </div>
-            <Button onClick={handleSearch} size="sm" variant="secondary" className="rounded-full h-10 px-4 font-bold text-xs">
-              Search
-            </Button>
-          </div>
+          <SearchBarWithSuggestions
+            value={searchQuery}
+            onChange={setSearchQuery}
+            onSubmit={handleSearch}
+            onFocus={() => setIsSearchFocused(true)}
+            onBlur={() => setIsSearchFocused(false)}
+            onBack={() => { setIsSearchFocused(false); setSearchQuery(""); navigate(-1); }}
+            showBackButton={true}
+          />
         </div>
 
         {/* Filter tabs */}
-        <div className="container mx-auto px-4 pb-2">
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide">
-            {FILTER_TABS.map(tab => {
-              const Icon = tab.icon;
-              const isActive = activeFilter === tab.key;
-              return (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveFilter(tab.key)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-all ${
-                    isActive
-                      ? "bg-primary-foreground text-primary shadow-sm"
-                      : "bg-primary-foreground/20 text-primary-foreground/90 hover:bg-primary-foreground/30"
-                  }`}
-                >
-                  <Icon className="h-3.5 w-3.5" />
-                  {tab.label}
-                </button>
-              );
-            })}
+        {!isSearchFocused && (
+          <div className="container mx-auto px-4 pb-2">
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+              {FILTER_TABS.map(tab => {
+                const Icon = tab.icon;
+                const isActive = activeFilter === tab.key;
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveFilter(tab.key)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-all ${
+                      isActive
+                        ? "bg-primary-foreground text-primary shadow-sm"
+                        : "bg-primary-foreground/20 text-primary-foreground/90 hover:bg-primary-foreground/30"
+                    }`}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Results */}
