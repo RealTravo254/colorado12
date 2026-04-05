@@ -51,7 +51,7 @@ const ReviewHeader = ({ event }: { event: any }) => (
   </div>
 );
 
-const SELECT_FIELDS = "id,name,location,place,country,image_url,gallery_images,images,date,is_custom_date,price,price_child,available_tickets,description,activities,phone_number,email,created_by,type,opening_hours,closing_hours,map_link,is_flexible_date,inclusions,exclusions,event_category,allow_children";
+const SELECT_FIELDS = "id,name,location,place,country,image_url,gallery_images,images,date,is_custom_date,price,price_child,available_tickets,description,activities,phone_number,email,created_by,type,opening_hours,closing_hours,map_link,is_flexible_date,inclusions,exclusions,event_category,allow_children,ticket_types,slot_limit_type";
 
 const EventDetail = () => {
   const { slug: rawSlug } = useParams();

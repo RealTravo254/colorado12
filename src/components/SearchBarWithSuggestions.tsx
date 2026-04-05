@@ -44,11 +44,12 @@ interface TrendingSearch {
   search_count: number;
 }
 
-const EVENT_CATEGORIES = [
-  "Roadtrips", "Music Events", "Children Events", "Pool Party", "Outdoor",
-  "Cultural Events", "Food", "Training", "Dancing Events", "Educational",
-  "Religious Events", "Night Parties", "Charity Events", "Others"
-];
+interface LocationSuggestion {
+  location: string;
+  count: number;
+  type: string;
+}
+
 
 export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchBarProps>(({ value, onChange, onSubmit, onSuggestionSearch, onFocus, onBlur, onBack, showBackButton = false, categoryType, showEventCategories = false }, _ref) => {
   const { user } = useAuth();
