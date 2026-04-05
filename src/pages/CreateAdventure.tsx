@@ -487,7 +487,9 @@ const CreateAdventure = () => {
     openingHours: "00:00", closingHours: "23:59",
     entranceFeeType: "free", adultPrice: "0", childPrice: "0",
     latitude: null as number | null, longitude: null as number | null,
+    locationLink: "",
   });
+  const [locationMode, setLocationMode] = useState<'link' | 'gps' | null>(null);
 
   const [workingDays, setWorkingDays] = useState({
     Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: true, Sun: true,
