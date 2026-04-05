@@ -494,29 +494,32 @@ const Index = () => {
       {/* Hero — full width on mobile, horizontally padded on desktop, no border radius */}
       {!isSearchFocused && (
         <div ref={searchRef} className="w-full md:px-6 lg:px-10">
-          {/* Image container — mobile tall enough for content, desktop compact fixed height */}
-          <div className="relative w-full overflow-hidden h-[72vw] sm:h-[60vw] md:h-[400px] lg:h-[420px] xl:h-[440px]">
-            <div className="absolute inset-0 bg-foreground/80" />
-            <picture>
-              <source srcSet="/images/hero-background.webp" type="image/webp" />
-              <img
-                src="/images/hero-background.webp"
-                alt="Travel destination"
-                fetchPriority="high" decoding="async" loading="eager"
-                width={1920} height={1080}
-                className="absolute inset-0 w-full h-full object-cover opacity-60"
-              />
-            </picture>
-            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" />
+          {/* Outer wrapper: relative so background image stretches to match content height */}
+          <div className="relative w-full">
+            {/* Background image layer — absolutely fills the outer wrapper */}
+            <div className="absolute inset-0 overflow-hidden">
+              <div className="absolute inset-0 bg-foreground/80" />
+              <picture>
+                <source srcSet="/images/hero-background.webp" type="image/webp" />
+                <img
+                  src="/images/hero-background.webp"
+                  alt="Travel destination"
+                  fetchPriority="high" decoding="async" loading="eager"
+                  width={1920} height={1080}
+                  className="absolute inset-0 w-full h-full object-cover opacity-60"
+                />
+              </picture>
+              <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" />
+            </div>
 
-            {/* Full-height flex column: title+search centered, category cards pinned to bottom */}
-            <div className="absolute inset-0 flex flex-col px-4 md:px-8">
-              {/* Spacer + title + search — takes up space above category cards */}
-              <div className="flex-1 flex flex-col items-center justify-center w-full max-w-3xl mx-auto">
+            {/* Content layer — drives the actual height of the hero */}
+            <div className="relative z-10 flex flex-col px-4 md:px-8 py-8 md:py-10">
+              {/* Title + search */}
+              <div className="flex flex-col items-center w-full max-w-3xl mx-auto mb-5 md:mb-6">
                 <p className="text-primary-foreground/70 text-xs md:text-sm font-semibold uppercase tracking-widest text-center mb-2">
                   {t('hero.tagline')}
                 </p>
-                <h1 className="text-primary-foreground text-3xl md:text-4xl lg:text-5xl font-extrabold text-center mb-3 md:mb-4 leading-tight tracking-tight">
+                <h1 className="text-primary-foreground text-3xl md:text-4xl lg:text-5xl font-extrabold text-center mb-4 leading-tight tracking-tight">
                   {t('hero.title')}
                 </h1>
                 <div onClick={() => navigate('/explore')} className="cursor-pointer w-full">
@@ -532,11 +535,11 @@ const Index = () => {
                 </div>
               </div>
 
-              {/* Category cards — pinned to bottom of image, full image width, compact on desktop */}
-              <div className="w-full pb-3 pt-2">
+              {/* Category cards — fully visible, same width as image, compact fixed height on desktop */}
+              <div className="w-full">
                 <div className="grid grid-cols-4 gap-2 md:gap-3 w-full">
                   {CATEGORIES.map((cat) => (
-                    <div key={cat.title} className="h-[22vw] sm:h-[18vw] md:h-[110px] lg:h-[120px]">
+                    <div key={cat.title} className="h-[22vw] sm:h-[20vw] md:h-[120px] lg:h-[130px]">
                       <CategoryCard
                         icon={cat.icon}
                         title={cat.title}
