@@ -200,18 +200,21 @@ const Index = () => {
     setLoadingScrollable(true);
     const fetchLimit = Math.max(limit * 3, 30);
     try {
-      const [tripsData, campsitesData, eventsData] = await Promise.all([
+      const [tripsData, campsitesData, eventsData, guidedData] = await Promise.all([
         supabase.from("trips").select("id,name,location,place,country,image_url,gallery_images,images,date,is_custom_date,is_flexible_date,available_tickets,activities,type,created_at,price,price_child,description,opening_hours,closing_hours")
-          .eq("approval_status", "approved").eq("is_hidden", false).eq("type", "trip").order("date", { ascending: true }).limit(fetchLimit),
+          .eq("approval_status", "approved").eq("is_hidden", false).eq("type", "trip").eq("is_flexible_date", false).eq("is_custom_date", false).order("date", { ascending: true }).limit(fetchLimit),
         supabase.from("adventure_places").select("id,name,location,place,country,image_url,gallery_images,images,entry_fee,activities,latitude,longitude,created_at,description,opening_hours,closing_hours")
           .eq("approval_status", "approved").eq("is_hidden", false).limit(fetchLimit),
         supabase.from("trips").select("id,name,location,place,country,image_url,gallery_images,images,date,is_custom_date,is_flexible_date,available_tickets,activities,type,created_at,price,price_child,description,opening_hours,closing_hours")
           .eq("approval_status", "approved").eq("is_hidden", false).eq("type", "event").order("date", { ascending: true }).limit(fetchLimit),
+        supabase.from("trips").select("id,name,location,place,country,image_url,gallery_images,images,date,is_custom_date,is_flexible_date,available_tickets,activities,type,created_at,price,price_child,description,opening_hours,closing_hours")
+          .eq("approval_status", "approved").eq("is_hidden", false).eq("type", "trip").or("is_flexible_date.eq.true,is_custom_date.eq.true").order("created_at", { ascending: false }).limit(fetchLimit),
       ]);
       setScrollableRows({
         trips: tripsData.data || [], hotels: [],
         attractions: [], campsites: campsitesData.data || [],
         events: eventsData.data || [], accommodations: [],
+        guidedTrips: guidedData.data || [],
       });
     } catch (error) {
       console.error("Error fetching scrollable rows:", error);
