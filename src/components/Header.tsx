@@ -25,6 +25,23 @@ export const Header = ({ onSearchClick, showSearchIcon = true, className, __from
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [hostPopoverOpen, setHostPopoverOpen] = useState(false);
   const [accountPopoverOpen, setAccountPopoverOpen] = useState(false);
+  
+  // State to track if the user has scrolled down
+  const [hasScrolled, setHasScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Show the search icon after scrolling 50px
+      if (window.scrollY > 50) {
+        setHasScrolled(true);
+      } else {
+        setHasScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -40,8 +57,8 @@ export const Header = ({ onSearchClick, showSearchIcon = true, className, __from
   const headerIconStyles = "h-9 w-9 rounded-xl flex items-center justify-center transition-all duration-200 active:scale-90 text-white hover:bg-white/20";
 
   return (
-    <header className={`z-[100] items-center absolute top-0 md:fixed md:top-0 left-0 right-0 flex py-3 md:bg-[#008080] ${className || ''}`}
-      style={{}}
+    <header 
+      className={`z-[100] items-center fixed top-0 left-0 right-0 flex py-3 md:bg-[#008080] transition-colors duration-300 ${className || ''}`}
     >
       <div className="container mx-auto px-4 flex items-center justify-between h-full">
         <div className="flex items-center gap-2">
@@ -74,10 +91,16 @@ export const Header = ({ onSearchClick, showSearchIcon = true, className, __from
         </nav>
 
         <div className="flex items-center gap-2">
-          {/* Explore icon */}
-          <button onClick={() => navigate('/explore')} className={headerIconStyles} aria-label="Explore">
-            <Search className="h-5 w-5" />
-          </button>
+          {/* Explore/Search icon - Only visible when showSearchIcon is true AND user has scrolled */}
+          {showSearchIcon && hasScrolled && (
+            <button 
+              onClick={() => navigate('/explore')} 
+              className={`${headerIconStyles} animate-in fade-in zoom-in duration-300`} 
+              aria-label="Explore"
+            >
+              <Search className="h-5 w-5" />
+            </button>
+          )}
 
           {/* Become Host with popover */}
           <Popover open={hostPopoverOpen} onOpenChange={setHostPopoverOpen}>
