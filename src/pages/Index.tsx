@@ -527,9 +527,9 @@ const Index = () => {
                   showBackButton={false}
                 />
               </div>
-              {/* Category cards below search bar, inside the hero */}
-              <div className="max-w-3xl mx-auto">
-                <div className="grid grid-cols-4 gap-1.5 md:gap-2">
+              {/* Category cards below search bar, overlapping hero bottom on desktop */}
+              <div className="max-w-3xl mx-auto md:translate-y-8 lg:translate-y-12">
+                <div className="grid grid-cols-4 gap-1.5 md:gap-4">
                   {CATEGORIES.map((cat) => (
                     <CategoryCard
                       key={cat.title}
