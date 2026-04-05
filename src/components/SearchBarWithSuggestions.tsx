@@ -50,6 +50,12 @@ interface LocationSuggestion {
   type: string;
 }
 
+const EVENT_CATEGORIES = [
+  "Music & Concerts", "Sports", "Festival", "Comedy", "Art & Culture",
+  "Food & Drink", "Networking", "Workshop", "Conference", "Charity",
+  "Nightlife", "Theater", "Outdoor", "Family"
+];
+
 
 export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchBarProps>(({ value, onChange, onSubmit, onSuggestionSearch, onFocus, onBlur, onBack, showBackButton = false, categoryType, showEventCategories = false }, _ref) => {
   const { user } = useAuth();
