@@ -60,16 +60,16 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
   const [hasSearched, setHasSearched] = useState(false);
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [trendingSearches, setTrendingSearches] = useState<TrendingSearch[]>([]);
+  const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestion[]>([]);
   const navigate = useNavigate();
   const wrapperRef = useRef<HTMLDivElement>(null);
-
-  const shouldShowEventCategories = categoryType === "events" || showEventCategories;
 
   useEffect(() => {
     const history = localStorage.getItem(SEARCH_HISTORY_KEY);
     if (history) setSearchHistory(JSON.parse(history));
     fetchTrendingSearches();
     fetchMostPopular();
+    fetchLocationSuggestions();
   }, []);
 
   const fetchTrendingSearches = async () => {
