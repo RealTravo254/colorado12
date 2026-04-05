@@ -81,6 +81,36 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
     }
   };
 
+  const fetchLocationSuggestions = async () => {
+    try {
+      const [tripsLoc, adventureLoc, hotelsLoc] = await Promise.all([
+        supabase.from("trips").select("location").eq("approval_status", "approved").eq("is_hidden", false).limit(50),
+        supabase.from("adventure_places").select("location").eq("approval_status", "approved").eq("is_hidden", false).limit(50),
+        supabase.from("hotels").select("location").eq("approval_status", "approved").eq("is_hidden", false).limit(50),
+      ]);
+      const locationMap = new Map<string, { count: number; type: string }>();
+      const addLocations = (data: any[] | null, type: string) => {
+        (data || []).forEach((item: any) => {
+          if (item.location) {
+            const loc = item.location.trim();
+            const existing = locationMap.get(loc);
+            locationMap.set(loc, { count: (existing?.count || 0) + 1, type: existing?.type || type });
+          }
+        });
+      };
+      addLocations(tripsLoc.data, "trip");
+      addLocations(adventureLoc.data, "adventure");
+      addLocations(hotelsLoc.data, "hotel");
+      const sorted = Array.from(locationMap.entries())
+        .map(([location, info]) => ({ location, count: info.count, type: info.type }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 12);
+      setLocationSuggestions(sorted);
+    } catch (error) {
+      console.error("Error fetching location suggestions:", error);
+    }
+  };
+
   const fetchMostPopular = async () => {
     try {
       const [tripsData, eventsData, hotelsData, adventuresData] = await Promise.all([
