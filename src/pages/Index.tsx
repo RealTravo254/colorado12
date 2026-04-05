@@ -391,6 +391,12 @@ const Index = () => {
   const displayCampsites = useMemo(() => getDisplayItems(scrollableRows.campsites, sortedCampsites), [scrollableRows.campsites, sortedCampsites, getDisplayItems]);
   const displayTrips = useMemo(() => getDisplayItems(scrollableRows.trips, sortedTrips, true), [scrollableRows.trips, sortedTrips, getDisplayItems]);
   const displayEvents = useMemo(() => getDisplayItems(scrollableRows.events, sortedEvents, true), [scrollableRows.events, sortedEvents, getDisplayItems]);
+  const sortedGuidedTrips = useMemo(() => sortByRating(scrollableRows.guidedTrips, ratings, position, calculateDistance), [scrollableRows.guidedTrips, ratings, position]);
+  const displayGuidedTrips = useMemo(() => {
+    const items = sortedGuidedTrips;
+    // No date filtering for guided (flexible) trips
+    return items;
+  }, [sortedGuidedTrips]);
 
   const renderCard = useCallback((item: any, type: string, index: number, opts: { hidePrice?: boolean; isTrip?: boolean; categoryColor?: string } = {}) => {
     const itemDistance = position && item.latitude && item.longitude ? calculateDistance(position.latitude, position.longitude, item.latitude, item.longitude) : undefined;
