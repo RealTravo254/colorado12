@@ -541,7 +541,7 @@ const Index = () => {
                     height: '36px',
                   }}
                 >
-                  <div className="absolute inset-0 rounded-lg bg-black/25" />
+                  <div className="absolute inset-0 rounded-lg bg-black/10" />
                   <cat.icon className="relative z-10 h-3 w-3 text-white shrink-0" />
                   <span className="relative z-10 text-white text-[10px] md:text-[11px] font-bold leading-none whitespace-nowrap">
                     {cat.title}
