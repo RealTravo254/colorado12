@@ -12,7 +12,7 @@ const About = () => {
       <main className="container px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">About TripTrac</h1>
         
-        <Card className="p-8 max-w-3xl">
+        <Card className="p-8 max-w-3xl"> 
           <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             Your Gateway to Adventure
           </h2>
