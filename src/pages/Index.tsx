@@ -495,7 +495,7 @@ const Index = () => {
       {!isSearchFocused && (
         <div ref={searchRef} className="w-full md:px-6 lg:px-10">
           {/* Image container — taller to fit text + search + category cards all inside */}
-          <div className="relative w-full overflow-hidden" style={{ height: 'clamp(340px, 58vh, 520px)' }}>
+          <div className="relative w-full overflow-hidden" style={{ height: 'clamp(300px, 48vh, 420px)' }}>
             <div className="absolute inset-0 bg-foreground/80" />
             <picture>
               <source srcSet="/images/hero-background.webp" type="image/webp" />
