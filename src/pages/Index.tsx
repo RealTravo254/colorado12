@@ -491,11 +491,11 @@ const Index = () => {
         </div>
       )}
 
-      {/* Hero — full width on mobile, padded/contained on desktop */}
+      {/* Hero — full width on mobile, horizontally padded on desktop, no border radius */}
       {!isSearchFocused && (
         <div ref={searchRef} className="w-full md:px-6 lg:px-10">
-          {/* Image area — full width mobile, rounded-xl on desktop with constrained width */}
-          <div className="relative w-full h-[44vh] md:h-[42vh] overflow-hidden md:rounded-2xl">
+          {/* Image container — taller to fit text + search + category cards all inside */}
+          <div className="relative w-full overflow-hidden" style={{ height: 'clamp(340px, 58vh, 520px)' }}>
             <div className="absolute inset-0 bg-foreground/80" />
             <picture>
               <source srcSet="/images/hero-background.webp" type="image/webp" />
@@ -509,16 +509,17 @@ const Index = () => {
             </picture>
             <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" />
 
-            {/* Text + search — vertically centered inside image, stops before category cards */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center px-4 pb-4">
-              <div className="w-full max-w-3xl mx-auto">
+            {/* Full-height flex column: title+search centered, category cards pinned to bottom */}
+            <div className="absolute inset-0 flex flex-col px-4 md:px-8">
+              {/* Spacer + title + search — takes up space above category cards */}
+              <div className="flex-1 flex flex-col items-center justify-center w-full max-w-3xl mx-auto">
                 <p className="text-primary-foreground/70 text-xs md:text-sm font-semibold uppercase tracking-widest text-center mb-2">
                   {t('hero.tagline')}
                 </p>
                 <h1 className="text-primary-foreground text-3xl md:text-5xl font-extrabold text-center mb-4 md:mb-6 leading-tight tracking-tight">
                   {t('hero.title')}
                 </h1>
-                <div onClick={() => navigate('/explore')} className="cursor-pointer">
+                <div onClick={() => navigate('/explore')} className="cursor-pointer w-full">
                   <SearchBarWithSuggestions
                     value="" onChange={() => {}}
                     onSubmit={() => navigate('/explore')}
@@ -530,23 +531,21 @@ const Index = () => {
                   />
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Category cards — outside overflow-hidden, fully visible, overlapping hero bottom */}
-          <div className="relative z-10 -mt-10 md:-mt-12 px-4 md:px-0 pb-2">
-            <div className="max-w-3xl mx-auto">
-              <div className="grid grid-cols-4 gap-1.5 md:gap-4">
-                {CATEGORIES.map((cat) => (
-                  <CategoryCard
-                    key={cat.title}
-                    icon={cat.icon}
-                    title={cat.title}
-                    description=""
-                    onClick={() => navigate(cat.path)}
-                    bgImage={cat.bgImage}
-                  />
-                ))}
+              {/* Category cards — pinned to bottom of image, full image width */}
+              <div className="w-full pb-4 pt-3">
+                <div className="grid grid-cols-4 gap-2 md:gap-4 w-full">
+                  {CATEGORIES.map((cat) => (
+                    <CategoryCard
+                      key={cat.title}
+                      icon={cat.icon}
+                      title={cat.title}
+                      description=""
+                      onClick={() => navigate(cat.path)}
+                      bgImage={cat.bgImage}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
