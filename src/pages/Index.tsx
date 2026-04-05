@@ -527,26 +527,25 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Category cards — inside image, rectangular, small fixed height, full width */}
+            {/* Category cards — very small height, full width, fully visible inside hero */}
             <div className="relative z-10 w-full grid grid-cols-4 gap-2 md:gap-3">
               {CATEGORIES.map((cat) => (
                 <div
                   key={cat.title}
-                  className="h-16 md:h-20 w-full cursor-pointer overflow-hidden rounded-xl relative"
                   onClick={() => navigate(cat.path)}
+                  className="cursor-pointer rounded-lg relative w-full flex items-center justify-center gap-1.5 px-2"
                   style={{
                     backgroundImage: `url(${cat.bgImage})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
+                    height: '36px',
                   }}
                 >
-                  <div className="absolute inset-0 bg-black/40" />
-                  <div className="relative z-10 h-full flex flex-col items-center justify-center gap-1 px-1">
-                    <cat.icon className="h-4 w-4 md:h-5 md:w-5 text-white shrink-0" />
-                    <span className="text-white text-[10px] md:text-xs font-bold text-center leading-tight">
-                      {cat.title}
-                    </span>
-                  </div>
+                  <div className="absolute inset-0 rounded-lg bg-black/50" />
+                  <cat.icon className="relative z-10 h-3 w-3 text-white shrink-0" />
+                  <span className="relative z-10 text-white text-[10px] md:text-[11px] font-bold leading-none whitespace-nowrap">
+                    {cat.title}
+                  </span>
                 </div>
               ))}
             </div>
@@ -747,4 +746,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Index;121
