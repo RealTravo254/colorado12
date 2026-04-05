@@ -540,9 +540,9 @@ const CreateAdventure = () => {
         return false;
       }
     } else if (currentStep === 2) {
-      if (!formData.locationName.trim() || !formData.place.trim() || !formData.latitude) {
+      if (!formData.locationName.trim() || !formData.place.trim() || (!formData.latitude && !formData.locationLink.trim())) {
         setShowErrors(true);
-        toast({ title: "Complete this step", description: "Fill location and capture GPS", variant: "destructive" });
+        toast({ title: "Complete this step", description: "Fill location and provide a link or GPS", variant: "destructive" });
         return false;
       }
     } else if (currentStep === 3) {
