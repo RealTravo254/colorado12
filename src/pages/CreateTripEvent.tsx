@@ -655,6 +655,26 @@ const CreateTripEvent = () => {
                 </p>
                 {validationErrors.includes("description") && <p className="text-red-500 text-[10px] font-bold mt-1">⚠ Description is required</p>}
               </Card>
+
+              {/* Activities */}
+              <Card className="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 space-y-4">
+                <h2 className="text-xs font-black uppercase tracking-widest" style={{ color: COLORS.TEAL }}>Activities (Optional)</h2>
+                <p className="text-[10px] text-slate-400 font-bold">Add activities visitors can enjoy during this experience</p>
+                <div className="flex gap-2">
+                  <StyledInput value={newActivityName} onChange={(e) => setNewActivityName(e.target.value)} placeholder="e.g. Hiking, Swimming, Game Drive" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (newActivityName.trim()) { setActivityNames([...activityNames, newActivityName.trim()]); setNewActivityName(""); } } }} />
+                  <Button type="button" onClick={() => { if (newActivityName.trim()) { setActivityNames([...activityNames, newActivityName.trim()]); setNewActivityName(""); } }} className="rounded-xl shrink-0" style={{ background: COLORS.TEAL }}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {activityNames.map((name, i) => (
+                    <span key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#008080]/10 text-[#008080] text-xs font-bold border border-[#008080]/20">
+                      {name}
+                      <button type="button" onClick={() => setActivityNames(activityNames.filter((_, idx) => idx !== i))} className="hover:text-red-500"><X className="h-3 w-3" /></button>
+                    </span>
+                  ))}
+                </div>
+              </Card>
             </>
           )}
 
