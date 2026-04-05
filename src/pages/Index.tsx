@@ -139,8 +139,8 @@ const Index = () => {
   const searchRef = useRef<HTMLDivElement>(null);
   const [scrollableRows, setScrollableRows] = useState<{
     trips: any[]; hotels: any[]; attractions: any[];
-    campsites: any[]; events: any[]; accommodations: any[];
-  }>({ trips: [], hotels: [], attractions: [], campsites: [], events: [], accommodations: [] });
+    campsites: any[]; events: any[]; accommodations: any[]; guidedTrips: any[];
+  }>({ trips: [], hotels: [], attractions: [], campsites: [], events: [], accommodations: [], guidedTrips: [] });
   const [nearbyPlacesHotels, setNearbyPlacesHotels] = useState<any[]>([]);
   const [loadingScrollable, setLoadingScrollable] = useState(true);
   const [loadingNearby, setLoadingNearby] = useState(true);
@@ -184,6 +184,7 @@ const Index = () => {
   const featuredCampsitesRef = useRef<HTMLDivElement>(null);
   const featuredEventsRef = useRef<HTMLDivElement>(null);
   const featuredTripsRef = useRef<HTMLDivElement>(null);
+  const guidedTripsRef = useRef<HTMLDivElement>(null);
 
   const [scrollPositions, setScrollPositions] = useState<Record<string, number>>({});
 
@@ -199,18 +200,21 @@ const Index = () => {
     setLoadingScrollable(true);
     const fetchLimit = Math.max(limit * 3, 30);
     try {
-      const [tripsData, campsitesData, eventsData] = await Promise.all([
+      const [tripsData, campsitesData, eventsData, guidedData] = await Promise.all([
         supabase.from("trips").select("id,name,location,place,country,image_url,gallery_images,images,date,is_custom_date,is_flexible_date,available_tickets,activities,type,created_at,price,price_child,description,opening_hours,closing_hours")
-          .eq("approval_status", "approved").eq("is_hidden", false).eq("type", "trip").order("date", { ascending: true }).limit(fetchLimit),
+          .eq("approval_status", "approved").eq("is_hidden", false).eq("type", "trip").eq("is_flexible_date", false).eq("is_custom_date", false).order("date", { ascending: true }).limit(fetchLimit),
         supabase.from("adventure_places").select("id,name,location,place,country,image_url,gallery_images,images,entry_fee,activities,latitude,longitude,created_at,description,opening_hours,closing_hours")
           .eq("approval_status", "approved").eq("is_hidden", false).limit(fetchLimit),
         supabase.from("trips").select("id,name,location,place,country,image_url,gallery_images,images,date,is_custom_date,is_flexible_date,available_tickets,activities,type,created_at,price,price_child,description,opening_hours,closing_hours")
           .eq("approval_status", "approved").eq("is_hidden", false).eq("type", "event").order("date", { ascending: true }).limit(fetchLimit),
+        supabase.from("trips").select("id,name,location,place,country,image_url,gallery_images,images,date,is_custom_date,is_flexible_date,available_tickets,activities,type,created_at,price,price_child,description,opening_hours,closing_hours")
+          .eq("approval_status", "approved").eq("is_hidden", false).eq("type", "trip").or("is_flexible_date.eq.true,is_custom_date.eq.true").order("created_at", { ascending: false }).limit(fetchLimit),
       ]);
       setScrollableRows({
         trips: tripsData.data || [], hotels: [],
         attractions: [], campsites: campsitesData.data || [],
         events: eventsData.data || [], accommodations: [],
+        guidedTrips: guidedData.data || [],
       });
     } catch (error) {
       console.error("Error fetching scrollable rows:", error);
@@ -311,7 +315,7 @@ const Index = () => {
     if (cachedData) {
       setListings(cachedData.listings || []);
       const c = cachedData.scrollableRows as any || {};
-      const cachedRows = { trips: c.trips || [], hotels: c.hotels || [], attractions: c.attractions || [], campsites: c.campsites || [], events: c.events || [], accommodations: c.accommodations || [] };
+      const cachedRows = { trips: c.trips || [], hotels: c.hotels || [], attractions: c.attractions || [], campsites: c.campsites || [], events: c.events || [], accommodations: c.accommodations || [], guidedTrips: c.guidedTrips || [] };
       setScrollableRows(cachedRows);
       setNearbyPlacesHotels(cachedData.nearbyPlacesHotels || []);
       setLoading(false); setLoadingScrollable(false); setLoadingNearby(false);
@@ -387,6 +391,12 @@ const Index = () => {
   const displayCampsites = useMemo(() => getDisplayItems(scrollableRows.campsites, sortedCampsites), [scrollableRows.campsites, sortedCampsites, getDisplayItems]);
   const displayTrips = useMemo(() => getDisplayItems(scrollableRows.trips, sortedTrips, true), [scrollableRows.trips, sortedTrips, getDisplayItems]);
   const displayEvents = useMemo(() => getDisplayItems(scrollableRows.events, sortedEvents, true), [scrollableRows.events, sortedEvents, getDisplayItems]);
+  const sortedGuidedTrips = useMemo(() => sortByRating(scrollableRows.guidedTrips, ratings, position, calculateDistance), [scrollableRows.guidedTrips, ratings, position]);
+  const displayGuidedTrips = useMemo(() => {
+    const items = sortedGuidedTrips;
+    // No date filtering for guided (flexible) trips
+    return items;
+  }, [sortedGuidedTrips]);
 
   const renderCard = useCallback((item: any, type: string, index: number, opts: { hidePrice?: boolean; isTrip?: boolean; categoryColor?: string } = {}) => {
     const itemDistance = position && item.latitude && item.longitude ? calculateDistance(position.latitude, position.longitude, item.latitude, item.longitude) : undefined;
@@ -491,63 +501,65 @@ const Index = () => {
         </div>
       )}
 
-      {/* Hero — full width on mobile, horizontally padded on desktop, no border radius */}
+      {/* Hero — full width on mobile, container-width on desktop */}
       {!isSearchFocused && (
-        <div ref={searchRef} className="w-full md:px-6 lg:px-10">
-          <div
-            className="relative w-full flex flex-col px-4 md:px-8 pt-8 md:pt-10 pb-5 md:pb-6"
-            style={{
-              backgroundImage: 'url(/images/hero-background.webp)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          >
-            {/* Overlays */}
-            <div className="absolute inset-0 bg-black/25" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/30" />
+        <div ref={searchRef} className="w-full">
+          <div className="container mx-auto px-4 md:px-6">
+            <div
+              className="relative w-full flex flex-col px-4 md:px-8 pt-8 md:pt-10 pb-5 md:pb-6 rounded-none md:rounded-2xl overflow-hidden"
+              style={{
+                backgroundImage: 'url(/images/hero-background.webp)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            >
+              {/* Overlays */}
+              <div className="absolute inset-0 bg-black/25" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/30" />
 
-            {/* Tagline + title + search */}
-            <div className="relative z-10 flex flex-col items-center w-full max-w-3xl mx-auto mb-4 md:mb-5">
-              <p className="text-white/70 text-xs md:text-sm font-semibold uppercase tracking-widest text-center mb-2">
-                {t('hero.tagline')}
-              </p>
-              <h1 className="text-white text-3xl md:text-4xl lg:text-5xl font-extrabold text-center mb-4 leading-tight tracking-tight">
-                {t('hero.title')}
-              </h1>
-              <div onClick={() => navigate('/explore')} className="cursor-pointer w-full">
-                <SearchBarWithSuggestions
-                  value="" onChange={() => {}}
-                  onSubmit={() => navigate('/explore')}
-                  onSuggestionSearch={() => navigate('/explore')}
-                  onFocus={() => navigate('/explore')}
-                  onBlur={() => {}}
-                  onBack={() => {}}
-                  showBackButton={false}
-                />
-              </div>
-            </div>
-
-            {/* Category cards — very small height, full width, fully visible inside hero */}
-            <div className="relative z-10 w-full grid grid-cols-4 gap-2 md:gap-3">
-              {CATEGORIES.map((cat) => (
-                <div
-                  key={cat.title}
-                  onClick={() => navigate(cat.path)}
-                  className="cursor-pointer rounded-lg relative w-full flex flex-col items-center justify-center gap-1 px-2 py-2 md:py-4"
-                  style={{
-                    backgroundImage: `url(${cat.bgImage})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    height: 'clamp(60px, 8vw, 144px)',
-                  }}
-                >
-                  <div className="absolute inset-0 rounded-lg bg-black/10" />
-                  <cat.icon className="relative z-10 h-3 w-3 md:h-6 md:w-6 text-white shrink-0" />
-                  <span className="relative z-10 text-white text-[10px] md:text-sm font-bold leading-none whitespace-nowrap">
-                    {cat.title}
-                  </span>
+              {/* Tagline + title + search */}
+              <div className="relative z-10 flex flex-col items-center w-full max-w-3xl mx-auto mb-4 md:mb-5">
+                <p className="text-white/70 text-xs md:text-sm font-semibold uppercase tracking-widest text-center mb-2">
+                  {t('hero.tagline')}
+                </p>
+                <h1 className="text-white text-3xl md:text-4xl lg:text-5xl font-extrabold text-center mb-4 leading-tight tracking-tight">
+                  {t('hero.title')}
+                </h1>
+                <div onClick={() => navigate('/explore')} className="cursor-pointer w-full">
+                  <SearchBarWithSuggestions
+                    value="" onChange={() => {}}
+                    onSubmit={() => navigate('/explore')}
+                    onSuggestionSearch={() => navigate('/explore')}
+                    onFocus={() => navigate('/explore')}
+                    onBlur={() => {}}
+                    onBack={() => {}}
+                    showBackButton={false}
+                  />
                 </div>
-              ))}
+              </div>
+
+              {/* Category cards */}
+              <div className="relative z-10 w-full grid grid-cols-4 gap-2 md:gap-3">
+                {CATEGORIES.map((cat) => (
+                  <div
+                    key={cat.title}
+                    onClick={() => navigate(cat.path)}
+                    className="cursor-pointer rounded-lg relative w-full flex flex-col items-center justify-center gap-1 px-2 py-2 md:py-4"
+                    style={{
+                      backgroundImage: `url(${cat.bgImage})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      height: 'clamp(60px, 8vw, 144px)',
+                    }}
+                  >
+                    <div className="absolute inset-0 rounded-lg bg-black/10" />
+                    <cat.icon className="relative z-10 h-3 w-3 md:h-6 md:w-6 text-white shrink-0" />
+                    <span className="relative z-10 text-white text-[10px] md:text-sm font-bold leading-none whitespace-nowrap">
+                      {cat.title}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -614,7 +626,16 @@ const Index = () => {
               {displayEvents.map((event, i) => renderCard(event, "EVENT", i, { isTrip: true, categoryColor: "hsl(340, 75%, 50%)" }))}
             </ScrollSection>
 
-            {/* Nearest */}
+            {/* Get Your Guide - Guided Trips */}
+            <ScrollSection
+              title="Get Your Guide" viewAllPath="/category/guided"
+              accentColor="hsl(260, 70%, 55%)" scrollRef={guidedTripsRef}
+              onScroll={handleScroll('guidedTrips')}
+              hasItems={displayGuidedTrips.length > 0} loading={loadingScrollable}
+            >
+              {displayGuidedTrips.map((trip, i) => renderCard(trip, "TRIP", i, { isTrip: true, categoryColor: "hsl(260, 70%, 55%)" }))}
+            </ScrollSection>
+
             {position && sortedNearbyPlaces.length > 0 && (
               <section className="mb-4 md:mb-8">
                 <div className="flex items-center gap-2 mb-3 md:mb-4">
