@@ -516,7 +516,7 @@ const CreateAdventure = () => {
 
   // Step validation
   const isStep1Complete = !!formData.registrationName.trim() && !!formData.registrationNumber.trim() && !!formData.country;
-  const isStep2Complete = !!formData.locationName.trim() && !!formData.place.trim() && !!formData.latitude;
+  const isStep2Complete = !!formData.locationName.trim() && !!formData.place.trim() && (!!formData.latitude || !!formData.locationLink.trim());
   const isStep3Complete = !!formData.description.trim();
   const isStep4Complete = true; // Operating hours have defaults
   const isStep5Complete = facilities.every(f => f.saved);
