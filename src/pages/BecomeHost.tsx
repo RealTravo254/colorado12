@@ -191,20 +191,20 @@ const BecomeHost = () => {
               </div>
               <h3 className="text-xl font-black uppercase tracking-tight text-slate-900 mb-2">Tour Guide</h3>
               <p className="text-sm text-slate-500 mb-4 leading-relaxed">
-                Host flexible trips and tours. Share your knowledge and guide travelers through amazing experiences.
+                Host flexible trips, guided tours and events. Share your knowledge and guide travelers.
               </p>
               <div className="space-y-2 text-xs text-slate-400">
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-green-400" />
-                  <span>Host multiple flexible trips</span>
+                  <span>Flexible trips & events only</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-green-400" />
                   <span>Basic verification required</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-green-400" />
-                  <span>Flexible dates only</span>
+                  <div className="h-1.5 w-1.5 rounded-full bg-red-400" />
+                  <span>Cannot host fixed trips, hotels or campsites</span>
                 </div>
               </div>
               <div className="mt-6 py-2.5 rounded-xl text-center text-xs font-bold uppercase tracking-widest border-2 border-slate-200 group-hover:border-[#008080] group-hover:text-[#008080] transition-colors">
@@ -222,7 +222,7 @@ const BecomeHost = () => {
               </div>
               <h3 className="text-xl font-black uppercase tracking-tight text-slate-900 mb-2">Campsite / Adventure</h3>
               <p className="text-sm text-slate-500 mb-4 leading-relaxed">
-                List your campsite or adventure place. No verification needed — start hosting immediately.
+                List your campsite or adventure place. You can also host events. No verification needed.
               </p>
               <div className="space-y-2 text-xs text-slate-400">
                 <div className="flex items-center gap-2">
@@ -231,11 +231,11 @@ const BecomeHost = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-green-400" />
-                  <span>Host one adventure place</span>
+                  <span>Host adventure places & events</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-green-400" />
-                  <span>Start hosting today</span>
+                  <div className="h-1.5 w-1.5 rounded-full bg-red-400" />
+                  <span>Cannot host flexible trips or hotels</span>
                 </div>
               </div>
               <div className="mt-6 py-2.5 rounded-xl text-center text-xs font-bold uppercase tracking-widest border-2 border-slate-200 group-hover:border-[#008080] group-hover:text-[#008080] transition-colors">
@@ -253,7 +253,7 @@ const BecomeHost = () => {
               </div>
               <h3 className="text-xl font-black uppercase tracking-tight text-slate-900 mb-2">Register Company</h3>
               <p className="text-sm text-slate-500 mb-4 leading-relaxed">
-                Register your travel company to host fixed-date trips and events. Company verification required.
+                Register your travel company to host fixed-date trips, events and accommodation. Company verification required.
               </p>
               <div className="space-y-2 text-xs text-slate-400">
                 <div className="flex items-center gap-2">
@@ -262,11 +262,11 @@ const BecomeHost = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-green-400" />
-                  <span>Host multiple fixed-date trips</span>
+                  <span>Host fixed-date trips & hotels</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-green-400" />
-                  <span>Trips require no extra verification</span>
+                  <div className="h-1.5 w-1.5 rounded-full bg-red-400" />
+                  <span>Cannot host campsites or flexible trips</span>
                 </div>
               </div>
               <div className="mt-6 py-2.5 rounded-xl text-center text-xs font-bold uppercase tracking-widest border-2 border-slate-200 group-hover:border-[#008080] group-hover:text-[#008080] transition-colors">
@@ -317,14 +317,28 @@ const BecomeHost = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Tours & Events - visible for guides and companies, hidden for campsite-only */}
-          {hostingCategory !== 'campsite' && (
+          {/* Fixed Trips & Events - visible for companies only */}
+          {hasCompany && companyStatus === 'approved' && (
             <HostCategoryCard 
-              title="Tours & Events"
-              subtitle="Trips, Sports & Events"
+              title="Fixed Trips & Events"
+              subtitle="Fixed-Date Tours & Events"
               image="/images/category-trips.webp"
               icon={<Plane className="h-8 w-8" />}
-              count={myContent.filter(i => i.contentType === 'trip' || i.contentType === 'event').length}
+              count={myContent.filter(i => (i.contentType === 'trip' || i.contentType === 'event') && !i.is_flexible_date && !i.is_custom_date).length}
+              onManage={() => navigate("/host/trips")}
+              onAdd={() => navigate("/create-trip")}
+              accentColor={COLORS.TEAL}
+            />
+          )}
+
+          {/* Flexible Trips - visible for guides only */}
+          {hostingCategory === 'guide' && verificationStatus === 'approved' && (
+            <HostCategoryCard 
+              title="Guided Tours"
+              subtitle="Flexible & Custom-Date Trips"
+              image="/images/category-trips.webp"
+              icon={<Map className="h-8 w-8" />}
+              count={myContent.filter(i => (i.contentType === 'trip' || i.contentType === 'event')).length}
               onManage={() => navigate("/host/trips")}
               onAdd={() => navigate("/create-trip")}
               accentColor={COLORS.TEAL}
@@ -332,7 +346,7 @@ const BecomeHost = () => {
           )}
 
           {/* Stays - visible for companies only */}
-          {hasCompany && (
+          {hasCompany && companyStatus === 'approved' && (
             <HostCategoryCard 
               title="Stays"
               subtitle="Hotels & Accommodation"
@@ -345,11 +359,25 @@ const BecomeHost = () => {
             />
           )}
 
-          {/* Experiences - visible for campsite hosts, hidden for companies and guides */}
-          {(hostingCategory === 'campsite' || (!hasCompany && hostingCategory !== 'guide')) && (
+          {/* Events - visible for guides and campsite hosts */}
+          {(hostingCategory === 'guide' || hostingCategory === 'campsite') && (
             <HostCategoryCard 
-              title="Experiences"
-              subtitle="Outdoor & Adventure"
+              title="Events"
+              subtitle="Sports & Social Events"
+              image="/images/category-campsite.webp"
+              icon={<Users className="h-8 w-8" />}
+              count={myContent.filter(i => i.contentType === 'event').length}
+              onManage={() => navigate("/host/trips")}
+              onAdd={() => navigate("/create-trip")}
+              accentColor={COLORS.KHAKI_DARK}
+            />
+          )}
+
+          {/* Campsite/Adventure - visible for campsite hosts only */}
+          {hostingCategory === 'campsite' && (
+            <HostCategoryCard 
+              title="Campsite / Adventure"
+              subtitle="Outdoor & Adventure Places"
               image="/images/category-campsite.webp"
               icon={<Tent className="h-8 w-8" />}
               count={myContent.filter(i => i.contentType === 'adventure').length}

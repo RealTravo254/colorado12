@@ -27,7 +27,7 @@ export const MobileBottomBar = () => {
     <div className={cn(
       "md:hidden fixed bottom-0 left-0 right-0 z-[110] shadow-[0_-4px_20px_rgb(0,0,0,0.08)]"
     )}
-      style={{ backgroundColor: TEAL, paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+      style={{ backgroundColor: TEAL, paddingBottom: 'env(safe-area-inset-bottom, 8px)' }}
     >
       <nav className="flex items-center justify-around h-14 px-4">
         {navItems.map((item) => {
