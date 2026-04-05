@@ -81,6 +81,9 @@ const CreateTripEvent = () => {
   const [exclusions, setExclusions] = useState<string[]>([]);
   const [newInclusion, setNewInclusion] = useState("");
   const [newExclusion, setNewExclusion] = useState("");
+  const [activityNames, setActivityNames] = useState<string[]>([]);
+  const [newActivityName, setNewActivityName] = useState("");
+  const [locationMode, setLocationMode] = useState<'link' | 'gps' | null>(null);
 
   const [workingDays, setWorkingDays] = useState<WorkingDays>({ Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: true, Sun: true });
   const [galleryImages, setGalleryImages] = useState<File[]>([]);
