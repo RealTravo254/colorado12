@@ -494,28 +494,26 @@ const Index = () => {
       {/* Hero — full width on mobile, horizontally padded on desktop, no border radius */}
       {!isSearchFocused && (
         <div ref={searchRef} className="w-full md:px-6 lg:px-10">
-          {/* Outer wrapper: relative so background image stretches to match content height */}
-          <div className="relative w-full">
-            {/* Background image layer — absolutely fills the outer wrapper */}
-            <div className="absolute inset-0 overflow-hidden">
+          {/* Outer wrapper — height is driven by content, bg image stretches to fill it */}
+          <div className="relative w-full overflow-hidden">
+            {/* Background fills 100% width AND height of outer wrapper via absolute inset-0 */}
+            <div className="absolute inset-0">
               <div className="absolute inset-0 bg-foreground/80" />
-              <picture>
-                <source srcSet="/images/hero-background.webp" type="image/webp" />
-                <img
-                  src="/images/hero-background.webp"
-                  alt="Travel destination"
-                  fetchPriority="high" decoding="async" loading="eager"
-                  width={1920} height={1080}
-                  className="absolute inset-0 w-full h-full object-cover opacity-60"
-                />
-              </picture>
-              <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" />
+              <img
+                src="/images/hero-background.webp"
+                alt="Travel destination"
+                fetchPriority="high" decoding="async" loading="eager"
+                width={1920} height={1080}
+                className="absolute inset-0 w-full h-full object-cover opacity-60"
+              />
+              {/* Gradient covers full height — no fade-out before bottom */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/60" />
             </div>
 
-            {/* Content layer — drives the actual height of the hero */}
-            <div className="relative z-10 flex flex-col px-4 md:px-8 py-8 md:py-10">
-              {/* Title + search */}
-              <div className="flex flex-col items-center w-full max-w-3xl mx-auto mb-5 md:mb-6">
+            {/* Content — sits on top, its height defines the outer wrapper height */}
+            <div className="relative z-10 flex flex-col px-4 md:px-8 pt-8 md:pt-10 pb-4 md:pb-5">
+              {/* Tagline + title + search bar */}
+              <div className="flex flex-col items-center w-full max-w-3xl mx-auto mb-4 md:mb-5">
                 <p className="text-primary-foreground/70 text-xs md:text-sm font-semibold uppercase tracking-widest text-center mb-2">
                   {t('hero.tagline')}
                 </p>
@@ -535,7 +533,7 @@ const Index = () => {
                 </div>
               </div>
 
-              {/* Category cards — fully visible, same width as image, compact fixed height on desktop */}
+              {/* Category cards — inside the image, fully visible, not covered */}
               <div className="w-full">
                 <div className="grid grid-cols-4 gap-2 md:gap-3 w-full">
                   {CATEGORIES.map((cat) => (
