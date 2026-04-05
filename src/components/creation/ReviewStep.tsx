@@ -57,6 +57,10 @@ interface ReviewStepProps {
     mapLink?: string;
     imageCount?: number;
     galleryPreviewUrls?: string[];
+    inclusions?: string[];
+    exclusions?: string[];
+    ticketTypes?: { name: string; price: number }[];
+    allowChildren?: boolean;
   };
   creatorName?: string;
   creatorEmail?: string;
