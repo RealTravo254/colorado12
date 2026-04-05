@@ -568,7 +568,7 @@ const CreateTripEvent = () => {
                   <MapPin className="h-5 w-5" style={{ color: COLORS.TEAL }} />
                 </div>
                 <div>
-                  <h2 className="text-sm font-black uppercase tracking-tight" style={{ color: COLORS.TEAL }}>Contact & GPS Location</h2>
+                  <h2 className="text-sm font-black uppercase tracking-tight" style={{ color: COLORS.TEAL }}>Contact Details</h2>
                   <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">How guests can reach you</p>
                 </div>
               </div>
@@ -586,11 +586,6 @@ const CreateTripEvent = () => {
                   <div className={validationErrors.includes("phone_number") ? "rounded-xl ring-1 ring-red-500" : ""}><PhoneInput value={formData.phone_number} onChange={(val) => { setFormData({...formData, phone_number: val}); if(val) setValidationErrors(prev => prev.filter(err => err !== "phone_number")); }} country={formData.country} placeholder="712345678" /></div>
                   {validationErrors.includes("phone_number") && <p className="text-red-500 text-[10px] font-bold">⚠ Phone number is required</p>}
                 </div>
-              </div>
-              <div className="p-4 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/50">
-                <Button type="button" onClick={getCurrentLocation} className="w-full h-14 rounded-2xl shadow-lg font-black uppercase text-[11px] tracking-widest text-white active:scale-95 transition-all" style={{ background: formData.map_link ? COLORS.TEAL : COLORS.CORAL }}>
-                  <Navigation className="h-5 w-5 mr-3" />{formData.map_link ? '✓ Location Captured' : 'Tap to Capture GPS Location'}
-                </Button>
               </div>
 
               {/* Gallery */}
