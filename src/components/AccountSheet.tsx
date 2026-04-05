@@ -68,9 +68,8 @@ export const AccountSheet = ({ children }: AccountSheetProps) => {
       { icon: CalendarCheck, label: "My Host Bookings", path: "/host-bookings", show: true },
     ]},
     { section: "Personal", items: [
-      { icon: User, label: "Edit Profile", path: "/profile/edit", show: true },
+      { icon: User, label: "Profile & Security", path: "/profile/edit", show: true },
       { icon: CreditCard, label: "Payments & Earnings", path: "/payment", show: true },
-      { icon: Receipt, label: "Payment History", path: "/payment-history", show: true },
     ]},
     { section: "Admin Control", items: [
       { icon: Shield, label: "Admin Dashboard", path: "/admin", show: userRole === "admin" },
