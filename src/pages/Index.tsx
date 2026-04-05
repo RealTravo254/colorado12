@@ -315,7 +315,7 @@ const Index = () => {
     if (cachedData) {
       setListings(cachedData.listings || []);
       const c = cachedData.scrollableRows as any || {};
-      const cachedRows = { trips: c.trips || [], hotels: c.hotels || [], attractions: c.attractions || [], campsites: c.campsites || [], events: c.events || [], accommodations: c.accommodations || [] };
+      const cachedRows = { trips: c.trips || [], hotels: c.hotels || [], attractions: c.attractions || [], campsites: c.campsites || [], events: c.events || [], accommodations: c.accommodations || [], guidedTrips: c.guidedTrips || [] };
       setScrollableRows(cachedRows);
       setNearbyPlacesHotels(cachedData.nearbyPlacesHotels || []);
       setLoading(false); setLoadingScrollable(false); setLoadingNearby(false);
