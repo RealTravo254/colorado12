@@ -44,11 +44,12 @@ interface TrendingSearch {
   search_count: number;
 }
 
-const EVENT_CATEGORIES = [
-  "Roadtrips", "Music Events", "Children Events", "Pool Party", "Outdoor",
-  "Cultural Events", "Food", "Training", "Dancing Events", "Educational",
-  "Religious Events", "Night Parties", "Charity Events", "Others"
-];
+interface LocationSuggestion {
+  location: string;
+  count: number;
+  type: string;
+}
+
 
 export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchBarProps>(({ value, onChange, onSubmit, onSuggestionSearch, onFocus, onBlur, onBack, showBackButton = false, categoryType, showEventCategories = false }, _ref) => {
   const { user } = useAuth();
@@ -59,16 +60,16 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
   const [hasSearched, setHasSearched] = useState(false);
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [trendingSearches, setTrendingSearches] = useState<TrendingSearch[]>([]);
+  const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestion[]>([]);
   const navigate = useNavigate();
   const wrapperRef = useRef<HTMLDivElement>(null);
-
-  const shouldShowEventCategories = categoryType === "events" || showEventCategories;
 
   useEffect(() => {
     const history = localStorage.getItem(SEARCH_HISTORY_KEY);
     if (history) setSearchHistory(JSON.parse(history));
     fetchTrendingSearches();
     fetchMostPopular();
+    fetchLocationSuggestions();
   }, []);
 
   const fetchTrendingSearches = async () => {
@@ -77,6 +78,36 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
       if (!error && data) setTrendingSearches(data);
     } catch (error) {
       console.error("Error fetching trending searches:", error);
+    }
+  };
+
+  const fetchLocationSuggestions = async () => {
+    try {
+      const [tripsLoc, adventureLoc, hotelsLoc] = await Promise.all([
+        supabase.from("trips").select("location").eq("approval_status", "approved").eq("is_hidden", false).limit(50),
+        supabase.from("adventure_places").select("location").eq("approval_status", "approved").eq("is_hidden", false).limit(50),
+        supabase.from("hotels").select("location").eq("approval_status", "approved").eq("is_hidden", false).limit(50),
+      ]);
+      const locationMap = new Map<string, { count: number; type: string }>();
+      const addLocations = (data: any[] | null, type: string) => {
+        (data || []).forEach((item: any) => {
+          if (item.location) {
+            const loc = item.location.trim();
+            const existing = locationMap.get(loc);
+            locationMap.set(loc, { count: (existing?.count || 0) + 1, type: existing?.type || type });
+          }
+        });
+      };
+      addLocations(tripsLoc.data, "trip");
+      addLocations(adventureLoc.data, "adventure");
+      addLocations(hotelsLoc.data, "hotel");
+      const sorted = Array.from(locationMap.entries())
+        .map(([location, info]) => ({ location, count: info.count, type: info.type }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 12);
+      setLocationSuggestions(sorted);
+    } catch (error) {
+      console.error("Error fetching location suggestions:", error);
     }
   };
 
@@ -261,21 +292,21 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
               {/* History / Trending / Most Popular Section (Shown when input is empty) */}
               {!value.trim() && (
                 <div className="p-2 min-h-[100px]">
-                  {/* Event Category Quick Filters - shown for events category or when showEventCategories is true */}
-                  {shouldShowEventCategories && (
+                  {/* Location Suggestions */}
+                  {locationSuggestions.length > 0 && (
                     <div className="mb-4">
                       <div className="flex items-center gap-2 px-5 py-3">
-                        <Calendar className="h-4 w-4 text-primary" />
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Event Types</p>
+                        <MapPin className="h-4 w-4 text-primary" />
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Popular Locations</p>
                       </div>
                       <div className="flex flex-wrap gap-2 px-4">
-                        {EVENT_CATEGORIES.map((cat) => (
+                        {locationSuggestions.map((loc) => (
                           <Badge
-                            key={cat}
-                            onClick={() => { onChange(cat); setShowSuggestions(false); onSubmit(); }}
+                            key={loc.location}
+                            onClick={() => { onChange(loc.location); setShowSuggestions(false); onSubmit(); }}
                             className="cursor-pointer bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 py-2 px-3 rounded-xl text-[10px] font-bold transition-colors"
                           >
-                            {cat}
+                            {loc.location}
                           </Badge>
                         ))}
                       </div>

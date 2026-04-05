@@ -50,7 +50,7 @@ const ReviewHeader = ({ event }: { event: any }) => (
   </div>
 );
 
-const SELECT_FIELDS = "id,name,location,place,country,image_url,gallery_images,images,date,is_custom_date,price,price_child,available_tickets,description,activities,phone_number,email,created_by,type,opening_hours,closing_hours,days_opened,map_link,is_flexible_date,inclusions,exclusions,allow_children";
+const SELECT_FIELDS = "id,name,location,place,country,image_url,gallery_images,images,date,is_custom_date,price,price_child,available_tickets,description,activities,phone_number,email,created_by,type,opening_hours,closing_hours,days_opened,map_link,is_flexible_date,inclusions,exclusions,allow_children,ticket_types,slot_limit_type";
 
 const TripDetail = () => {
   const { slug: rawSlug } = useParams();
@@ -342,25 +342,31 @@ const TripDetail = () => {
             {((event.inclusions && event.inclusions.length > 0) || (event.exclusions && event.exclusions.length > 0)) && (
               <div className="bg-white rounded-[28px] p-7 shadow-sm border border-slate-100">
                 <h2 className="text-xl font-black uppercase tracking-tight mb-5" style={{ color: COLORS.TEAL }}>Package Details</h2>
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {event.inclusions?.length > 0 && (
                     <div>
                       <p className="text-[10px] font-black uppercase text-emerald-600 tracking-widest mb-3">✓ What's Included</p>
-                      <div className="flex flex-wrap gap-2">
+                      <ul className="space-y-2">
                         {event.inclusions.map((item: string, i: number) => (
-                          <span key={i} className="px-4 py-2 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">✓ {item}</span>
+                          <li key={i} className="flex items-start gap-2 text-sm text-emerald-700">
+                            <span className="text-emerald-500 mt-0.5">✓</span>
+                            <span>{item}</span>
+                          </li>
                         ))}
-                      </div>
+                      </ul>
                     </div>
                   )}
                   {event.exclusions?.length > 0 && (
                     <div>
                       <p className="text-[10px] font-black uppercase text-red-500 tracking-widest mb-3">✗ Not Included</p>
-                      <div className="flex flex-wrap gap-2">
+                      <ul className="space-y-2">
                         {event.exclusions.map((item: string, i: number) => (
-                          <span key={i} className="px-4 py-2 rounded-xl bg-red-50 text-red-600 text-xs font-bold border border-red-200">✗ {item}</span>
+                          <li key={i} className="flex items-start gap-2 text-sm text-red-600">
+                            <span className="text-red-400 mt-0.5">✗</span>
+                            <span>{item}</span>
+                          </li>
                         ))}
-                      </div>
+                      </ul>
                     </div>
                   )}
                 </div>
@@ -407,15 +413,29 @@ const TripDetail = () => {
                   </span>
                 </div>
                 <div className="flex justify-between text-xs font-bold uppercase tracking-tight">
-                  <span className="text-slate-400">Child (Under 12)</span>
-                  <span className="text-slate-700">
-                    {event.allow_children === false ? (
-                      <span className="text-red-500">Not Available</span>
-                    ) : (
-                      formatPrice(event.price_child || 0)
-                    )}
+                  <span className="text-slate-400">Children Allowed</span>
+                  <span className={event.allow_children === false ? "text-red-500 font-black" : "text-emerald-600 font-black"}>
+                    {event.allow_children === false ? "No" : "Yes"}
                   </span>
                 </div>
+                {event.allow_children !== false && (
+                  <div className="flex justify-between text-xs font-bold uppercase tracking-tight">
+                    <span className="text-slate-400">Child (Under 12)</span>
+                    <span className="text-slate-700">{formatPrice(event.price_child || 0)}</span>
+                  </div>
+                )}
+                {/* Ticket Types */}
+                {event.ticket_types && Array.isArray(event.ticket_types) && event.ticket_types.length > 0 && (
+                  <div className="pt-2 border-t border-slate-100">
+                    <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2">Ticket Types</p>
+                    {event.ticket_types.map((ticket: any, i: number) => (
+                      <div key={i} className="flex justify-between text-xs font-bold uppercase tracking-tight py-1">
+                        <span className="text-slate-500">{ticket.name}</span>
+                        <span className="text-slate-700">{formatPrice(Number(ticket.price))}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <Button

@@ -653,6 +653,10 @@ const CreateTripEvent = () => {
                 capacity: formData.available_tickets, tripType: formData.type,
                 latitude: formData.latitude, longitude: formData.longitude, mapLink: formData.map_link,
                 galleryPreviewUrls: galleryImages.map(f => URL.createObjectURL(f)),
+                inclusions,
+                exclusions,
+                ticketTypes: useTicketTypes ? ticketTypes : [],
+                allowChildren: formData.allow_children,
               }}
               creatorEmail={user?.email}
             />

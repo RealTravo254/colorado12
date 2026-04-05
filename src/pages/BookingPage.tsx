@@ -76,7 +76,7 @@ const BookingPage = () => {
       if (type === "trip" || type === "event") {
         const result = await supabase
           .from("trips")
-          .select("id,name,location,place,country,image_url,date,is_custom_date,is_flexible_date,slot_limit_type,price,price_child,available_tickets,description,activities,phone_number,email,created_by,opening_hours,closing_hours,days_opened,type,approval_status,is_hidden")
+          .select("id,name,location,place,country,image_url,date,is_custom_date,is_flexible_date,slot_limit_type,price,price_child,available_tickets,description,activities,phone_number,email,created_by,opening_hours,closing_hours,days_opened,type,approval_status,is_hidden,ticket_types,allow_children")
           .eq("id", id)
           .maybeSingle();
         data = result.data;
@@ -147,7 +147,11 @@ const BookingPage = () => {
       const isFacilityOnly = searchParams.get("skipToFacility") === "true";
       
       if (type === "trip" || type === "event") {
-        totalAmount = (formData.num_adults * item.price) + (formData.num_children * (item.price_child || 0));
+        if (formData.ticketSelections && formData.ticketSelections.length > 0) {
+          formData.ticketSelections.forEach(t => totalAmount += t.price * t.quantity);
+        } else {
+          totalAmount = (formData.num_adults * item.price) + (formData.num_children * (item.price_child || 0));
+        }
       } else if (type === "adventure_place" || type === "adventure") {
         // In facility-only mode, don't charge entry fee
         if (!isFacilityOnly) {
@@ -247,6 +251,9 @@ const BookingPage = () => {
     };
     
     if (type === "trip" || type === "event") {
+      const parsedTicketTypes = Array.isArray(item.ticket_types) 
+        ? (item.ticket_types as any[]).map((t: any) => ({ name: t.name, price: Number(t.price) }))
+        : [];
       return {
         ...baseProps,
         bookingType: type,
@@ -259,6 +266,8 @@ const BookingPage = () => {
         totalCapacity: item.available_tickets || 0,
         slotLimitType: item.slot_limit_type || (item.is_flexible_date ? 'per_booking' : 'inventory'),
         isFlexibleDate: item.is_flexible_date || false,
+        ticketTypes: parsedTicketTypes,
+        allowChildren: item.allow_children !== false,
       };
     }
     
