@@ -491,63 +491,65 @@ const Index = () => {
         </div>
       )}
 
-      {/* Hero — full width on mobile, horizontally padded on desktop, no border radius */}
+      {/* Hero — full width on mobile, container-width on desktop */}
       {!isSearchFocused && (
-        <div ref={searchRef} className="w-full md:px-6 lg:px-10">
-          <div
-            className="relative w-full flex flex-col px-4 md:px-8 pt-8 md:pt-10 pb-5 md:pb-6"
-            style={{
-              backgroundImage: 'url(/images/hero-background.webp)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          >
-            {/* Overlays */}
-            <div className="absolute inset-0 bg-black/25" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/30" />
+        <div ref={searchRef} className="w-full">
+          <div className="container mx-auto px-4 md:px-6">
+            <div
+              className="relative w-full flex flex-col px-4 md:px-8 pt-8 md:pt-10 pb-5 md:pb-6 rounded-none md:rounded-2xl overflow-hidden"
+              style={{
+                backgroundImage: 'url(/images/hero-background.webp)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            >
+              {/* Overlays */}
+              <div className="absolute inset-0 bg-black/25" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/30" />
 
-            {/* Tagline + title + search */}
-            <div className="relative z-10 flex flex-col items-center w-full max-w-3xl mx-auto mb-4 md:mb-5">
-              <p className="text-white/70 text-xs md:text-sm font-semibold uppercase tracking-widest text-center mb-2">
-                {t('hero.tagline')}
-              </p>
-              <h1 className="text-white text-3xl md:text-4xl lg:text-5xl font-extrabold text-center mb-4 leading-tight tracking-tight">
-                {t('hero.title')}
-              </h1>
-              <div onClick={() => navigate('/explore')} className="cursor-pointer w-full">
-                <SearchBarWithSuggestions
-                  value="" onChange={() => {}}
-                  onSubmit={() => navigate('/explore')}
-                  onSuggestionSearch={() => navigate('/explore')}
-                  onFocus={() => navigate('/explore')}
-                  onBlur={() => {}}
-                  onBack={() => {}}
-                  showBackButton={false}
-                />
-              </div>
-            </div>
-
-            {/* Category cards — very small height, full width, fully visible inside hero */}
-            <div className="relative z-10 w-full grid grid-cols-4 gap-2 md:gap-3">
-              {CATEGORIES.map((cat) => (
-                <div
-                  key={cat.title}
-                  onClick={() => navigate(cat.path)}
-                  className="cursor-pointer rounded-lg relative w-full flex flex-col items-center justify-center gap-1 px-2 py-2 md:py-4"
-                  style={{
-                    backgroundImage: `url(${cat.bgImage})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    height: 'clamp(60px, 8vw, 144px)',
-                  }}
-                >
-                  <div className="absolute inset-0 rounded-lg bg-black/10" />
-                  <cat.icon className="relative z-10 h-3 w-3 md:h-6 md:w-6 text-white shrink-0" />
-                  <span className="relative z-10 text-white text-[10px] md:text-sm font-bold leading-none whitespace-nowrap">
-                    {cat.title}
-                  </span>
+              {/* Tagline + title + search */}
+              <div className="relative z-10 flex flex-col items-center w-full max-w-3xl mx-auto mb-4 md:mb-5">
+                <p className="text-white/70 text-xs md:text-sm font-semibold uppercase tracking-widest text-center mb-2">
+                  {t('hero.tagline')}
+                </p>
+                <h1 className="text-white text-3xl md:text-4xl lg:text-5xl font-extrabold text-center mb-4 leading-tight tracking-tight">
+                  {t('hero.title')}
+                </h1>
+                <div onClick={() => navigate('/explore')} className="cursor-pointer w-full">
+                  <SearchBarWithSuggestions
+                    value="" onChange={() => {}}
+                    onSubmit={() => navigate('/explore')}
+                    onSuggestionSearch={() => navigate('/explore')}
+                    onFocus={() => navigate('/explore')}
+                    onBlur={() => {}}
+                    onBack={() => {}}
+                    showBackButton={false}
+                  />
                 </div>
-              ))}
+              </div>
+
+              {/* Category cards */}
+              <div className="relative z-10 w-full grid grid-cols-4 gap-2 md:gap-3">
+                {CATEGORIES.map((cat) => (
+                  <div
+                    key={cat.title}
+                    onClick={() => navigate(cat.path)}
+                    className="cursor-pointer rounded-lg relative w-full flex flex-col items-center justify-center gap-1 px-2 py-2 md:py-4"
+                    style={{
+                      backgroundImage: `url(${cat.bgImage})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      height: 'clamp(60px, 8vw, 144px)',
+                    }}
+                  >
+                    <div className="absolute inset-0 rounded-lg bg-black/10" />
+                    <cat.icon className="relative z-10 h-3 w-3 md:h-6 md:w-6 text-white shrink-0" />
+                    <span className="relative z-10 text-white text-[10px] md:text-sm font-bold leading-none whitespace-nowrap">
+                      {cat.title}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
