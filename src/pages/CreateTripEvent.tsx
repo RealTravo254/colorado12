@@ -265,6 +265,7 @@ const CreateTripEvent = () => {
         ticket_types: useTicketTypes ? ticketTypes : [],
         allow_children: formData.allow_children,
         location_link: formData.location_link || null,
+        activities: activityNames.length > 0 ? activityNames.map(name => ({ name, price: 0 })) : [],
       } as any]);
 
       if (error) throw error;
