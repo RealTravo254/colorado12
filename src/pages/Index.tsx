@@ -506,7 +506,7 @@ const Index = () => {
         <div ref={searchRef} className="w-full">
           <div className="container mx-auto px-4 md:px-6">
             <div
-              className="relative w-full flex flex-col px-4 md:px-8 pt-8 md:pt-10 pb-5 md:pb-6 rounded-none md:rounded-2xl overflow-hidden"
+              className="relative w-full flex flex-col px-4 md:px-8 pt-8 md:pt-10 pb-5 md:pb-6 overflow-hidden"
               style={{
                 backgroundImage: 'url(/images/hero-background.webp)',
                 backgroundSize: 'cover',
