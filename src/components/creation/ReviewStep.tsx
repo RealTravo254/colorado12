@@ -252,6 +252,60 @@ export const ReviewStep = ({ type, data, creatorName, creatorEmail, creatorPhone
         </div>
       </Card>
 
+      {/* Children & Ticket Types */}
+      {isTripOrEvent && (
+        <Card className="rounded-2xl border border-border/60 shadow-sm p-4 sm:p-5">
+          <SectionHeader title="Ticket Info" icon={Users} colorClass="bg-indigo-500/10 text-indigo-600" />
+          <div className="grid grid-cols-2 gap-2.5">
+            <InfoItem label="Children Allowed" value={data.allowChildren === false ? "No" : "Yes"} />
+            {data.ticketTypes && data.ticketTypes.length > 0 && (
+              <div className="col-span-2 space-y-1.5">
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Ticket Types</p>
+                {data.ticketTypes.map((t, i) => (
+                  <div key={i} className="flex justify-between p-2 rounded-lg bg-muted/50 border border-border/50">
+                    <span className="text-sm font-semibold">{t.name}</span>
+                    <span className="text-sm font-bold">{currencyFormat(t.price)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
+
+      {/* Inclusions & Exclusions */}
+      {isTripOrEvent && ((data.inclusions && data.inclusions.length > 0) || (data.exclusions && data.exclusions.length > 0)) && (
+        <Card className="rounded-2xl border border-border/60 shadow-sm p-4 sm:p-5">
+          <SectionHeader title="Package Details" icon={CheckCircle2} colorClass="bg-emerald-500/10 text-emerald-600" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {data.inclusions && data.inclusions.length > 0 && (
+              <div>
+                <p className="text-[10px] font-bold uppercase text-emerald-600 tracking-widest mb-2">✓ Included</p>
+                <ul className="space-y-1.5">
+                  {data.inclusions.map((item, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-emerald-700">
+                      <span className="mt-0.5">✓</span><span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {data.exclusions && data.exclusions.length > 0 && (
+              <div>
+                <p className="text-[10px] font-bold uppercase text-red-500 tracking-widest mb-2">✗ Not Included</p>
+                <ul className="space-y-1.5">
+                  {data.exclusions.map((item, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-red-600">
+                      <span className="mt-0.5">✗</span><span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
+
       {/* General Amenities */}
       {data.generalFacilities && data.generalFacilities.length > 0 && (
         <Card className="rounded-2xl border border-border/60 shadow-sm p-4 sm:p-5">
