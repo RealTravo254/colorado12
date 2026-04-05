@@ -235,6 +235,9 @@ export const FacilitiesGrid = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [showAll, setShowAll] = useState(false);
 
+  const MOBILE_INITIAL = 4;
+  const [mobileShowAll, setMobileShowAll] = useState(false);
+
   const paidFacilities = facilities.filter(f => f.price > 0 || !f.is_free);
   
   if (paidFacilities.length === 0) return null;
@@ -243,6 +246,8 @@ export const FacilitiesGrid = ({
   const displayedFacilities = showAll 
     ? paidFacilities 
     : paidFacilities.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+  const mobileDisplayed = mobileShowAll ? paidFacilities : paidFacilities.slice(0, MOBILE_INITIAL);
 
   const handleSeeAllImages = (facility: FacilityWithImages) => {
     if (facility.images && facility.images.length > 0) {
@@ -253,40 +258,82 @@ export const FacilitiesGrid = ({
 
   return (
     <>
-      <section className="bg-background rounded-3xl p-6 shadow-sm border border-border">
-        <h2 className="text-[11px] font-black uppercase tracking-widest mb-4 text-muted-foreground">
+      <section className="bg-background rounded-3xl p-4 md:p-6 shadow-sm border border-border">
+        <h2 className="text-[11px] font-black uppercase tracking-widest mb-3 md:mb-4 text-muted-foreground">
           Facilities & Rooms
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {displayedFacilities.map((facility, idx) => (
-            <div key={idx} className="relative">
-              <FacilityImageCard
-                facility={facility}
-                itemId={itemId}
-                itemType={itemType}
-                accentColor={accentColor}
-                useExternalLink={useExternalLink}
-              />
-              {facility.images && facility.images.length > 1 && (
+        {/* Mobile: compact horizontal row */}
+        <div className="md:hidden">
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {mobileDisplayed.map((facility, idx) => {
+              const mainImg = facility.images?.[0];
+              return (
                 <button
-                  onClick={() => handleSeeAllImages(facility)}
-                  className="absolute top-2 left-2 bg-black/70 text-white text-[9px] px-2 py-1 rounded-full flex items-center gap-1 hover:bg-black/80 transition-colors z-10"
+                  key={idx}
+                  onClick={() => navigate(`/booking/${itemType}/${itemId}?facility=${encodeURIComponent(facility.name)}&skipToFacility=true`)}
+                  className="flex-shrink-0 w-20 flex flex-col items-center gap-1 p-1.5 rounded-lg bg-muted/50 border border-border"
                 >
-                  <Images className="h-3 w-3" />
-                  See All ({facility.images.length})
+                  <div className="w-14 h-14 rounded-md overflow-hidden bg-muted">
+                    {mainImg ? (
+                      <img src={mainImg} alt={facility.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-[7px] text-muted-foreground">No img</span>
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-[7px] font-bold text-foreground text-center leading-tight line-clamp-2">{facility.name}</span>
+                  {facility.is_free || facility.price === 0 ? (
+                    <span className="text-[7px] font-bold text-emerald-600">Free</span>
+                  ) : (
+                    <span className="text-[7px] font-bold" style={{ color: accentColor }}>{formatPrice(facility.price)}</span>
+                  )}
                 </button>
-              )}
-            </div>
-          ))}
+              );
+            })}
+          </div>
+          {paidFacilities.length > MOBILE_INITIAL && (
+            <button
+              onClick={() => setMobileShowAll(!mobileShowAll)}
+              className="mt-2 text-[10px] font-bold text-primary"
+            >
+              {mobileShowAll ? "Show Less" : `View More (${paidFacilities.length})`}
+            </button>
+          )}
         </div>
-        <PaginationControls
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalItems={paidFacilities.length}
-          onPageChange={setCurrentPage}
-          onViewAll={() => { setShowAll(!showAll); setCurrentPage(1); }}
-          showingAll={showAll}
-        />
+        {/* Desktop: original grid */}
+        <div className="hidden md:block">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {displayedFacilities.map((facility, idx) => (
+              <div key={idx} className="relative">
+                <FacilityImageCard
+                  facility={facility}
+                  itemId={itemId}
+                  itemType={itemType}
+                  accentColor={accentColor}
+                  useExternalLink={useExternalLink}
+                />
+                {facility.images && facility.images.length > 1 && (
+                  <button
+                    onClick={() => handleSeeAllImages(facility)}
+                    className="absolute top-2 left-2 bg-black/70 text-white text-[9px] px-2 py-1 rounded-full flex items-center gap-1 hover:bg-black/80 transition-colors z-10"
+                  >
+                    <Images className="h-3 w-3" />
+                    See All ({facility.images.length})
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={paidFacilities.length}
+            onPageChange={setCurrentPage}
+            onViewAll={() => { setShowAll(!showAll); setCurrentPage(1); }}
+            showingAll={showAll}
+          />
+        </div>
       </section>
 
       <Dialog open={showAllGallery} onOpenChange={setShowAllGallery}>
