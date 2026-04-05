@@ -494,10 +494,10 @@ const Index = () => {
       {/* Hero — full width on mobile, horizontally padded on desktop, no border radius */}
       {!isSearchFocused && (
         <div ref={searchRef} className="w-full md:px-6 lg:px-10">
-          {/* Outer wrapper — height is driven by content, bg image stretches to fill it */}
-          <div className="relative w-full overflow-hidden">
-            {/* Background fills 100% width AND height of outer wrapper via absolute inset-0 */}
-            <div className="absolute inset-0">
+          {/* Outer wrapper — NO overflow-hidden, height driven by content */}
+          <div className="relative w-full">
+            {/* Background: absolutely fills outer wrapper. Uses its own overflow-hidden to crop the img */}
+            <div className="absolute inset-0 overflow-hidden">
               <div className="absolute inset-0 bg-foreground/80" />
               <img
                 src="/images/hero-background.webp"
@@ -506,13 +506,12 @@ const Index = () => {
                 width={1920} height={1080}
                 className="absolute inset-0 w-full h-full object-cover opacity-60"
               />
-              {/* Gradient covers full height — no fade-out before bottom */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/60" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/55" />
             </div>
 
-            {/* Content — sits on top, its height defines the outer wrapper height */}
-            <div className="relative z-10 flex flex-col px-4 md:px-8 pt-8 md:pt-10 pb-4 md:pb-5">
-              {/* Tagline + title + search bar */}
+            {/* Content layer — drives the height, z-index above background */}
+            <div className="relative z-10 flex flex-col px-4 md:px-8 pt-8 md:pt-10 pb-5 md:pb-6">
+              {/* Tagline + title + search */}
               <div className="flex flex-col items-center w-full max-w-3xl mx-auto mb-4 md:mb-5">
                 <p className="text-primary-foreground/70 text-xs md:text-sm font-semibold uppercase tracking-widest text-center mb-2">
                   {t('hero.tagline')}
@@ -533,11 +532,11 @@ const Index = () => {
                 </div>
               </div>
 
-              {/* Category cards — inside the image, fully visible, not covered */}
+              {/* Category cards — rectangular, fixed small height, flexible width, fully inside image */}
               <div className="w-full">
                 <div className="grid grid-cols-4 gap-2 md:gap-3 w-full">
                   {CATEGORIES.map((cat) => (
-                    <div key={cat.title} className="h-[22vw] sm:h-[20vw] md:h-[120px] lg:h-[130px]">
+                    <div key={cat.title} className="h-20 md:h-24">
                       <CategoryCard
                         icon={cat.icon}
                         title={cat.title}
