@@ -222,7 +222,7 @@ const BecomeHost = () => {
               </div>
               <h3 className="text-xl font-black uppercase tracking-tight text-slate-900 mb-2">Campsite / Adventure</h3>
               <p className="text-sm text-slate-500 mb-4 leading-relaxed">
-                List your campsite or adventure place. No verification needed — start hosting immediately.
+                List your campsite or adventure place. You can also host events. No verification needed.
               </p>
               <div className="space-y-2 text-xs text-slate-400">
                 <div className="flex items-center gap-2">
@@ -231,11 +231,11 @@ const BecomeHost = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-green-400" />
-                  <span>Host one adventure place</span>
+                  <span>Host adventure places & events</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-green-400" />
-                  <span>Start hosting today</span>
+                  <div className="h-1.5 w-1.5 rounded-full bg-red-400" />
+                  <span>Cannot host flexible trips or hotels</span>
                 </div>
               </div>
               <div className="mt-6 py-2.5 rounded-xl text-center text-xs font-bold uppercase tracking-widest border-2 border-slate-200 group-hover:border-[#008080] group-hover:text-[#008080] transition-colors">
