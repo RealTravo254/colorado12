@@ -421,6 +421,34 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
                     </div>
                   )}
 
+                  {/* County Matches */}
+                  {(() => {
+                    const q = value.trim().toLowerCase();
+                    const matchedCounties = q ? KENYA_COUNTIES.filter(c => c.toLowerCase().includes(q)) : [];
+                    if (matchedCounties.length > 0) {
+                      return (
+                        <div className="mb-2">
+                          <div className="flex items-center gap-2 px-5 py-3">
+                            <Map className="h-4 w-4 text-primary" />
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Counties</p>
+                          </div>
+                          <div className="flex flex-wrap gap-2 px-4">
+                            {matchedCounties.slice(0, 6).map(county => (
+                              <Badge
+                                key={county}
+                                onClick={() => { setShowSuggestions(false); navigate(`/county/${encodeURIComponent(county)}`); }}
+                                className="cursor-pointer bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 py-2 px-3 rounded-xl text-[10px] font-bold transition-colors"
+                              >
+                                {county} County
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
+
                   {/* Results */}
                   {!isSearching && suggestions.length > 0 && (
                     <>
@@ -466,7 +494,7 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
                   )}
 
                   {/* Not Available */}
-                  {!isSearching && hasSearched && suggestions.length === 0 && (
+                  {!isSearching && hasSearched && suggestions.length === 0 && KENYA_COUNTIES.filter(c => c.toLowerCase().includes(value.trim().toLowerCase())).length === 0 && (
                      <div className="p-10 text-center">
                        <p className="text-muted-foreground text-xs font-bold uppercase tracking-widest mb-2">Not Available</p>
                        <p className="text-muted-foreground/50 text-[10px]">No results found for "{value}"</p>
