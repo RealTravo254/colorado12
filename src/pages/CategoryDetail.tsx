@@ -231,6 +231,33 @@ const CategoryDetail = () => {
         </div>
       </div>
 
+      {/* County filter tabs */}
+      {showCountyTabs && (
+        <div className="sticky top-[52px] md:static z-40 bg-card border-b">
+          <div className="container px-4 py-2">
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+              {["All", ...KENYA_COUNTIES.filter(c => {
+                // Only show counties that have items
+                return items.some(item => item.place === c);
+              })].map((county) => (
+                <button
+                  key={county}
+                  onClick={() => setSelectedCounty(county)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-full text-[10px] font-bold whitespace-nowrap transition-all shrink-0",
+                    selectedCounty === county
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "bg-muted text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {county}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className={cn("container px-4 py-6 transition-opacity duration-200", isSearchFocused && "pointer-events-none opacity-20")}>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
           {loading ? (
