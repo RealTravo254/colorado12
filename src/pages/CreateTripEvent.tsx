@@ -306,18 +306,12 @@ const CreateTripEvent = () => {
           {currentStep === 1 && (
             <>
               <Card className="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100">
-                <h2 className="text-xs font-black uppercase tracking-widest mb-6" style={{ color: COLORS.TEAL }}>Select Listing Type</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {[{ id: 'trip', label: 'Trip / Tour', sub: 'Flexible or fixed multi-day adventures' }, { id: 'event', label: 'Event / Sport', sub: 'Fixed date single sessions or matches' }].map((type) => (
-                    <label key={type.id} className={`relative p-6 rounded-[24px] border-2 cursor-pointer transition-all ${formData.type === type.id ? 'border-[#008080] bg-[#008080]/5' : 'border-slate-100 bg-slate-50 hover:bg-white'}`}>
-                      <input type="radio" name="type" value={type.id} className="hidden" onChange={(e) => setFormData({...formData, type: e.target.value as any})} />
-                      <div className="flex justify-between items-start">
-                        <div><span className={`block font-black uppercase tracking-tight text-sm ${formData.type === type.id ? 'text-[#008080]' : 'text-slate-600'}`}>{type.label}</span><span className="text-[10px] font-bold text-slate-400 uppercase mt-1 block">{type.sub}</span></div>
-                        {formData.type === type.id && <CheckCircle2 className="h-5 w-5 text-[#008080]" />}
-                      </div>
-                    </label>
-                  ))}
-                </div>
+                <h2 className="text-xs font-black uppercase tracking-widest mb-4" style={{ color: COLORS.TEAL }}>
+                  {formData.type === "event" ? "Creating an Event" : "Creating a Trip / Tour"}
+                </h2>
+                <p className="text-sm text-slate-500">
+                  {formData.type === "event" ? "Fixed date single sessions or matches" : "Flexible or fixed multi-day adventures"}
+                </p>
               </Card>
 
               {/* Event Category Selector */}
