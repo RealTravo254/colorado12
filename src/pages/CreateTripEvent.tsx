@@ -14,6 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Calendar, MapPin, DollarSign, Users, Navigation, ArrowLeft, Camera, CheckCircle2, X, Loader2, ChevronLeft, ChevronRight, Plus, Link2, Ticket } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CountrySelector } from "@/components/creation/CountrySelector";
+import { CountySelector } from "@/components/creation/CountySelector";
 import { PhoneInput } from "@/components/creation/PhoneInput";
 import { approvalStatusSchema } from "@/lib/validation";
 import { ReviewStep } from "@/components/creation/ReviewStep";
@@ -348,9 +349,11 @@ const CreateTripEvent = () => {
                     {validationErrors.includes("country") && <p className="text-red-500 text-[10px] font-bold">⚠ Country is required</p>}
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Region / Place *</Label>
-                    <div className="relative"><MapPin className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" /><StyledInput isInvalid={validationErrors.includes("place")} className="pl-11" value={formData.place} onChange={(e) => { setFormData({...formData, place: e.target.value}); if(e.target.value) setValidationErrors(prev => prev.filter(err => err !== "place")); }} placeholder="e.g. Mt. Kenya Region" /></div>
-                    {validationErrors.includes("place") && <p className="text-red-500 text-[10px] font-bold">⚠ Region/Place is required</p>}
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">County *</Label>
+                    <div className={validationErrors.includes("place") ? "rounded-xl ring-1 ring-red-500" : ""}>
+                      <CountySelector value={formData.place} onChange={(val) => { setFormData({...formData, place: val}); setValidationErrors(prev => prev.filter(err => err !== "place")); }} />
+                    </div>
+                    {validationErrors.includes("place") && <p className="text-red-500 text-[10px] font-bold">⚠ County is required</p>}
                   </div>
                   <div className="space-y-2 md:col-span-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Specific Location *</Label>

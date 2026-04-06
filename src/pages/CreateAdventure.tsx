@@ -20,6 +20,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { CountrySelector } from "@/components/creation/CountrySelector";
+import { CountySelector } from "@/components/creation/CountySelector";
 import { PhoneInput } from "@/components/creation/PhoneInput";
 import { compressImages } from "@/lib/imageCompression";
 import { OperatingHoursSection } from "@/components/creation/OperatingHoursSection";
@@ -761,10 +762,10 @@ const CreateAdventure = () => {
                     className={cn("rounded-xl h-12 font-bold", isMissing(formData.locationName) && "border-red-500 bg-red-50")} />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Place (City/Town) *</Label>
-                  <Input value={formData.place} onChange={(e) => setFormData({ ...formData, place: e.target.value })}
-                    placeholder="e.g. Nairobi"
-                    className={cn("rounded-xl h-12 font-bold", isMissing(formData.place) && "border-red-500 bg-red-50")} />
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">County *</Label>
+                  <div className={cn("rounded-xl", isMissing(formData.place) && "border-2 border-red-500 overflow-hidden")}>
+                    <CountySelector value={formData.place} onChange={(v) => setFormData({ ...formData, place: v })} />
+                  </div>
                 </div>
               </div>
               <div className="space-y-3">

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { SearchBarWithSuggestions } from "@/components/SearchBarWithSuggestions";
 import { useSearchFocus } from "@/components/PageLayout";
@@ -14,11 +14,13 @@ import { useSavedItems } from "@/hooks/useSavedItems";
 import { useGeolocation, calculateDistance } from "@/hooks/useGeolocation";
 import { useRatings, sortByRating } from "@/hooks/useRatings";
 import { useRealtimeBookings } from "@/hooks/useRealtimeBookings";
+import { KENYA_COUNTIES } from "@/lib/kenyaCounties";
 
 const ITEMS_PER_PAGE = 20;
 
 const CategoryDetail = () => {
   const { category } = useParams<{ category: string }>();
+  const [searchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [items, setItems] = useState<any[]>([]);
   const [filteredItems, setFilteredItems] = useState<any[]>([]);
@@ -28,6 +30,9 @@ const CategoryDetail = () => {
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
   const [userId, setUserId] = useState<string | null>(null);
+  const [selectedCounty, setSelectedCounty] = useState<string>(searchParams.get("county") || "All");
+
+  const showCountyTabs = category === "campsite" || category === "guided" || category === "events";
   
   const { position } = useGeolocation();
   const [showSearchIcon, setShowSearchIcon] = useState(false);
@@ -170,7 +175,7 @@ const CategoryDetail = () => {
     return sorted;
   }, [items, position, ratings, category]);
 
-  const applyFilters = useCallback((itemsToFilter: any[], query: string) => {
+  const applyFilters = useCallback((itemsToFilter: any[], query: string, county: string) => {
     let result = [...itemsToFilter];
     if (query) {
       const q = query.toLowerCase();
@@ -182,13 +187,16 @@ const CategoryDetail = () => {
         item.event_category?.toLowerCase().includes(q)
       );
     }
+    if (county && county !== "All") {
+      result = result.filter(item => item.place === county);
+    }
     return result;
   }, []);
 
   useEffect(() => {
-    const filtered = applyFilters(sortedItems, searchQuery);
+    const filtered = applyFilters(sortedItems, searchQuery, selectedCounty);
     setFilteredItems(filtered);
-  }, [sortedItems, searchQuery, applyFilters]);
+  }, [sortedItems, searchQuery, selectedCounty, applyFilters]);
 
   if (!config) return <div className="p-10 text-center">Category not found</div>;
 
@@ -211,7 +219,7 @@ const CategoryDetail = () => {
             <SearchBarWithSuggestions 
               value={searchQuery} 
               onChange={setSearchQuery} 
-              onSubmit={() => setFilteredItems(applyFilters(sortedItems, searchQuery))} 
+              onSubmit={() => setFilteredItems(applyFilters(sortedItems, searchQuery, selectedCounty))} 
               onFocus={() => setIsSearchFocused(true)} 
               onBlur={() => setIsSearchFocused(false)} 
               onBack={() => { setIsSearchFocused(false); setSearchQuery(""); }} 
@@ -222,6 +230,33 @@ const CategoryDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* County filter tabs */}
+      {showCountyTabs && (
+        <div className="sticky top-[52px] md:static z-40 bg-card border-b">
+          <div className="container px-4 py-2">
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+              {["All", ...KENYA_COUNTIES.filter(c => {
+                // Only show counties that have items
+                return items.some(item => item.place === c);
+              })].map((county) => (
+                <button
+                  key={county}
+                  onClick={() => setSelectedCounty(county)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-full text-[10px] font-bold whitespace-nowrap transition-all shrink-0",
+                    selectedCounty === county
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "bg-muted text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {county}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <main className={cn("container px-4 py-6 transition-opacity duration-200", isSearchFocused && "pointer-events-none opacity-20")}>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">

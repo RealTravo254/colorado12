@@ -317,28 +317,28 @@ const BecomeHost = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Fixed Trips & Events - visible for companies only */}
+          {/* Fixed Trips - visible for companies only */}
           {hasCompany && companyStatus === 'approved' && (
             <HostCategoryCard 
-              title="Fixed Trips & Events"
-              subtitle="Fixed-Date Tours & Events"
+              title="Fixed Trips"
+              subtitle="Fixed-Date Tours"
               image="/images/category-trips.webp"
               icon={<Plane className="h-8 w-8" />}
-              count={myContent.filter(i => (i.contentType === 'trip' || i.contentType === 'event') && !i.is_flexible_date && !i.is_custom_date).length}
+              count={myContent.filter(i => i.contentType === 'trip').length}
               onManage={() => navigate("/host/trips")}
               onAdd={() => navigate("/create-trip")}
               accentColor={COLORS.TEAL}
             />
           )}
 
-          {/* Flexible Trips - visible for guides only */}
+          {/* Flexible/Guided Trips - visible for guides only */}
           {hostingCategory === 'guide' && verificationStatus === 'approved' && (
             <HostCategoryCard 
               title="Guided Tours"
               subtitle="Flexible & Custom-Date Trips"
               image="/images/category-trips.webp"
               icon={<Map className="h-8 w-8" />}
-              count={myContent.filter(i => (i.contentType === 'trip' || i.contentType === 'event')).length}
+              count={myContent.filter(i => i.contentType === 'trip').length}
               onManage={() => navigate("/host/trips")}
               onAdd={() => navigate("/create-trip")}
               accentColor={COLORS.TEAL}
@@ -359,8 +359,10 @@ const BecomeHost = () => {
             />
           )}
 
-          {/* Events - visible for guides and campsite hosts */}
-          {(hostingCategory === 'guide' || hostingCategory === 'campsite') && (
+          {/* Events - visible for all host types */}
+          {((hasCompany && companyStatus === 'approved') || 
+            (hostingCategory === 'guide' && verificationStatus === 'approved') || 
+            hostingCategory === 'campsite') && (
             <HostCategoryCard 
               title="Events"
               subtitle="Sports & Social Events"
