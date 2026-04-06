@@ -36,36 +36,127 @@ const MyListing = () => {
   const [hasMoreListings, setHasMoreListings] = useState(true);
   const [hasMoreBookings, setHasMoreBookings] = useState(true);
 
+  // Host type state
+  const [hostingCategory, setHostingCategory] = useState<string | null>(null);
+  const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
+  const [hasCompany, setHasCompany] = useState(false);
+  const [companyStatus, setCompanyStatus] = useState<string | null>(null);
+
   useEffect(() => {
     if (!user) {
       navigate("/auth");
       return;
     }
-    fetchData(0, 0);
+    fetchHostStatus();
   }, [user, navigate]);
 
-  const fetchData = async (listingsFetchOffset: number, bookingsFetchOffset: number) => {
+  const fetchHostStatus = async () => {
+    setLoading(true);
+    try {
+      const [verRes, companyRes] = await Promise.all([
+        supabase.from("host_verifications").select("status, hosting_category").eq("user_id", user!.id).maybeSingle(),
+        supabase.from("companies").select("verification_status").eq("user_id", user!.id).maybeSingle(),
+      ]);
+
+      const hCategory = verRes.data?.hosting_category || null;
+      const vStatus = verRes.data?.status || null;
+      const hCompany = !!companyRes.data;
+      const cStatus = companyRes.data?.verification_status || null;
+
+      setHostingCategory(hCategory);
+      setVerificationStatus(vStatus);
+      setHasCompany(hCompany);
+      setCompanyStatus(cStatus);
+
+      await fetchData(0, 0, hCategory, vStatus, hCompany, cStatus);
+    } catch (error) {
+      console.error("Error fetching host status:", error);
+      setLoading(false);
+    }
+  };
+
+  // Determine which content types to fetch based on host type
+  const getContentTypesToFetch = (
+    category: string | null, 
+    vStatus: string | null, 
+    isCompany: boolean, 
+    cStatus: string | null
+  ) => {
+    const types: string[] = [];
+    const isGuideApproved = vStatus === "approved" && category === "guide";
+    const isCompanyApproved = isCompany && cStatus === "approved";
+    const isCampsite = category === "campsite";
+
+    // Trips: guides (flexible) and companies (fixed)
+    if (isGuideApproved || isCompanyApproved) types.push("trip");
+    // Hotels: companies only
+    if (isCompanyApproved) types.push("hotel");
+    // Adventures: campsite hosts
+    if (isCampsite) types.push("adventure");
+    // Events: all verified host types can host events (events are trips with type='event')
+    if (isGuideApproved || isCompanyApproved || isCampsite) types.push("event");
+
+    return types;
+  };
+
+  const fetchData = async (
+    listingsFetchOffset: number, 
+    bookingsFetchOffset: number,
+    category?: string | null,
+    vStatus?: string | null,
+    isCompany?: boolean,
+    cStatus?: string | null
+  ) => {
+    const hCategory = category ?? hostingCategory;
+    const hVStatus = vStatus ?? verificationStatus;
+    const hCompany = isCompany ?? hasCompany;
+    const hCStatus = cStatus ?? companyStatus;
+    
+    const contentTypes = getContentTypesToFetch(hCategory, hVStatus, hCompany, hCStatus);
+
     if (listingsFetchOffset === 0 && bookingsFetchOffset === 0) {
       setLoading(true);
     }
 
     const userEmail = user?.email;
+    const range = [listingsFetchOffset, listingsFetchOffset + ITEMS_PER_PAGE - 1] as const;
 
-    // Fetch all data in parallel with specific fields
+    // Fetch only relevant content types
+    const shouldFetchTrips = contentTypes.includes("trip") || contentTypes.includes("event");
+    const shouldFetchHotels = contentTypes.includes("hotel");
+    const shouldFetchAdventures = contentTypes.includes("adventure");
+
     const [tripsRes, hotelsRes, adventuresRes, hotelsAdminRes, adventuresAdminRes] = await Promise.all([
-      supabase.from("trips").select("id,name,location,country,image_url,price,approval_status,is_hidden,type").eq("created_by", user.id).range(listingsFetchOffset, listingsFetchOffset + ITEMS_PER_PAGE - 1),
-      supabase.from("hotels").select("id,name,location,country,image_url,approval_status,is_hidden,created_by").eq("created_by", user.id).range(listingsFetchOffset, listingsFetchOffset + ITEMS_PER_PAGE - 1),
-      supabase.from("adventure_places").select("id,name,location,country,image_url,entry_fee,approval_status,is_hidden,created_by").eq("created_by", user.id).range(listingsFetchOffset, listingsFetchOffset + ITEMS_PER_PAGE - 1),
-      userEmail ? supabase.from("hotels").select("id,name,location,country,image_url,approval_status,is_hidden,created_by").contains("allowed_admin_emails", [userEmail]).range(listingsFetchOffset, listingsFetchOffset + ITEMS_PER_PAGE - 1) : Promise.resolve({ data: [] }),
-      userEmail ? supabase.from("adventure_places").select("id,name,location,country,image_url,entry_fee,approval_status,is_hidden,created_by").contains("allowed_admin_emails", [userEmail]).range(listingsFetchOffset, listingsFetchOffset + ITEMS_PER_PAGE - 1) : Promise.resolve({ data: [] })
+      shouldFetchTrips 
+        ? supabase.from("trips").select("id,name,location,country,image_url,price,approval_status,is_hidden,type").eq("created_by", user!.id).range(range[0], range[1])
+        : Promise.resolve({ data: [] }),
+      shouldFetchHotels 
+        ? supabase.from("hotels").select("id,name,location,country,image_url,approval_status,is_hidden,created_by").eq("created_by", user!.id).range(range[0], range[1])
+        : Promise.resolve({ data: [] }),
+      shouldFetchAdventures 
+        ? supabase.from("adventure_places").select("id,name,location,country,image_url,entry_fee,approval_status,is_hidden,created_by").eq("created_by", user!.id).range(range[0], range[1])
+        : Promise.resolve({ data: [] }),
+      shouldFetchHotels && userEmail 
+        ? supabase.from("hotels").select("id,name,location,country,image_url,approval_status,is_hidden,created_by").contains("allowed_admin_emails", [userEmail]).range(range[0], range[1]) 
+        : Promise.resolve({ data: [] }),
+      shouldFetchAdventures && userEmail 
+        ? supabase.from("adventure_places").select("id,name,location,country,image_url,entry_fee,approval_status,is_hidden,created_by").contains("allowed_admin_emails", [userEmail]).range(range[0], range[1]) 
+        : Promise.resolve({ data: [] })
     ]);
 
+    // Filter trips based on host type
+    let filteredTrips = tripsRes.data || [];
+    if (!contentTypes.includes("trip") && contentTypes.includes("event")) {
+      // Only show events (type='event')
+      filteredTrips = filteredTrips.filter((t: any) => t.type === "event");
+    }
+
     const allContent = [
-      ...(tripsRes.data?.map(t => ({ ...t, type: "trip", isCreator: true })) || []),
-      ...(hotelsRes.data?.map(h => ({ ...h, type: "hotel", isCreator: true })) || []),
-      ...(adventuresRes.data?.map(a => ({ ...a, type: "adventure", isCreator: true })) || []),
-      ...(hotelsAdminRes.data?.filter(h => h.created_by !== user.id).map(h => ({ ...h, type: "hotel", isCreator: false })) || []),
-      ...(adventuresAdminRes.data?.filter(a => a.created_by !== user.id).map(a => ({ ...a, type: "adventure", isCreator: false })) || [])
+      ...(filteredTrips.map((t: any) => ({ ...t, type: t.type === "event" ? "event" : "trip", isCreator: true })) || []),
+      ...(hotelsRes.data?.map((h: any) => ({ ...h, type: "hotel", isCreator: true })) || []),
+      ...(adventuresRes.data?.map((a: any) => ({ ...a, type: "adventure", isCreator: true })) || []),
+      ...(hotelsAdminRes.data?.filter((h: any) => h.created_by !== user!.id).map((h: any) => ({ ...h, type: "hotel", isCreator: false })) || []),
+      ...(adventuresAdminRes.data?.filter((a: any) => a.created_by !== user!.id).map((a: any) => ({ ...a, type: "adventure", isCreator: false })) || [])
     ];
 
     if (listingsFetchOffset === 0) {
@@ -116,6 +207,16 @@ const MyListing = () => {
 
   const getCategoryCount = (category: string) => myContent.filter(item => item.type === category).length;
   const getBookingCount = (category: string) => bookings.filter(b => b.booking_type === category).length;
+
+  // Determine visible sections
+  const isGuideApproved = verificationStatus === "approved" && hostingCategory === "guide";
+  const isCompanyApproved = hasCompany && companyStatus === "approved";
+  const isCampsite = hostingCategory === "campsite";
+
+  const showTrips = isGuideApproved || isCompanyApproved;
+  const showHotels = isCompanyApproved;
+  const showAdventures = isCampsite;
+  const showEvents = isGuideApproved || isCompanyApproved || isCampsite;
 
   const renderListings = (category: string) => {
     const items = myContent.filter(item => item.type === category);
@@ -180,7 +281,7 @@ const MyListing = () => {
                         </div>
                     )}
                     <Button
-                        onClick={() => navigate(`/edit-listing/${item.type}/${item.id}`)}
+                        onClick={() => navigate(`/edit-listing/${item.type === 'event' ? 'trip' : item.type}/${item.id}`)}
                         size="sm"
                         className="h-9 px-4 rounded-xl font-black uppercase text-[10px] tracking-widest text-white transition-transform active:scale-95 shadow-lg shadow-teal-900/10 border-none"
                         style={{ backgroundColor: COLORS.TEAL }}
@@ -246,6 +347,12 @@ const MyListing = () => {
     );
   }
 
+  // If user has no verification at all, redirect to become-host
+  if (!verificationStatus && !hasCompany) {
+    navigate("/become-host");
+    return null;
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F9FA]">
       <Header />
@@ -268,6 +375,16 @@ const MyListing = () => {
             <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none text-slate-900">
                 My <span style={{ color: COLORS.TEAL }}>Listings</span>
             </h1>
+            {hostingCategory && (
+              <Badge className="mt-3 rounded-full px-3 py-1 text-[9px] font-black uppercase tracking-widest" style={{ backgroundColor: `${COLORS.TEAL}15`, color: COLORS.TEAL }}>
+                {hostingCategory === 'guide' ? '🗺️ Tour Guide' : hostingCategory === 'campsite' ? '⛺ Campsite Host' : '🏢 Company'}
+              </Badge>
+            )}
+            {hasCompany && companyStatus === 'approved' && !hostingCategory && (
+              <Badge className="mt-3 rounded-full px-3 py-1 text-[9px] font-black uppercase tracking-widest" style={{ backgroundColor: `${COLORS.CORAL}15`, color: COLORS.CORAL }}>
+                🏢 Company Host
+              </Badge>
+            )}
         </header>
 
         <Tabs defaultValue="listings" className="w-full">
@@ -289,35 +406,55 @@ const MyListing = () => {
           </TabsList>
 
           <TabsContent value="listings" className="space-y-12 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <section>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-black uppercase tracking-tight" style={{ color: COLORS.TEAL }}>Experiences</h2>
-                <div className="bg-white px-4 py-1 rounded-full shadow-sm border border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-500">
-                    {getCategoryCount('trip')} Total
+            {showTrips && (
+              <section>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-black uppercase tracking-tight" style={{ color: COLORS.TEAL }}>
+                    {isGuideApproved ? 'Guided Tours' : 'Fixed Trips'}
+                  </h2>
+                  <div className="bg-white px-4 py-1 rounded-full shadow-sm border border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                      {getCategoryCount('trip')} Total
+                  </div>
                 </div>
-              </div>
-              {renderListings('trip')}
-            </section>
+                {renderListings('trip')}
+              </section>
+            )}
 
-            <section>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-black uppercase tracking-tight" style={{ color: COLORS.TEAL }}>Hotels & Stays</h2>
-                <div className="bg-white px-4 py-1 rounded-full shadow-sm border border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-500">
-                    {getCategoryCount('hotel')} Total
+            {showEvents && (
+              <section>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-black uppercase tracking-tight" style={{ color: COLORS.KHAKI_DARK }}>Events</h2>
+                  <div className="bg-white px-4 py-1 rounded-full shadow-sm border border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                      {getCategoryCount('event')} Total
+                  </div>
                 </div>
-              </div>
-              {renderListings('hotel')}
-            </section>
+                {renderListings('event')}
+              </section>
+            )}
 
-            <section>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-black uppercase tracking-tight" style={{ color: COLORS.TEAL }}>Campsites</h2>
-                <div className="bg-white px-4 py-1 rounded-full shadow-sm border border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-500">
-                    {getCategoryCount('adventure')} Total
+            {showHotels && (
+              <section>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-black uppercase tracking-tight" style={{ color: COLORS.TEAL }}>Hotels & Stays</h2>
+                  <div className="bg-white px-4 py-1 rounded-full shadow-sm border border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                      {getCategoryCount('hotel')} Total
+                  </div>
                 </div>
-              </div>
-              {renderListings('adventure')}
-            </section>
+                {renderListings('hotel')}
+              </section>
+            )}
+
+            {showAdventures && (
+              <section>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-black uppercase tracking-tight" style={{ color: COLORS.TEAL }}>Campsites</h2>
+                  <div className="bg-white px-4 py-1 rounded-full shadow-sm border border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                      {getCategoryCount('adventure')} Total
+                  </div>
+                </div>
+                {renderListings('adventure')}
+              </section>
+            )}
             
             {hasMoreListings && (
               <div className="flex justify-center mt-10">
@@ -341,29 +478,47 @@ const MyListing = () => {
           </TabsContent>
 
           <TabsContent value="bookings" className="space-y-12 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <section>
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-black uppercase tracking-tight" style={{ color: COLORS.CORAL }}>Experience Bookings</h2>
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{getBookingCount('trip')} Received</span>
-                </div>
-                {renderBookings('trip')}
-            </section>
+            {showTrips && (
+              <section>
+                  <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-xl font-black uppercase tracking-tight" style={{ color: COLORS.CORAL }}>
+                        {isGuideApproved ? 'Tour Bookings' : 'Trip Bookings'}
+                      </h2>
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{getBookingCount('trip')} Received</span>
+                  </div>
+                  {renderBookings('trip')}
+              </section>
+            )}
 
-            <section>
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-black uppercase tracking-tight" style={{ color: COLORS.CORAL }}>Stay Bookings</h2>
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{getBookingCount('hotel')} Received</span>
-                </div>
-                {renderBookings('hotel')}
-            </section>
+            {showEvents && (
+              <section>
+                  <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-xl font-black uppercase tracking-tight" style={{ color: COLORS.CORAL }}>Event Bookings</h2>
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{getBookingCount('event')} Received</span>
+                  </div>
+                  {renderBookings('event')}
+              </section>
+            )}
 
-            <section>
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-black uppercase tracking-tight" style={{ color: COLORS.CORAL }}>Campground Bookings</h2>
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{getBookingCount('adventure_place')} Received</span>
-                </div>
-                {renderBookings('adventure_place')}
-            </section>
+            {showHotels && (
+              <section>
+                  <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-xl font-black uppercase tracking-tight" style={{ color: COLORS.CORAL }}>Stay Bookings</h2>
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{getBookingCount('hotel')} Received</span>
+                  </div>
+                  {renderBookings('hotel')}
+              </section>
+            )}
+
+            {showAdventures && (
+              <section>
+                  <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-xl font-black uppercase tracking-tight" style={{ color: COLORS.CORAL }}>Campground Bookings</h2>
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{getBookingCount('adventure_place')} Received</span>
+                  </div>
+                  {renderBookings('adventure_place')}
+              </section>
+            )}
             
             {hasMoreBookings && (
               <div className="flex justify-center mt-10">
