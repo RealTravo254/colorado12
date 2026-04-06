@@ -342,12 +342,10 @@ const BecomeHost = () => {
               icon={<Map className="h-8 w-8" />}
               count={myContent.filter(i => i.contentType === 'trip').length}
               onManage={() => navigate("/host/trips")}
-              onAdd={() => navigate("/create-trip")}
+              onAdd={() => navigate("/create-trip?flexible=true")}
               accentColor={COLORS.TEAL}
             />
           )}
-
-          {/* Hotels removed */}
 
           {/* Events - visible for all verified host types */}
           {((hasCompany && companyStatus === 'approved') || 
@@ -362,20 +360,6 @@ const BecomeHost = () => {
               count={myContent.filter(i => i.contentType === 'event').length}
               onManage={() => navigate("/host/trips")}
               onAdd={() => navigate("/create-event")}
-              accentColor={COLORS.KHAKI_DARK}
-            />
-          )}
-
-          {/* Campsite/Adventure - visible for campsite hosts or legacy verified users */}
-          {(hostingCategory === 'campsite' || (verificationStatus === 'approved' && !hostingCategory)) && (
-            <HostCategoryCard 
-              title="Campsite / Adventure"
-              subtitle="Outdoor & Adventure Places"
-              image="/images/category-campsite.webp"
-              icon={<Tent className="h-8 w-8" />}
-              count={myContent.filter(i => i.contentType === 'adventure').length}
-              onManage={() => navigate("/host/experiences")}
-              onAdd={() => navigate("/create-adventure")}
               accentColor={COLORS.KHAKI_DARK}
             />
           )}

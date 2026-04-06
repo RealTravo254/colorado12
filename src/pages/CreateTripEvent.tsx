@@ -65,6 +65,8 @@ const CreateTripEvent = () => {
 
   // Auto-detect type from route
   const isEventRoute = location.pathname === "/create-event";
+  const searchParams = new URLSearchParams(location.search);
+  const isFlexibleFromRoute = searchParams.get("flexible") === "true";
   
 
   const [formData, setFormData] = useState({
