@@ -51,7 +51,11 @@ const ScrollSection = memo(({ title, viewAllPath, accentColor, children, scrollR
 
   return (
     <section className="mb-4 md:mb-8">
-      <div className="flex items-center justify-between mb-3 md:mb-4 rounded-lg px-3 py-2" style={{ backgroundColor: `${accentColor}10` }}>
+      {/* Header: full-width flush on mobile, contained on md+ */}
+      <div
+        className="flex items-center justify-between mb-3 md:mb-4 rounded-none md:rounded-lg px-3 py-2 -mx-4 md:mx-0"
+        style={{ backgroundColor: `${accentColor}10` }}
+      >
         <h2 className="text-base sm:text-xl md:text-2xl font-extrabold tracking-tight" style={{ color: accentColor }}>
           {title}
         </h2>
@@ -526,10 +530,11 @@ const Index = () => {
         </div>
       )}
 
-      {/* Hero — full width on mobile, container-width on desktop */}
+      {/* Hero — full width on ALL screens (no container wrapper on mobile) */}
       {!isSearchFocused && (
         <div ref={searchRef} className="w-full">
-          <div className="container mx-auto px-4 md:px-6">
+          {/* On md+: keep the container constraint. On mobile: go edge-to-edge */}
+          <div className="md:container md:mx-auto md:px-6">
             <div
               className="relative w-full flex flex-col px-4 md:px-8 pt-8 md:pt-10 pb-5 md:pb-6 overflow-hidden"
               style={{
