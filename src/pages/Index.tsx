@@ -680,7 +680,7 @@ const Index = () => {
                           id={item.id} type={a.type || 'ADVENTURE PLACE'}
                           name={item.name} imageUrl={a.image_url} location={a.location} country={a.country}
                           price={a.entry_fee || 0} date=""
-                          isSaved={savedItems.has(item.id)} hidePrice={true} showBadge={true}
+                          isSaved={savedItems.has(item.id)} hideSave={true} hidePrice={true} showBadge={true}
                           priority={index === 0} activities={a.activities} distance={dist}
                           avgRating={rd?.avgRating} reviewCount={rd?.reviewCount} place={a.place}
                           description={a.description}
