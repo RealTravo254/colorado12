@@ -619,15 +619,74 @@ const Index = () => {
           </div>
 
           <div className="container mx-auto px-4 md:px-6 py-3 md:py-5 space-y-2 md:space-y-4">
-            {/* Adventures */}
-            <ScrollSection
-              title={t('sections.placesToAdventure')} viewAllPath="/category/campsite"
-              accentColor="hsl(142, 70%, 35%)" scrollRef={featuredCampsitesRef}
-              onScroll={handleScroll('featuredCampsites')}
-              hasItems={displayCampsites.length > 0} loading={loadingScrollable}
-            >
-              {displayCampsites.map((place, i) => renderCard(place, "ADVENTURE PLACE", i, { hidePrice: true, categoryColor: "hsl(142, 70%, 35%)" }))}
-            </ScrollSection>
+            {/* Top Visited Counties */}
+            <section className="mb-4 md:mb-8">
+              <div className="flex items-center justify-between mb-3 md:mb-4 rounded-lg px-3 py-2" style={{ backgroundColor: "hsl(142, 70%, 35%, 0.1)" }}>
+                <h2 className="text-base sm:text-xl md:text-2xl font-extrabold tracking-tight" style={{ color: "hsl(142, 70%, 35%)" }}>
+                  Top Visited Counties
+                </h2>
+                <Link to="/category/campsite" className="text-xs md:text-sm font-semibold shrink-0" style={{ color: "hsl(142, 70%, 35%)" }}>
+                  View All →
+                </Link>
+              </div>
+              <div ref={countiesRef} className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide scroll-smooth snap-x snap-mandatory">
+                {FEATURED_COUNTIES.map((county) => {
+                  const counts = countyCounts[county] || { adventures: 0, guidedTrips: 0 };
+                  const total = counts.adventures + counts.guidedTrips;
+                  const displayCount = total > 1000 ? "1000+" : String(total);
+                  return (
+                    <div
+                      key={county}
+                      onClick={() => navigate(`/category/campsite?county=${encodeURIComponent(county)}`)}
+                      className="flex-shrink-0 w-[36vw] sm:w-[180px] md:w-[200px] snap-start cursor-pointer group"
+                    >
+                      <div className="relative rounded-2xl overflow-hidden aspect-[3/4] bg-slate-200">
+                        <img
+                          src={`https://source.unsplash.com/400x500/?${county},kenya,landscape`}
+                          alt={county}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                        <div className="absolute bottom-0 left-0 right-0 p-3">
+                          <h3 className="text-white font-extrabold text-sm leading-tight">{county}</h3>
+                          <p className="text-white/70 text-[10px] font-bold mt-0.5">{displayCount} listings</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* Category Grid: 2x2 on mobile */}
+            <section className="mb-4 md:mb-8">
+              <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-3">
+                Browse by Category
+              </h2>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { title: "Sports & Events", path: "/category/events", color: "hsl(340, 75%, 50%)", items: displayEvents, icon: Trophy },
+                  { title: "Fixed Trips", path: "/category/trips", color: "hsl(25, 90%, 50%)", items: displayTrips, icon: Calendar },
+                  { title: "Guided Tours", path: "/category/guided", color: "hsl(260, 70%, 55%)", items: displayGuidedTrips, icon: Compass },
+                  { title: "Adventures", path: "/category/campsite", color: "hsl(142, 70%, 35%)", items: displayCampsites, icon: Tent },
+                ].map((cat) => (
+                  <button
+                    key={cat.title}
+                    onClick={() => navigate(cat.path)}
+                    className="relative overflow-hidden rounded-2xl bg-card border border-border p-4 text-left hover:shadow-lg transition-all active:scale-95 group"
+                  >
+                    <div className="h-9 w-9 rounded-xl flex items-center justify-center mb-2" style={{ backgroundColor: `${cat.color}15` }}>
+                      <cat.icon className="h-4 w-4" style={{ color: cat.color }} />
+                    </div>
+                    <h3 className="text-xs font-extrabold text-foreground leading-tight">{cat.title}</h3>
+                    <p className="text-[10px] text-muted-foreground font-bold mt-0.5">
+                      {loadingScrollable ? "..." : `${cat.items.length}+ listings`}
+                    </p>
+                  </button>
+                ))}
+              </div>
+            </section>
 
             {/* Trips */}
             <ScrollSection
@@ -649,7 +708,7 @@ const Index = () => {
               {displayEvents.map((event, i) => renderCard(event, "EVENT", i, { isTrip: true, categoryColor: "hsl(340, 75%, 50%)" }))}
             </ScrollSection>
 
-            {/* Get Your Guide - Guided Trips */}
+            {/* Guided Tours & Activities */}
             <ScrollSection
               title="Guided Tours & Activities" viewAllPath="/category/guided"
               accentColor="hsl(260, 70%, 55%)" scrollRef={guidedTripsRef}
