@@ -600,9 +600,10 @@ const CreateHotel = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">City / Place *</Label>
-                  <Input className={cn("rounded-xl h-12 font-bold", showErrors && !formData.place.trim() && "border-red-500 bg-red-50")}
-                    value={formData.place} onChange={(e) => setFormData({ ...formData, place: e.target.value })} />
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">County *</Label>
+                  <div className={cn("rounded-xl", showErrors && !formData.place.trim() && "border-2 border-red-500 overflow-hidden")}>
+                    <CountySelector value={formData.place} onChange={(v) => setFormData({ ...formData, place: v })} />
+                  </div>
                 </div>
               </div>
               {!isAccommodationOnly && (
