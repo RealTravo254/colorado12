@@ -100,8 +100,8 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
         (data || []).forEach((item: any) => {
           if (item.location) {
             const loc = item.location.trim();
-            const existing = locationMap.get(loc);
-            locationMap.set(loc, { count: (existing?.count || 0) + 1, type: existing?.type || type });
+            const existing = locationMap[loc];
+            locationMap[loc] = { count: (existing?.count || 0) + 1, type: existing?.type || type };
           }
         });
       };
