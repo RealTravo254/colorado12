@@ -82,6 +82,8 @@ const BecomeHost = () => {
         const isGuideApproved = hasV && verification?.status === "approved" && verification?.hosting_category === "guide";
         const isCampsiteHost = hasV && verification?.hosting_category === "campsite";
         const isCompanyApproved = company && company.verification_status === "approved";
+        // If verified but no hosting_category set, treat as fully verified (legacy users)
+        const isVerifiedNoCategory = hasV && verification?.status === "approved" && !verification?.hosting_category;
 
         // If no verification at all and no company, show type selection
         if (!hasV && !company) {
