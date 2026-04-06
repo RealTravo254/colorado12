@@ -54,6 +54,7 @@ const STEP_NAMES = ["Basic Info", "Date & Pricing", "Contact & Photos", "Schedul
 
 const CreateTripEvent = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const goBack = useSafeBack("/become-host");
   const { toast } = useToast();
   const { user } = useAuth();
@@ -61,6 +62,10 @@ const CreateTripEvent = () => {
   const [loading, setLoading] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [currentStep, setCurrentStep] = useState(1);
+
+  // Auto-detect type from route
+  const isEventRoute = location.pathname === "/create-event";
+  const isFixedType = true; // type is now determined by route
 
   const [formData, setFormData] = useState({
     name: "", description: "", location: "", place: "", country: "", date: "",
