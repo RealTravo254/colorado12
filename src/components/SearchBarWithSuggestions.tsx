@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Clock, TrendingUp, Home, Calendar, Search as SearchIcon, MapPin, Loader2, Sparkles } from "lucide-react";
+import { Clock, TrendingUp, Home, Calendar, Search as SearchIcon, MapPin, Loader2, Sparkles, Map } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getSessionId } from "@/lib/sessionManager";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { KENYA_COUNTIES } from "@/lib/kenyaCounties";
 
 
 interface SearchBarProps {
