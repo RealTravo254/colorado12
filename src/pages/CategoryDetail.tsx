@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { SearchBarWithSuggestions } from "@/components/SearchBarWithSuggestions";
 import { useSearchFocus } from "@/components/PageLayout";
@@ -14,6 +14,7 @@ import { useSavedItems } from "@/hooks/useSavedItems";
 import { useGeolocation, calculateDistance } from "@/hooks/useGeolocation";
 import { useRatings, sortByRating } from "@/hooks/useRatings";
 import { useRealtimeBookings } from "@/hooks/useRealtimeBookings";
+import { KENYA_COUNTIES } from "@/lib/kenyaCounties";
 
 const ITEMS_PER_PAGE = 20;
 
