@@ -95,7 +95,7 @@ const CountyDetail = () => {
       </div>
 
       {/* Tab filters */}
-      <div className="sticky top-[52px] md:static z-40 bg-card border-b">
+      <div className={cn("sticky top-[52px] md:static bg-card border-b", isSearchFocusedLocal ? "z-0" : "z-40")}>
         <div className="container px-4 py-2">
           <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
             {TABS.map(tab => (
