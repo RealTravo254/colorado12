@@ -131,7 +131,7 @@ export const NavigationDrawer = ({ onClose }: NavigationDrawerProps) => {
           <div className="mx-4 bg-card rounded-2xl overflow-hidden border border-border shadow-sm divide-y divide-border/50">
             <NavItem icon={Heart} label={t('nav.wishlist')} path="/saved" isProtected />
             <NavItem icon={Ticket} label={t('nav.myBookings')} path="/bookings" isProtected />
-            <NavItem icon={Briefcase} label="Your Travel Partner" path="/become-host" isProtected />
+            <NavItem icon={Briefcase} label="Host" path="/become-host" isProtected />
           </div>
 
           {/* Support & Legal */}
