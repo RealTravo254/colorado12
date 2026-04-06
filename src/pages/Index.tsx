@@ -593,10 +593,14 @@ const Index = () => {
         <div className={`w-full ${isSearchFocused ? 'hidden' : ''}`}>
 
           <div className="container mx-auto px-4 md:px-6 py-3 md:py-5 space-y-2 md:space-y-4">
-            {/* Counties */}
+            {/* Counties — sorted by most listings */}
             <section className="mb-4 md:mb-8">
               <div ref={countiesRef} className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide scroll-smooth snap-x snap-mandatory">
-                {FEATURED_COUNTIES.map((county) => {
+                {[...FEATURED_COUNTIES].sort((a, b) => {
+                  const totalA = (countyCounts[a]?.adventures || 0) + (countyCounts[a]?.guidedTrips || 0);
+                  const totalB = (countyCounts[b]?.adventures || 0) + (countyCounts[b]?.guidedTrips || 0);
+                  return totalB - totalA;
+                }).map((county) => {
                   const counts = countyCounts[county] || { adventures: 0, guidedTrips: 0 };
                   const total = counts.adventures + counts.guidedTrips;
                   const displayCount = total > 1000 ? "1000+" : String(total);
