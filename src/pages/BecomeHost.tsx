@@ -361,7 +361,7 @@ const BecomeHost = () => {
               icon={<Users className="h-8 w-8" />}
               count={myContent.filter(i => i.contentType === 'event').length}
               onManage={() => navigate("/host/trips")}
-              onAdd={() => navigate("/create-trip")}
+              onAdd={() => navigate("/create-event")}
               accentColor={COLORS.KHAKI_DARK}
             />
           )}
