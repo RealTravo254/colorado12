@@ -72,7 +72,7 @@ const CreateTripEvent = () => {
   const [formData, setFormData] = useState({
     name: "", description: "", location: "", place: "", country: "", date: "",
     price: "0", price_child: "0", available_tickets: "0", email: "", phone_number: "",
-    map_link: "", is_custom_date: false, type: (isEventRoute ? "event" : "trip") as "trip" | "event",
+    map_link: "", is_custom_date: isFlexibleFromRoute, type: (isEventRoute ? "event" : "trip") as "trip" | "event",
     latitude: null as number | null, longitude: null as number | null,
     opening_hours: "00:00", closing_hours: "23:59", flexible_duration_months: "3",
     event_category: "" as string,
