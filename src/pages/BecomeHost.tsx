@@ -347,19 +347,7 @@ const BecomeHost = () => {
             />
           )}
 
-          {/* Stays - visible for companies or legacy verified users */}
-          {((hasCompany && companyStatus === 'approved') || (verificationStatus === 'approved' && !hostingCategory)) && (
-            <HostCategoryCard 
-              title="Stays"
-              subtitle="Hotels & Accommodation"
-              image="/images/category-hotels.webp"
-              icon={<Building className="h-8 w-8" />}
-              count={myContent.filter(i => i.contentType === 'hotel').length}
-              onManage={() => navigate("/host/hotels")}
-              onAdd={() => navigate("/create-hotel")}
-              accentColor={COLORS.CORAL}
-            />
-          )}
+          {/* Hotels removed */}
 
           {/* Events - visible for all verified host types */}
           {((hasCompany && companyStatus === 'approved') || 
@@ -373,7 +361,7 @@ const BecomeHost = () => {
               icon={<Users className="h-8 w-8" />}
               count={myContent.filter(i => i.contentType === 'event').length}
               onManage={() => navigate("/host/trips")}
-              onAdd={() => navigate("/create-trip")}
+              onAdd={() => navigate("/create-event")}
               accentColor={COLORS.KHAKI_DARK}
             />
           )}

@@ -43,7 +43,7 @@ const AdminVerification = lazy(() => import("./pages/AdminVerification"));
 const AdminReferralSettings = lazy(() => import("./pages/AdminReferralSettings"));
 const QRScanner = lazy(() => import("./pages/QRScanner"));
 const CreateTripEvent = lazy(() => import("./pages/CreateTripEvent"));
-const CreateHotel = lazy(() => import("./pages/CreateHotel"));
+
 const CreateAdventure = lazy(() => import("./pages/CreateAdventure"));
 const ProfileEdit = lazy(() => import("./pages/ProfileEdit"));
 const EditListing = lazy(() => import("./pages/EditListing"));
@@ -154,7 +154,7 @@ const App = () => {
                     <Route path="/admin/referral-settings" element={<AdminReferralSettings />} />
                     <Route path="/become-host" element={<BecomeHost />} />
                     <Route path="/create-trip" element={<CreateTripEvent />} />
-                    {/* Create hotel route removed */}
+                    <Route path="/create-event" element={<CreateTripEvent />} />
                     <Route path="/create-adventure" element={<CreateAdventure />} />
                     <Route path="/create-attraction" element={<CreateAdventure />} />
                     <Route path="/host/item/:itemType/:id" element={<HostItemDetail />} />
