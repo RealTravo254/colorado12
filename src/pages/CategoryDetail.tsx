@@ -175,7 +175,7 @@ const CategoryDetail = () => {
     return sorted;
   }, [items, position, ratings, category]);
 
-  const applyFilters = useCallback((itemsToFilter: any[], query: string) => {
+  const applyFilters = useCallback((itemsToFilter: any[], query: string, county: string) => {
     let result = [...itemsToFilter];
     if (query) {
       const q = query.toLowerCase();
@@ -186,6 +186,9 @@ const CategoryDetail = () => {
         item.country?.toLowerCase().includes(q) ||
         item.event_category?.toLowerCase().includes(q)
       );
+    }
+    if (county && county !== "All") {
+      result = result.filter(item => item.place === county);
     }
     return result;
   }, []);
