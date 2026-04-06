@@ -25,20 +25,10 @@ export const Header = ({ onSearchClick, showSearchIcon = true, className, __from
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [hostPopoverOpen, setHostPopoverOpen] = useState(false);
   const [accountPopoverOpen, setAccountPopoverOpen] = useState(false);
-  
-  // State to track if the user has scrolled down
   const [hasScrolled, setHasScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      // Show the search icon after scrolling 50px
-      if (window.scrollY > 50) {
-        setHasScrolled(true);
-      } else {
-        setHasScrolled(false);
-      }
-    };
-
+    const handleScroll = () => setHasScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -57,10 +47,10 @@ export const Header = ({ onSearchClick, showSearchIcon = true, className, __from
   const headerIconStyles = "h-9 w-9 rounded-xl flex items-center justify-center transition-all duration-200 active:scale-90 text-white hover:bg-white/20";
 
   return (
-    <header 
-      className={`z-[100] items-center fixed top-0 left-0 right-0 flex py-3 md:bg-[#008080] transition-colors duration-300 ${className || ''}`}
-    >
+    <header className={`z-[100] items-center fixed top-0 left-0 right-0 flex py-3 md:bg-[#008080] transition-colors duration-300 ${className || ''}`}>
       <div className="container mx-auto px-4 flex items-center justify-between h-full">
+
+        {/* Left — hamburger + logo */}
         <div className="flex items-center gap-2">
           <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
             <SheetTrigger asChild>
@@ -77,6 +67,7 @@ export const Header = ({ onSearchClick, showSearchIcon = true, className, __from
           </Link>
         </div>
 
+        {/* Center nav — desktop only */}
         <nav className="hidden lg:flex items-center gap-6">
           {[
             { to: "/", icon: <Home className="h-4 w-4" />, label: t('nav.home') },
@@ -90,19 +81,21 @@ export const Header = ({ onSearchClick, showSearchIcon = true, className, __from
           ))}
         </nav>
 
+        {/* Right — actions */}
         <div className="flex items-center gap-2">
-          {/* Explore/Search icon - Only visible when showSearchIcon is true AND user has scrolled */}
+
+          {/* Search — only after scroll */}
           {showSearchIcon && hasScrolled && (
-            <button 
-              onClick={() => navigate('/explore')} 
-              className={`${headerIconStyles} animate-in fade-in zoom-in duration-300`} 
+            <button
+              onClick={() => navigate('/explore')}
+              className={`${headerIconStyles} animate-in fade-in zoom-in duration-300`}
               aria-label="Explore"
             >
               <Search className="h-5 w-5" />
             </button>
           )}
 
-          {/* Become Host with popover */}
+          {/* Become Host — desktop only */}
           <Popover open={hostPopoverOpen} onOpenChange={setHostPopoverOpen}>
             <PopoverTrigger asChild>
               <button className="hidden md:flex h-9 px-3 rounded-xl items-center gap-2 transition-all font-semibold text-xs text-white bg-white/20 hover:bg-white/30">
@@ -140,12 +133,14 @@ export const Header = ({ onSearchClick, showSearchIcon = true, className, __from
             </PopoverContent>
           </Popover>
 
-          {/* NotificationBell — hidden on small screens (md+ only) to prevent duplication */}
+          {/* NotificationBell — desktop only (md+).
+              On mobile it must live inside NavigationDrawer ONLY.
+              Do NOT render it here on small screens — it causes a duplicate. */}
           <div className="hidden md:flex [&_button]:text-white [&_button]:h-9 [&_button]:w-9">
             <NotificationBell />
           </div>
 
-          {/* Account button */}
+          {/* Account — desktop only */}
           {user ? (
             <AccountSheet>
               <button className="hidden md:flex h-9 px-4 rounded-xl items-center gap-2 transition-all font-semibold text-xs text-[#008080] bg-white hover:brightness-95">
