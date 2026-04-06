@@ -535,14 +535,18 @@ const Index = () => {
         <div ref={searchRef} className="w-full">
           {/* On md+: keep the container constraint. On mobile: go edge-to-edge */}
           <div className="md:container md:mx-auto md:px-6">
-            <div
-              className="relative w-full flex flex-col px-4 md:px-8 pt-8 md:pt-10 pb-5 md:pb-6 overflow-hidden"
-              style={{
-                backgroundImage: 'url(/images/hero-background.webp)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
-            >
+            <div className="relative w-full flex flex-col px-4 md:px-8 pt-8 md:pt-10 pb-5 md:pb-6 overflow-hidden">
+              {/* Hero background image — eager + high priority so browser fetches it immediately */}
+              <img
+                src="/images/hero-background.webp"
+                alt=""
+                aria-hidden="true"
+                fetchPriority="high"
+                loading="eager"
+                decoding="async"
+                className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
+              />
+
               {/* Overlays */}
               <div className="absolute inset-0 bg-black/25" />
               <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/30" />
@@ -568,20 +572,25 @@ const Index = () => {
                 </div>
               </div>
 
-              {/* Category cards */}
+              {/* Category cards — use <img> so browser preload scanner picks them up */}
               <div className="relative z-10 w-full grid grid-cols-4 gap-2 md:gap-3">
                 {CATEGORIES.map((cat) => (
                   <div
                     key={cat.title}
                     onClick={() => navigate(cat.path)}
-                    className="cursor-pointer rounded-lg relative w-full flex flex-col items-center justify-center gap-1 px-2 py-2 md:py-4"
-                    style={{
-                      backgroundImage: `url(${cat.bgImage})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                      height: 'clamp(60px, 8vw, 144px)',
-                    }}
+                    className="cursor-pointer rounded-lg relative w-full flex flex-col items-center justify-center gap-1 px-2 py-2 md:py-4 overflow-hidden"
+                    style={{ height: 'clamp(60px, 8vw, 144px)' }}
                   >
+                    {/* Category background image — eager since all 4 are above the fold */}
+                    <img
+                      src={cat.bgImage}
+                      alt=""
+                      aria-hidden="true"
+                      fetchPriority="high"
+                      loading="eager"
+                      decoding="async"
+                      className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none rounded-lg"
+                    />
                     <div className="absolute inset-0 rounded-lg bg-black/10" />
                     <cat.icon className="relative z-10 h-3 w-3 md:h-6 md:w-6 text-white shrink-0" />
                     <span className="relative z-10 text-white text-[10px] md:text-sm font-bold leading-none whitespace-nowrap">
@@ -606,7 +615,8 @@ const Index = () => {
                   const totalA = (countyCounts[a]?.adventures || 0) + (countyCounts[a]?.guidedTrips || 0);
                   const totalB = (countyCounts[b]?.adventures || 0) + (countyCounts[b]?.guidedTrips || 0);
                   return totalB - totalA;
-                }).map((county) => {
+                }).map((county, idx) => {
+                  const isVisible = idx < 4;
                   const counts = countyCounts[county] || { adventures: 0, guidedTrips: 0 };
                   const total = counts.adventures + counts.guidedTrips;
                   const displayCount = total > 1000 ? "1000+" : String(total);
@@ -621,7 +631,8 @@ const Index = () => {
                           src={COUNTY_IMAGES[county] || `/images/counties/${county.toLowerCase().replace(/['\s]/g, '-')}.jpg`}
                           alt={county}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                          loading="lazy"
+                          loading={isVisible ? "eager" : "lazy"}
+                          decoding="async"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                         <div className="absolute bottom-0 left-0 right-0 p-2">
@@ -806,4 +817,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Index;12
