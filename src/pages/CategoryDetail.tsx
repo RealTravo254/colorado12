@@ -20,6 +20,7 @@ const ITEMS_PER_PAGE = 20;
 
 const CategoryDetail = () => {
   const { category } = useParams<{ category: string }>();
+  const [searchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [items, setItems] = useState<any[]>([]);
   const [filteredItems, setFilteredItems] = useState<any[]>([]);
@@ -29,6 +30,9 @@ const CategoryDetail = () => {
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
   const [userId, setUserId] = useState<string | null>(null);
+  const [selectedCounty, setSelectedCounty] = useState<string>(searchParams.get("county") || "All");
+
+  const showCountyTabs = category === "campsite" || category === "guided" || category === "events";
   
   const { position } = useGeolocation();
   const [showSearchIcon, setShowSearchIcon] = useState(false);
