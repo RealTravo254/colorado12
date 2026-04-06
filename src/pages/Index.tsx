@@ -147,6 +147,7 @@ const Index = () => {
   const [loadingNearby, setLoadingNearby] = useState(true);
   const [isSearchFocused, setIsSearchFocusedLocal] = useState(false);
   const { setSearchFocused } = useSearchFocus();
+  const [countyCounts, setCountyCounts] = useState<Record<string, { adventures: number; guidedTrips: number }>>({});
 
   const setIsSearchFocused = useCallback((v: boolean) => {
     setIsSearchFocusedLocal(v);
