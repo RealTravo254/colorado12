@@ -140,7 +140,8 @@ export const Header = ({ onSearchClick, showSearchIcon = true, className, __from
             </PopoverContent>
           </Popover>
 
-          <div className="[&_button]:text-white [&_button]:h-9 [&_button]:w-9">
+          {/* NotificationBell — hidden on small screens (md+ only) to prevent duplication */}
+          <div className="hidden md:flex [&_button]:text-white [&_button]:h-9 [&_button]:w-9">
             <NotificationBell />
           </div>
 
