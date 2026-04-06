@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Clock, TrendingUp, Home, Calendar, Search as SearchIcon, MapPin, Loader2, Sparkles } from "lucide-react";
+import { Clock, TrendingUp, Home, Calendar, Search as SearchIcon, MapPin, Loader2, Sparkles, Map } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getSessionId } from "@/lib/sessionManager";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { KENYA_COUNTIES } from "@/lib/kenyaCounties";
 
 
 interface SearchBarProps {
@@ -94,20 +95,20 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
         supabase.from("adventure_places").select("location").eq("approval_status", "approved").eq("is_hidden", false).limit(50),
         supabase.from("hotels").select("location").eq("approval_status", "approved").eq("is_hidden", false).limit(50),
       ]);
-      const locationMap = new Map<string, { count: number; type: string }>();
+      const locationMap: Record<string, { count: number; type: string }> = {};
       const addLocations = (data: any[] | null, type: string) => {
         (data || []).forEach((item: any) => {
           if (item.location) {
             const loc = item.location.trim();
-            const existing = locationMap.get(loc);
-            locationMap.set(loc, { count: (existing?.count || 0) + 1, type: existing?.type || type });
+            const existing = locationMap[loc];
+            locationMap[loc] = { count: (existing?.count || 0) + 1, type: existing?.type || type };
           }
         });
       };
       addLocations(tripsLoc.data, "trip");
       addLocations(adventureLoc.data, "adventure");
       addLocations(hotelsLoc.data, "hotel");
-      const sorted = Array.from(locationMap.entries())
+      const sorted = Object.entries(locationMap)
         .map(([location, info]) => ({ location, count: info.count, type: info.type }))
         .sort((a, b) => b.count - a.count)
         .slice(0, 12);
@@ -293,7 +294,8 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
 
           {showSuggestions && (
             <div 
-              className="absolute left-0 right-0 top-full mt-3 bg-card border border-border rounded-[32px] shadow-2xl max-h-[70vh] md:max-h-[500px] overflow-y-auto z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
+              className="absolute left-0 right-0 top-full mt-3 bg-card border border-border rounded-[32px] shadow-2xl max-h-[70vh] md:max-h-[500px] overflow-y-auto z-[9999] animate-in fade-in slide-in-from-top-2 duration-200"
+              style={{ position: 'absolute' }}
             >
               {/* History / Trending / Most Popular Section (Shown when input is empty) */}
               {!value.trim() && (
@@ -419,6 +421,34 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
                     </div>
                   )}
 
+                  {/* County Matches */}
+                  {(() => {
+                    const q = value.trim().toLowerCase();
+                    const matchedCounties = q ? KENYA_COUNTIES.filter(c => c.toLowerCase().includes(q)) : [];
+                    if (matchedCounties.length > 0) {
+                      return (
+                        <div className="mb-2">
+                          <div className="flex items-center gap-2 px-5 py-3">
+                            <Map className="h-4 w-4 text-primary" />
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Counties</p>
+                          </div>
+                          <div className="flex flex-wrap gap-2 px-4">
+                            {matchedCounties.slice(0, 6).map(county => (
+                              <Badge
+                                key={county}
+                                onClick={() => { setShowSuggestions(false); navigate(`/county/${encodeURIComponent(county)}`); }}
+                                className="cursor-pointer bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 py-2 px-3 rounded-xl text-[10px] font-bold transition-colors"
+                              >
+                                {county} County
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
+
                   {/* Results */}
                   {!isSearching && suggestions.length > 0 && (
                     <>
@@ -464,7 +494,7 @@ export const SearchBarWithSuggestions = React.forwardRef<HTMLDivElement, SearchB
                   )}
 
                   {/* Not Available */}
-                  {!isSearching && hasSearched && suggestions.length === 0 && (
+                  {!isSearching && hasSearched && suggestions.length === 0 && KENYA_COUNTIES.filter(c => c.toLowerCase().includes(value.trim().toLowerCase())).length === 0 && (
                      <div className="p-10 text-center">
                        <p className="text-muted-foreground text-xs font-bold uppercase tracking-widest mb-2">Not Available</p>
                        <p className="text-muted-foreground/50 text-[10px]">No results found for "{value}"</p>

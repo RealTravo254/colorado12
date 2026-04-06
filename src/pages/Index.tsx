@@ -187,6 +187,7 @@ const Index = () => {
   const featuredEventsRef = useRef<HTMLDivElement>(null);
   const featuredTripsRef = useRef<HTMLDivElement>(null);
   const guidedTripsRef = useRef<HTMLDivElement>(null);
+  const adventurePlacesRef = useRef<HTMLDivElement>(null);
   const countiesRef = useRef<HTMLDivElement>(null);
 
   const [scrollPositions, setScrollPositions] = useState<Record<string, number>>({});
@@ -593,10 +594,14 @@ const Index = () => {
         <div className={`w-full ${isSearchFocused ? 'hidden' : ''}`}>
 
           <div className="container mx-auto px-4 md:px-6 py-3 md:py-5 space-y-2 md:space-y-4">
-            {/* Counties */}
+            {/* Counties — sorted by most listings */}
             <section className="mb-4 md:mb-8">
               <div ref={countiesRef} className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide scroll-smooth snap-x snap-mandatory">
-                {FEATURED_COUNTIES.map((county) => {
+                {[...FEATURED_COUNTIES].sort((a, b) => {
+                  const totalA = (countyCounts[a]?.adventures || 0) + (countyCounts[a]?.guidedTrips || 0);
+                  const totalB = (countyCounts[b]?.adventures || 0) + (countyCounts[b]?.guidedTrips || 0);
+                  return totalB - totalA;
+                }).map((county) => {
                   const counts = countyCounts[county] || { adventures: 0, guidedTrips: 0 };
                   const total = counts.adventures + counts.guidedTrips;
                   const displayCount = total > 1000 ? "1000+" : String(total);
@@ -653,6 +658,16 @@ const Index = () => {
               hasItems={displayGuidedTrips.length > 0} loading={loadingScrollable}
             >
               {displayGuidedTrips.map((trip, i) => renderCard(trip, "TRIP", i, { isTrip: true, categoryColor: "hsl(260, 70%, 55%)" }))}
+            </ScrollSection>
+
+            {/* Adventure Places */}
+            <ScrollSection
+              title="Adventure Places" viewAllPath="/category/campsite"
+              accentColor="hsl(142, 70%, 35%)" scrollRef={adventurePlacesRef}
+              onScroll={handleScroll('adventurePlaces')}
+              hasItems={displayCampsites.length > 0} loading={loadingScrollable}
+            >
+              {displayCampsites.map((place, i) => renderCard(place, "ADVENTURE PLACE", i, { hidePrice: true, categoryColor: "hsl(142, 70%, 35%)" }))}
             </ScrollSection>
 
             {position && sortedNearbyPlaces.length > 0 && (
