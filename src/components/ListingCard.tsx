@@ -62,7 +62,7 @@ export interface ListingCardProps {
 
 const ListingCardComponent = ({
   id, type, name, imageUrl, location, price, date,
-  isOutdated = false, activities, onSave, isSaved = false,
+  isOutdated = false, activities, onSave, isSaved = false, hideSave = false,
   availableTickets = 0, bookedTickets = 0,
   priority = false, compact = false, avgRating, reviewCount, place,
   isFlexibleDate = false, hidePrice = false, description, categoryColor,
