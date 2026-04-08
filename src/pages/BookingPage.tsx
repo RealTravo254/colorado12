@@ -282,6 +282,7 @@ const BookingPage = () => {
         activities: item.activities || [],
         totalCapacity: item.available_slots || 0,
         workingDays: item.days_opened || [],
+        skipDateSelection: true,
       };
     }
     
@@ -304,23 +305,33 @@ const BookingPage = () => {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
-      {/* Header */}
-      {!isCompleted && !isVerifying && (
+      {/* Header - show during form and during payment processing */}
+      {!isCompleted && (
         <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-100">
           <div className="container max-w-2xl mx-auto px-4 py-4 flex items-center gap-4">
             <Button
               variant="ghost"
               size="icon"
-              onClick={goBack}
+              onClick={() => {
+                if (isProcessing || isVerifying) {
+                  // If payment is in progress, allow going back (will cancel pending booking)
+                  setIsProcessing(false);
+                  setIsVerifying(false);
+                } else {
+                  goBack();
+                }
+              }}
               className="rounded-full bg-slate-100 hover:bg-slate-200"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div className="flex-1 min-w-0">
-              <h1 className="text-lg font-black uppercase tracking-tight truncate" style={{ color: COLORS.TEAL }}>
-                Book {item.name}
+              <h1 className="text-lg font-black uppercase tracking-tight truncate" style={{ color: isVerifying || isProcessing ? COLORS.TEAL : COLORS.TEAL }}>
+                {isVerifying ? "Checkout" : `Book ${item.name}`}
               </h1>
-              <p className="text-xs text-slate-500 truncate">{item.location}, {item.country}</p>
+              <p className="text-xs text-slate-500 truncate">
+                {isVerifying ? "Processing payment..." : `${item.location}, ${item.country}`}
+              </p>
             </div>
           </div>
         </div>
