@@ -24,12 +24,14 @@ const HostVerification = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [existingVerification, setExistingVerification] = useState<any>(null);
+  const [hostingCategory, setHostingCategory] = useState<string | null>(null);
 
   // Form state
   const [legalName, setLegalName] = useState("");
   const [streetAddress, setStreetAddress] = useState("");
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
+  const [registrationNumber, setRegistrationNumber] = useState("");
   const [documentType, setDocumentType] = useState("");
   const [documentFront, setDocumentFront] = useState<File | null>(null);
   const [documentBack, setDocumentBack] = useState<File | null>(null);
@@ -41,8 +43,12 @@ const HostVerification = () => {
       return;
     }
 
+    // Get hosting category from URL params
+    const params = new URLSearchParams(window.location.search);
+    const category = params.get("category");
+    if (category) setHostingCategory(category);
+
     const fetchData = async () => {
-      // Fetch user profile to auto-populate name
       const { data: profileData } = await supabase
         .from("profiles")
         .select("name")
@@ -53,7 +59,6 @@ const HostVerification = () => {
         setLegalName(profileData.name);
       }
 
-      // Check if user already has a verification
       const { data, error } = await supabase
         .from("host_verifications")
         .select("*")
@@ -92,6 +97,15 @@ const HostVerification = () => {
         toast({
           title: "Missing Information",
           description: "Please fill in all required fields.",
+          variant: "destructive",
+        });
+        return;
+      }
+      // Require registration number for guide and company
+      if ((hostingCategory === 'guide' || hostingCategory === 'company') && !registrationNumber.trim()) {
+        toast({
+          title: "Missing Information",
+          description: "Registration number is required.",
           variant: "destructive",
         });
         return;
@@ -160,7 +174,7 @@ const HostVerification = () => {
         : null;
       const selfieUrl = await uploadFile(selfie, `${user!.id}/selfie_${Date.now()}`);
 
-      const verificationData = {
+      const verificationData: Record<string, any> = {
         user_id: user!.id,
         legal_name: legalName,
         street_address: streetAddress,
@@ -173,6 +187,8 @@ const HostVerification = () => {
         status: "pending",
         rejection_reason: null,
         submitted_at: new Date().toISOString(),
+        hosting_category: hostingCategory || null,
+        registration_number: registrationNumber.trim() || null,
       };
 
       const { data: existingVer } = await supabase
