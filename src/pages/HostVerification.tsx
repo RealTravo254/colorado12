@@ -390,6 +390,21 @@ const HostVerification = () => {
                     </SelectContent>
                   </Select>
                 </div>
+                {(hostingCategory === 'guide' || hostingCategory === 'company') && (
+                  <div>
+                    <Label htmlFor="registrationNumber">Registration Number *</Label>
+                    <Input
+                      id="registrationNumber"
+                      value={registrationNumber}
+                      onChange={(e) => setRegistrationNumber(e.target.value)}
+                      placeholder="e.g. BN-X12345 or guide license number"
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {hostingCategory === 'guide' ? 'Your tour guide license or registration number' : 'Your company registration number'}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
