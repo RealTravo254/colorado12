@@ -201,13 +201,13 @@ const HostVerification = () => {
       if (existingVer) {
         const { error } = await supabase
           .from("host_verifications")
-          .update(verificationData)
+          .update(verificationData as any)
           .eq("user_id", user!.id);
         verificationError = error;
       } else {
         const { error } = await supabase
           .from("host_verifications")
-          .insert(verificationData);
+          .insert(verificationData as any);
         verificationError = error;
       }
 
