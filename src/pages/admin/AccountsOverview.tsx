@@ -138,7 +138,7 @@ const AccountsOverview = () => {
       setHostAccounts(prev => [...prev, ...accounts]);
     } else {
       setHostAccounts(accounts);
-    }
+    } 
     setHostOffset(offset);
     setHasMoreHosts(profiles.length >= ITEMS_PER_PAGE);
   }, []);
