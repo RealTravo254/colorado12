@@ -111,8 +111,10 @@ const CORAL = "#FF7F50";
    >([]);
   const [isFacilityOnlyMode, setIsFacilityOnlyMode] = useState(false);
   const [ticketSelections, setTicketSelections] = useState<{ name: string; price: number; quantity: number }[]>(
-    ticketTypes.map(t => ({ name: t.name, price: t.price, quantity: 0 }))
-  );
+     ticketTypes.map(t => ({ name: t.name, price: t.price, quantity: 0 }))
+   );
+   const [facilityBookedRanges, setFacilityBookedRanges] = useState<Record<string, { startDate: string; endDate: string }[]>>({});
+   const [dateConflictWarning, setDateConflictWarning] = useState<string | null>(null);
 
   const hasTicketTypes = ticketTypes.length > 0;
  
