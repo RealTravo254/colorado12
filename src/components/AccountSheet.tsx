@@ -229,7 +229,7 @@ export const AccountSheet = ({ children }: AccountSheetProps) => {
                 <ChevronRight className="h-4 w-4 text-destructive/50 group-hover:text-destructive" />
               </button>
           </div>
-
+        </div>
         {/* Cancel button at bottom */}
         <div className="bg-background px-4 pb-4 pt-2">
           <button 
