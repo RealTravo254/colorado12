@@ -300,9 +300,17 @@ const CORAL = "#FF7F50";
     }
   };
 
-  const updateFacilityDates = (name: string, startDate?: string, endDate?: string) => {
-    setSelectedFacilities(selectedFacilities.map((f) => f.name === name ? { ...f, startDate, endDate } : f));
-  };
+   const updateFacilityDates = (name: string, startDate?: string, endDate?: string) => {
+     // Validate no overlap with booked dates
+     if (startDate && endDate) {
+       if (!isFacilityRangeAvailable(name, startDate, endDate)) {
+         setDateConflictWarning(`Selected dates for ${name} overlap with an existing booking. Please choose different dates.`);
+         return;
+       }
+       setDateConflictWarning(null);
+     }
+     setSelectedFacilities(selectedFacilities.map((f) => f.name === name ? { ...f, startDate, endDate } : f));
+   };
 
   const updateTicketQuantity = (name: string, quantity: number) => {
     setTicketSelections(ticketSelections.map(t => t.name === name ? { ...t, quantity: Math.max(0, Math.min(quantity, totalCapacity)) } : t));
