@@ -145,20 +145,48 @@ export const AccountSheet = ({ children }: AccountSheetProps) => {
 
         {/* White rounded content */}
         <div className="flex-1 overflow-y-auto bg-background rounded-t-3xl py-4">
-          {loading ? (
-            <div className="space-y-3 px-4">
-              <Skeleton className="h-24 w-full rounded-2xl" />
+          {/* Always show Creator Tools and Personal immediately */}
+          <div className="space-y-4 px-4">
+            {menuItems.filter(s => s.section !== "Admin Control").map((section, idx) => {
+              const visibleItems = section.items.filter(item => item.show);
+              if (visibleItems.length === 0) return null;
+              return (
+                <div key={idx} className="space-y-1">
+                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-2 mb-1">
+                    {section.section}
+                  </p>
+                  <div className="bg-card rounded-2xl overflow-hidden border border-border shadow-sm divide-y divide-border/50">
+                    {visibleItems.map((item) => (
+                      <button 
+                        key={item.path} 
+                        onClick={() => handleNavigate(item.path)} 
+                        className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted/50 transition-all group"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-xl bg-primary/10">
+                            <item.icon className="h-4 w-4 text-primary" />
+                          </div>
+                          <span className="text-sm font-medium text-foreground group-hover:text-foreground">
+                            {item.label}
+                          </span>
+                        </div>
+                        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-transform group-hover:translate-x-0.5" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Admin section - show skeleton while loading, then show if admin */}
+            {loading ? (
               <Skeleton className="h-20 w-full rounded-2xl" />
-              <Skeleton className="h-20 w-full rounded-2xl" />
-            </div>
-          ) : ( 
-            <div className="space-y-4 px-4">
-              {menuItems.map((section, idx) => {
+            ) : (
+              menuItems.filter(s => s.section === "Admin Control").map((section, idx) => {
                 const visibleItems = section.items.filter(item => item.show);
                 if (visibleItems.length === 0) return null;
-
                 return (
-                  <div key={idx} className="space-y-1">
+                  <div key={`admin-${idx}`} className="space-y-1">
                     <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-2 mb-1">
                       {section.section}
                     </p>
@@ -183,7 +211,8 @@ export const AccountSheet = ({ children }: AccountSheetProps) => {
                     </div>
                   </div>
                 );
-              })}
+              })
+            )}
 
               <button 
                 onClick={handleLogout} 
