@@ -84,13 +84,13 @@ const Auth = () => {
         <div className="flex items-center justify-between p-4 lg:p-8 lg:pb-0">
           <button
             onClick={() => navigate("/")}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            className="hidden lg:flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm font-medium">Back</span>
           </button>
           <img src="/fulllogo.png" alt="Realtravo" className="h-7 lg:hidden" />
-          <div className="w-16" />
+          <div className="w-16 lg:hidden" />
         </div>
 
         {/* Form area */}
