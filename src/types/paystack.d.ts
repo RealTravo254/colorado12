@@ -12,6 +12,7 @@ declare module '@paystack/inline-js' {
     onSuccess?: (transaction: PaystackTransaction) => void;
     onCancel?: () => void;
     onError?: (error: any) => void;
+    container?: string;
   }
 
   interface PaystackNewTransactionOptions {
