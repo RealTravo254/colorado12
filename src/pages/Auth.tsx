@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { LoginForm } from "@/components/auth/LoginForm";
@@ -13,11 +13,9 @@ const Auth = () => {
   const location = useLocation();
   const returnTo = (location.state as any)?.returnTo || "/";
 
-  useEffect(() => {
-    if (!loading && user) {
-      navigate(returnTo);
-    }
-  }, [user, loading, navigate, returnTo]);
+  if (!loading && user) {
+    navigate(returnTo);
+  }
 
   if (loading) {
     return <div className="min-h-screen bg-background animate-pulse" />;
@@ -32,17 +30,14 @@ const Auth = () => {
 
       {/* Left Panel - Branding */}
       <div className="hidden lg:flex lg:w-[48%] relative overflow-hidden">
-        {/* Background image */}
         <img src="/images/category-campsite.webp" alt="" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-primary/80" />
 
         <div className="relative z-10 flex flex-col justify-between p-12 w-full">
-          {/* Logo */}
           <div className="flex items-center gap-3">
             <img src="/fulllogo.png" alt="Realtravo" className="h-10 brightness-0 invert" />
           </div>
 
-          {/* Main copy */}
           <div className="space-y-8">
             <div>
               <h1 className="text-5xl font-extrabold text-primary-foreground leading-[1.1] tracking-tight">
@@ -55,7 +50,6 @@ const Auth = () => {
               </p>
             </div>
 
-            {/* Feature pills */}
             <div className="flex flex-col gap-4">
               {[
                 { icon: MapPin, text: "Handpicked stays, trips & adventures" },
@@ -72,81 +66,94 @@ const Auth = () => {
             </div>
           </div>
 
-          {/* Footer */}
           <p className="text-primary-foreground/30 text-xs">
             © {new Date().getFullYear()} Realtravo. All rights reserved.
           </p>
         </div>
       </div>
 
-      {/* Right Panel - Auth Forms */}
-      <div className="flex-1 flex flex-col min-h-screen bg-background">
+      {/* Right Panel - Auth Forms with background image */}
+      <div
+        className="flex-1 flex flex-col min-h-screen relative"
+        style={{
+          backgroundImage: "url('/images/category-campsite.webp')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-black/60 z-0" />
+
         {/* Mobile top bar */}
-        <div className="flex items-center justify-between p-4 lg:p-8 lg:pb-0">
+        <div className="relative z-10 flex items-center justify-between p-4 lg:p-8 lg:pb-0">
           <button
             onClick={() => navigate("/")}
-            className="hidden lg:flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            className="hidden lg:flex items-center gap-2 text-white/70 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm font-medium">Back</span>
           </button>
-          <img src="/fulllogo.png" alt="Realtravo" className="h-7 lg:hidden" />
+          <img src="/fulllogo.png" alt="Realtravo" className="h-7 lg:hidden brightness-0 invert" />
           <div className="w-16 lg:hidden" />
         </div>
 
         {/* Form area */}
-        <div className="flex-1 flex items-center justify-center px-4 py-8 lg:px-12">
-          <div className="w-full max-w-[420px] space-y-8">
-            {/* Header */}
-            <div>
-              <h2 className="text-2xl font-bold text-foreground tracking-tight">
-                {activeTab === "login" ? "Welcome back" : "Create your account"}
-              </h2>
-              <p className="mt-1 text-muted-foreground text-sm">
-                {activeTab === "login"
-                  ? "Sign in to continue your journey"
-                  : "Join Realtravo and start exploring"}
-              </p>
-            </div>
+        <div className="relative z-10 flex-1 flex items-center justify-center px-4 py-8 lg:px-12">
+          <div className="w-full max-w-[420px]">
+            {/* Glass card */}
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 space-y-6 shadow-xl">
 
-            {/* Tab switcher */}
-            <div className="flex bg-muted rounded-xl p-1 gap-1">
-              <button
-                onClick={() => setActiveTab("login")}
-                className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all ${
-                  activeTab === "login"
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Sign In
-              </button>
-              <button
-                onClick={() => setActiveTab("signup")}
-                className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all ${
-                  activeTab === "signup"
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Sign Up
-              </button>
-            </div>
+              {/* Header */}
+              <div>
+                <h2 className="text-2xl font-bold text-white tracking-tight">
+                  {activeTab === "login" ? "Welcome back" : "Create your account"}
+                </h2>
+                <p className="mt-1 text-white/60 text-sm">
+                  {activeTab === "login"
+                    ? "Sign in to continue your journey"
+                    : "Join Realtravo and start exploring"}
+                </p>
+              </div>
 
-            {/* Forms */}
-            <div>
-              {activeTab === "login" ? (
-                <LoginForm onSwitchToSignup={() => setActiveTab("signup")} />
-              ) : (
-                <SignupForm />
-              )}
+              {/* Tab switcher */}
+              <div className="flex bg-white/10 rounded-xl p-1 gap-1">
+                <button
+                  onClick={() => setActiveTab("login")}
+                  className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all ${
+                    activeTab === "login"
+                      ? "bg-white text-gray-900 shadow-sm"
+                      : "text-white/60 hover:text-white"
+                  }`}
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => setActiveTab("signup")}
+                  className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all ${
+                    activeTab === "signup"
+                      ? "bg-white text-gray-900 shadow-sm"
+                      : "text-white/60 hover:text-white"
+                  }`}
+                >
+                  Sign Up
+                </button>
+              </div>
+
+              {/* Forms */}
+              <div>
+                {activeTab === "login" ? (
+                  <LoginForm onSwitchToSignup={() => setActiveTab("signup")} />
+                ) : (
+                  <SignupForm />
+                )}
+              </div>
             </div>
           </div>
         </div>
 
         {/* Mobile footer */}
-        <div className="p-4 text-center lg:hidden">
-          <p className="text-xs text-muted-foreground">
+        <div className="relative z-10 p-4 text-center lg:hidden">
+          <p className="text-xs text-white/40">
             © {new Date().getFullYear()} Realtravo. All rights reserved.
           </p>
         </div>

@@ -9,7 +9,7 @@ import { Lock, Key, Loader2 } from "lucide-react";
 
 interface SecondaryLoginDialogProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange: (open: boolean) => void; 
   onSuccess: () => void;
   itemId: string;
   itemType: 'hotel' | 'adventure' | 'adventure_place';

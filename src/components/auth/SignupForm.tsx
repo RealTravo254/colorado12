@@ -58,6 +58,10 @@ export const SignupForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const inputClass = "h-11 rounded-xl bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-white/50 focus:bg-white/15";
+  const labelClass = "text-sm font-medium text-white/80";
+  const errorClass = "text-xs text-red-300";
+
   const validatePassword = (pwd: string): { valid: boolean; message?: string } => {
     if (pwd.length < 8) return { valid: false, message: "Password must be at least 8 characters long" };
     if (!/[A-Z]/.test(pwd)) return { valid: false, message: "Must contain at least one uppercase letter" };
@@ -132,11 +136,7 @@ export const SignupForm = () => {
     setErrors({});
 
     try {
-      const { error } = await supabase.auth.verifyOtp({
-        email,
-        token: code,
-        type: "email",
-      });
+      const { error } = await supabase.auth.verifyOtp({ email, token: code, type: "email" });
       if (error) throw error;
       navigate("/");
     } catch (error: any) {
@@ -171,31 +171,20 @@ export const SignupForm = () => {
     setShowConfirmPassword(true);
   };
 
-  const handleGoogleSignup = async () => {
-    const redirectUrl = `${window.location.origin}/`;
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: redirectUrl },
-    });
-    if (error) {
-      toast({ title: "Google signup failed", description: error.message, variant: "destructive" });
-    }
-  };
-
   // OTP Verification step
   if (step === "verify") {
     return (
       <div className="space-y-8">
         <div className="text-center space-y-3">
-          <div className="mx-auto w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
-            <Mail className="h-7 w-7 text-primary" />
+          <div className="mx-auto w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center">
+            <Mail className="h-7 w-7 text-white" />
           </div>
-          <h3 className="text-lg font-bold text-foreground">Check your email</h3>
-          <p className="text-sm text-muted-foreground">
-            We sent a 6-digit code to <strong className="text-foreground">{email}</strong>
+          <h3 className="text-lg font-bold text-white">Check your email</h3>
+          <p className="text-sm text-white/60">
+            We sent a 6-digit code to <strong className="text-white">{email}</strong>
           </p>
           {generatedUserId && (
-            <p className="text-xs font-mono text-primary bg-primary/5 py-2 px-3 rounded-lg inline-block">
+            <p className="text-xs font-mono text-white bg-white/10 py-2 px-3 rounded-lg inline-block">
               Your ID: {generatedUserId}
             </p>
           )}
@@ -224,27 +213,25 @@ export const SignupForm = () => {
             </InputOTP>
           </div>
 
-          {errors.otp && (
-            <p className="text-xs text-destructive text-center">{errors.otp}</p>
-          )}
+          {errors.otp && <p className={`${errorClass} text-center`}>{errors.otp}</p>}
 
           {verifying && (
-            <div className="flex items-center justify-center gap-2 text-muted-foreground text-sm">
+            <div className="flex items-center justify-center gap-2 text-white/60 text-sm">
               <Loader2 className="h-4 w-4 animate-spin" />
               Verifying...
             </div>
           )}
 
           <div className="text-center">
-            <p className="text-sm text-muted-foreground mb-1">Didn't receive the code?</p>
-            <Button variant="link" onClick={handleResendCode} disabled={resending} className="text-sm p-0 h-auto">
+            <p className="text-sm text-white/60 mb-1">Didn't receive the code?</p>
+            <Button variant="link" onClick={handleResendCode} disabled={resending} className="text-sm p-0 h-auto text-white hover:text-white/80">
               {resending ? "Sending..." : "Resend code"}
             </Button>
           </div>
 
           <button
             onClick={() => setStep("form")}
-            className="flex items-center justify-center gap-2 w-full text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
+            className="flex items-center justify-center gap-2 w-full text-sm text-white/50 hover:text-white transition-colors py-2"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to signup
@@ -255,52 +242,26 @@ export const SignupForm = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Google Button first */}
-      <button
-        type="button"
-        onClick={handleGoogleSignup}
-        className="group relative flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-background px-4 py-3 text-sm font-semibold text-foreground transition-all hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-      >
-        <svg className="h-5 w-5" viewBox="0 0 24 24">
-          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05" />
-          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-        </svg>
-        Sign up with Google
-      </button>
-
-      {/* Divider */}
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-border" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-3 text-muted-foreground font-medium">or continue with email</span>
-        </div>
-      </div>
-
-      {/* Signup form */}
+    <div className="space-y-4">
       <form onSubmit={handleSignup} className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-sm font-medium text-foreground">Full name</Label>
+            <Label htmlFor="name" className={labelClass}>Full name</Label>
             <Input
               id="name"
               placeholder="John Doe"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className={`h-11 rounded-xl ${errors.name ? "border-destructive" : ""}`}
+              className={`${inputClass} ${errors.name ? "border-red-400" : ""}`}
               required
             />
-            {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
+            {errors.name && <p className={errorClass}>{errors.name}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="gender" className="text-sm font-medium text-foreground">Gender</Label>
+            <Label htmlFor="gender" className={labelClass}>Gender</Label>
             <Select value={gender} onValueChange={setGender}>
-              <SelectTrigger className="h-11 rounded-xl">
+              <SelectTrigger className={`h-11 rounded-xl bg-white/10 border-white/20 text-white`}>
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -314,26 +275,26 @@ export const SignupForm = () => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="signup-email" className="text-sm font-medium text-foreground">Email address</Label>
+          <Label htmlFor="signup-email" className={labelClass}>Email address</Label>
           <Input
             id="signup-email"
             type="email"
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className={`h-11 rounded-xl ${errors.email ? "border-destructive" : ""}`}
+            className={`${inputClass} ${errors.email ? "border-red-400" : ""}`}
             required
           />
-          {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+          {errors.email && <p className={errorClass}>{errors.email}</p>}
         </div>
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="signup-password" className="text-sm font-medium text-foreground">Password</Label>
+            <Label htmlFor="signup-password" className={labelClass}>Password</Label>
             <button
               type="button"
               onClick={handleGeneratePassword}
-              className="flex items-center gap-1 text-xs font-medium text-primary hover:text-primary/80 transition-colors"
+              className="flex items-center gap-1 text-xs font-medium text-white/60 hover:text-white transition-colors"
             >
               <Sparkles className="h-3 w-3" />
               Generate
@@ -346,23 +307,23 @@ export const SignupForm = () => {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className={`h-11 rounded-xl pr-10 ${errors.password ? "border-destructive" : ""}`}
+              className={`${inputClass} pr-10 ${errors.password ? "border-red-400" : ""}`}
               required
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
             >
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
           <PasswordStrength password={password} />
-          {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
+          {errors.password && <p className={errorClass}>{errors.password}</p>}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">Confirm password</Label>
+          <Label htmlFor="confirmPassword" className={labelClass}>Confirm password</Label>
           <div className="relative">
             <Input
               id="confirmPassword"
@@ -370,21 +331,25 @@ export const SignupForm = () => {
               placeholder="••••••••"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className={`h-11 rounded-xl pr-10 ${errors.confirmPassword ? "border-destructive" : ""}`}
+              className={`${inputClass} pr-10 ${errors.confirmPassword ? "border-red-400" : ""}`}
               required
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
             >
               {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
-          {errors.confirmPassword && <p className="text-xs text-destructive">{errors.confirmPassword}</p>}
+          {errors.confirmPassword && <p className={errorClass}>{errors.confirmPassword}</p>}
         </div>
 
-        <Button type="submit" className="w-full h-11 rounded-xl text-sm font-semibold" disabled={loading}>
+        <Button
+          type="submit"
+          className="w-full h-11 rounded-xl text-sm font-semibold bg-white text-gray-900 hover:bg-white/90"
+          disabled={loading}
+        >
           {loading ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -395,11 +360,11 @@ export const SignupForm = () => {
           )}
         </Button>
 
-        <p className="text-center text-xs text-muted-foreground leading-relaxed">
+        <p className="text-center text-xs text-white/40 leading-relaxed">
           By signing up, you agree to our{" "}
-          <a href="/terms" className="text-primary hover:underline">Terms of Service</a>{" "}
+          <a href="/terms" className="text-white/70 hover:text-white underline">Terms of Service</a>{" "}
           and{" "}
-          <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a>.
+          <a href="/privacy" className="text-white/70 hover:text-white underline">Privacy Policy</a>.
         </p>
       </form>
     </div>
