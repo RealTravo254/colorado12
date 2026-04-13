@@ -37,7 +37,7 @@ const BookingPage = () => {
   const [paymentReference, setPaymentReference] = useState('');
   const [completedBookingData, setCompletedBookingData] = useState<any>(null);
   
-  const { initiatePayment, isLoading: isPaymentLoading } = usePaystackPopup({
+  const { initiatePayment, launchPaystack, isLoading: isPaymentLoading, showPaystackContainer } = usePaystackPopup({
     onSuccess: (reference, bookingData) => {
       console.log('Payment success callback:', reference, bookingData);
       setPaymentReference(reference);
@@ -60,6 +60,17 @@ const BookingPage = () => {
       setIsVerifying(false);
     },
   });
+
+  // Launch Paystack into the container once it's ready
+  useEffect(() => {
+    if (showPaystackContainer) {
+      // Small delay to ensure the container div is rendered
+      const timer = setTimeout(() => {
+        launchPaystack('paystack-checkout-container');
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [showPaystackContainer, launchPaystack]);
 
   useEffect(() => {
     if (id && type) fetchItem();
@@ -357,8 +368,26 @@ const BookingPage = () => {
         </div>
       )}
 
+      {/* Paystack Inline Checkout Container */}
+      {showPaystackContainer && !isCompleted && !isVerifying && (
+        <div className="container max-w-2xl mx-auto px-4 py-6 pb-24">
+          <div className="bg-white rounded-[32px] shadow-xl border border-slate-100 overflow-hidden">
+            <div className="p-6">
+              <h2 className="text-lg font-black uppercase tracking-tight mb-1" style={{ color: COLORS.TEAL }}>
+                Complete Payment
+              </h2>
+              <p className="text-xs text-slate-500 mb-4">Enter your payment details below to complete your booking</p>
+            </div>
+            <div 
+              id="paystack-checkout-container" 
+              className="w-full min-h-[400px] border-t border-slate-100"
+            />
+          </div>
+        </div>
+      )}
+
       {/* Full Page Booking Form */}
-      {!isCompleted && !isVerifying && (
+      {!isCompleted && !isVerifying && !showPaystackContainer && (
         <div className="container max-w-2xl mx-auto px-4 py-6 pb-24">
           <div className="bg-white rounded-[32px] shadow-xl border border-slate-100">
             <MultiStepBooking {...getMultiStepProps()} />

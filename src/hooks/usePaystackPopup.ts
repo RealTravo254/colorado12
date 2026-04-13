@@ -34,6 +34,8 @@ export const usePaystackPopup = (options: PaystackPopupOptions = {}) => {
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [pendingBookingId, setPendingBookingId] = useState<string | null>(null);
+  const [showPaystackContainer, setShowPaystackContainer] = useState(false);
+  const [accessCodeForContainer, setAccessCodeForContainer] = useState<string | null>(null);
 
   const cancelPendingBooking = useCallback(async (bookingId: string) => {
     try {
@@ -90,46 +92,10 @@ export const usePaystackPopup = (options: PaystackPopupOptions = {}) => {
         sessionStorage.setItem('pending_booking_id', pending_booking_id);
       }
 
-      // Open Paystack popup
-      const popup = new PaystackPop();
-      
-      popup.resumeTransaction(access_code, {
-        onSuccess: async (transaction: any) => {
-          console.log('Payment successful:', transaction);
-          setPaymentStatus('success');
-          options.onVerifying?.();
-          try {
-            const { data: verifyData, error: verifyError } = await supabase.functions.invoke('paystack-verify', {
-              body: { reference: transaction.reference },
-            });
-
-            if (verifyError || !verifyData?.success) {
-              console.error('Verification error:', verifyError || verifyData?.error);
-            }
-
-            sessionStorage.removeItem('paystack_reference');
-            sessionStorage.removeItem('paystack_booking_data');
-            sessionStorage.removeItem('pending_booking_id');
-
-            options.onSuccess?.(transaction.reference, verifyData?.data);
-          } catch (err) {
-            console.error('Error verifying payment:', err);
-            options.onSuccess?.(transaction.reference, bookingDataWithReferral);
-          }
-        },
-        onCancel: () => {
-          console.log('Payment cancelled');
-          // Cancel the pending booking to free up slots
-          if (pending_booking_id) {
-            cancelPendingBooking(pending_booking_id);
-          }
-          setPendingBookingId(null);
-          setPaymentStatus('idle');
-          setIsLoading(false);
-          sessionStorage.removeItem('pending_booking_id');
-          options.onClose?.();
-        },
-      });
+      // Store access code and show the container for inline checkout
+      setAccessCodeForContainer(access_code);
+      setShowPaystackContainer(true);
+      setIsLoading(false);
 
     } catch (error: any) {
       console.error('Paystack payment error:', error);
@@ -151,12 +117,65 @@ export const usePaystackPopup = (options: PaystackPopupOptions = {}) => {
     setIsLoading(false);
   }, [pendingBookingId, cancelPendingBooking]);
 
+  const launchPaystack = useCallback((containerId: string) => {
+    if (!accessCodeForContainer) return;
+    
+    const popup = new PaystackPop();
+    const pendingId = pendingBookingId;
+    const bookingDataStr = sessionStorage.getItem('paystack_booking_data');
+    const bookingDataWithReferral = bookingDataStr ? JSON.parse(bookingDataStr) : {};
+
+    popup.resumeTransaction(accessCodeForContainer, {
+      container: containerId,
+      onSuccess: async (transaction: any) => {
+        console.log('Payment successful:', transaction);
+        setPaymentStatus('success');
+        setShowPaystackContainer(false);
+        options.onVerifying?.();
+        try {
+          const { data: verifyData, error: verifyError } = await supabase.functions.invoke('paystack-verify', {
+            body: { reference: transaction.reference },
+          });
+
+          if (verifyError || !verifyData?.success) {
+            console.error('Verification error:', verifyError || verifyData?.error);
+          }
+
+          sessionStorage.removeItem('paystack_reference');
+          sessionStorage.removeItem('paystack_booking_data');
+          sessionStorage.removeItem('pending_booking_id');
+
+          options.onSuccess?.(transaction.reference, verifyData?.data);
+        } catch (err) {
+          console.error('Error verifying payment:', err);
+          options.onSuccess?.(transaction.reference, bookingDataWithReferral);
+        }
+      },
+      onCancel: () => {
+        console.log('Payment cancelled');
+        if (pendingId) {
+          cancelPendingBooking(pendingId);
+        }
+        setPendingBookingId(null);
+        setPaymentStatus('idle');
+        setIsLoading(false);
+        setShowPaystackContainer(false);
+        setAccessCodeForContainer(null);
+        sessionStorage.removeItem('pending_booking_id');
+        options.onClose?.();
+      },
+    });
+  }, [accessCodeForContainer, pendingBookingId, options, cancelPendingBooking]);
+
   return {
     initiatePayment,
+    launchPaystack,
     isLoading,
     paymentStatus,
     errorMessage,
     resetPayment,
     pendingBookingId,
+    showPaystackContainer,
+    accessCodeForContainer,
   };
 };
