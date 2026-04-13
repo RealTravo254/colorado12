@@ -46,7 +46,7 @@ const Auth = () => {
                 <span className="text-primary-foreground/70">Experience.</span>
               </h1>
               <p className="mt-6 text-primary-foreground/60 text-lg max-w-sm leading-relaxed">
-                Your gateway to curated adventures, hotels, and unforgettable trips across Africa.
+                Your gateway to curated adventures, events and unforgettable trips.
               </p>
             </div>
 
