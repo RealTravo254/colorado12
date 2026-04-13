@@ -37,7 +37,7 @@ const BookingPage = () => {
   const [paymentReference, setPaymentReference] = useState('');
   const [completedBookingData, setCompletedBookingData] = useState<any>(null);
   
-  const { initiatePayment, isLoading: isPaymentLoading } = usePaystackPopup({
+  const { initiatePayment, launchPaystack, isLoading: isPaymentLoading, showPaystackContainer } = usePaystackPopup({
     onSuccess: (reference, bookingData) => {
       console.log('Payment success callback:', reference, bookingData);
       setPaymentReference(reference);
@@ -60,6 +60,17 @@ const BookingPage = () => {
       setIsVerifying(false);
     },
   });
+
+  // Launch Paystack into the container once it's ready
+  useEffect(() => {
+    if (showPaystackContainer) {
+      // Small delay to ensure the container div is rendered
+      const timer = setTimeout(() => {
+        launchPaystack('paystack-checkout-container');
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [showPaystackContainer, launchPaystack]);
 
   useEffect(() => {
     if (id && type) fetchItem();
