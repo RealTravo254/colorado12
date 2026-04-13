@@ -126,6 +126,7 @@ export const usePaystackPopup = (options: PaystackPopupOptions = {}) => {
     const bookingDataWithReferral = bookingDataStr ? JSON.parse(bookingDataStr) : {};
 
     popup.resumeTransaction(accessCodeForContainer, {
+      container: containerId,
       onSuccess: async (transaction: any) => {
         console.log('Payment successful:', transaction);
         setPaymentStatus('success');
