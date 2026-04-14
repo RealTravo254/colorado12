@@ -300,38 +300,49 @@ const CORAL = "#FF7F50";
     }
   };
 
-   const updateFacilityDates = (name: string, startDate?: string, endDate?: string) => {
-     // Validate no overlap with booked dates
-     if (startDate && endDate) {
-       if (!isFacilityRangeAvailable(name, startDate, endDate)) {
-         setDateConflictWarning(`Selected dates for ${name} overlap with an existing booking. Please choose different dates.`);
-         return;
-       }
-       setDateConflictWarning(null);
-     }
-     setSelectedFacilities(selectedFacilities.map((f) => f.name === name ? { ...f, startDate, endDate } : f));
-   };
+    const updateFacilityDates = (name: string, startDate?: string, endDate?: string) => {
+      // Validate end date is not before start date
+      if (startDate && endDate && endDate <= startDate) {
+        setDateConflictWarning(`Check-out date must be after check-in date for ${name}.`);
+        return;
+      }
+      // Validate no overlap with booked dates
+      if (startDate && endDate) {
+        if (!isFacilityRangeAvailable(name, startDate, endDate)) {
+          setDateConflictWarning(`Selected dates for ${name} overlap with an existing booking. Please choose different dates.`);
+          return;
+        }
+        setDateConflictWarning(null);
+      }
+      setSelectedFacilities(selectedFacilities.map((f) => f.name === name ? { ...f, startDate, endDate } : f));
+    };
 
-  const updateTicketQuantity = (name: string, quantity: number) => {
-    setTicketSelections(ticketSelections.map(t => t.name === name ? { ...t, quantity: Math.max(0, Math.min(quantity, totalCapacity)) } : t));
-  };
+   const updateTicketQuantity = (name: string, quantity: number) => {
+     const maxPerBooking = 20;
+     const currentTotal = ticketSelections.reduce((sum, t) => sum + (t.name === name ? 0 : t.quantity), 0);
+     const maxForThis = Math.min(totalCapacity, maxPerBooking) - currentTotal;
+     setTicketSelections(ticketSelections.map(t => t.name === name ? { ...t, quantity: Math.max(0, Math.min(quantity, maxForThis)) } : t));
+   };
 
   const currentStepId = steps[currentStep]?.id;
 
-  const isStepValid = () => {
-    switch (currentStepId) {
-      case "date": return !!visitDate;
-      case "travelers": return numAdults > 0;
-      case "tickets": return getTotalTickets() > 0;
-      case "facilities":
-        return selectedFacilities.length > 0 && selectedFacilities.some(f => f.startDate && f.endDate);
-      case "activities": return true;
-      case "extras": return true;
-      case "details": return guestName.trim() && guestEmail.trim() && guestPhone.trim();
-      case "review": return true;
-      default: return true;
-    }
-  };
+   const isStepValid = () => {
+     switch (currentStepId) {
+       case "date": return !!visitDate;
+       case "travelers": return numAdults > 0 && (numAdults + numChildren) <= 20;
+       case "tickets": {
+         const total = getTotalTickets();
+         return total > 0 && total <= 20;
+       }
+       case "facilities":
+         return selectedFacilities.length > 0 && selectedFacilities.some(f => f.startDate && f.endDate && f.endDate > f.startDate) && !dateConflictWarning;
+       case "activities": return true;
+       case "extras": return true;
+       case "details": return guestName.trim() && guestEmail.trim() && guestPhone.trim();
+       case "review": return true;
+       default: return true;
+     }
+   };
 
   if (isCompleted) {
     return (
@@ -435,9 +446,21 @@ const CORAL = "#FF7F50";
                         <span>{dateConflictWarning}</span>
                       </div>
                     )}
-                    {selected?.startDate && selected?.endDate && (
-                      <div className="text-sm font-bold" style={{ color: TEAL }}>
-                        {Math.max(1, Math.ceil((new Date(selected.endDate).getTime() - new Date(selected.startDate).getTime()) / (1000 * 60 * 60 * 24)))} nights — {formatPrice(facility.price * Math.max(1, Math.ceil((new Date(selected.endDate).getTime() - new Date(selected.startDate).getTime()) / (1000 * 60 * 60 * 24))))}
+                    {selected?.startDate && selected?.endDate && selected.endDate > selected.startDate && isFacilityRangeAvailable(facility.name, selected.startDate, selected.endDate) && (
+                      <>
+                        <div className="flex items-center gap-2 text-xs text-green-600 bg-green-50 p-2 rounded-xl">
+                          <Check className="h-3 w-3 flex-shrink-0" />
+                          <span>Available for selected dates</span>
+                        </div>
+                        <div className="text-sm font-bold" style={{ color: TEAL }}>
+                          {Math.max(1, Math.ceil((new Date(selected.endDate).getTime() - new Date(selected.startDate).getTime()) / (1000 * 60 * 60 * 24)))} nights — {formatPrice(facility.price * Math.max(1, Math.ceil((new Date(selected.endDate).getTime() - new Date(selected.startDate).getTime()) / (1000 * 60 * 60 * 24))))}
+                        </div>
+                      </>
+                    )}
+                    {selected?.startDate && selected?.endDate && selected.endDate > selected.startDate && !isFacilityRangeAvailable(facility.name, selected.startDate, selected.endDate) && (
+                      <div className="flex items-center gap-2 text-xs text-red-500 bg-red-50 p-2 rounded-xl">
+                        <AlertCircle className="h-3 w-3 flex-shrink-0" />
+                        <span>Not available for selected dates. Please choose different dates.</span>
                       </div>
                     )}
                   </div>
@@ -510,7 +533,13 @@ const CORAL = "#FF7F50";
        {/* Ticket Types Step */}
        {currentStepId === "tickets" && (
          <div className="space-y-4">
-           <p className="text-xs text-muted-foreground mb-2">Select the type and quantity of tickets you want to purchase.</p>
+           <p className="text-xs text-muted-foreground mb-2">Select the type and quantity of tickets you want to purchase. Maximum 20 per booking.</p>
+           {getTotalTickets() >= 20 && (
+             <div className="flex items-center gap-2 text-xs text-amber-600 bg-amber-50 p-3 rounded-xl">
+               <AlertCircle className="h-4 w-4 flex-shrink-0" />
+               <span>Maximum limit of 20 tickets per booking reached.</span>
+             </div>
+           )}
            {ticketSelections.map((ticket) => (
              <div key={ticket.name} className={cn("p-4 border rounded-2xl transition-all", ticket.quantity > 0 ? "border-[#008080] bg-[#008080]/5" : "border-slate-200")}>
                <div className="flex items-center justify-between">
@@ -528,7 +557,7 @@ const CORAL = "#FF7F50";
                      <Minus className="h-3 w-3" />
                    </Button>
                    <span className="w-8 text-center font-black text-lg">{ticket.quantity}</span>
-                   <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl" onClick={() => updateTicketQuantity(ticket.name, ticket.quantity + 1)}>
+                   <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl" onClick={() => updateTicketQuantity(ticket.name, ticket.quantity + 1)} disabled={getTotalTickets() >= 20}>
                      <Plus className="h-3 w-3" />
                    </Button>
                  </div>
@@ -553,6 +582,12 @@ const CORAL = "#FF7F50";
        {currentStepId === "travelers" && (
          <div className="space-y-4">
            <p className="text-xs text-muted-foreground">Maximum 20 people per booking.</p>
+           {(numAdults + numChildren) >= 20 && (
+             <div className="flex items-center gap-2 text-xs text-amber-600 bg-amber-50 p-3 rounded-xl">
+               <AlertCircle className="h-4 w-4 flex-shrink-0" />
+               <span>Maximum limit of 20 persons per booking reached.</span>
+             </div>
+           )}
            <div className="flex items-center justify-between p-4 border rounded-2xl border-slate-200">
              <div>
                <p className="font-bold text-sm">Adults</p>
@@ -563,7 +598,7 @@ const CORAL = "#FF7F50";
                  <Minus className="h-4 w-4" />
                </Button>
                <span className="w-8 text-center font-black">{numAdults}</span>
-               <Button variant="outline" size="icon" className="rounded-xl" onClick={() => setNumAdults(Math.min(Math.min(20, totalCapacity) - numChildren, numAdults + 1))}>
+               <Button variant="outline" size="icon" className="rounded-xl" onClick={() => setNumAdults(Math.min(Math.min(20, totalCapacity) - numChildren, numAdults + 1))} disabled={(numAdults + numChildren) >= 20}>
                  <Plus className="h-4 w-4" />
                </Button>
              </div>
@@ -580,7 +615,7 @@ const CORAL = "#FF7F50";
                    <Minus className="h-4 w-4" />
                  </Button>
                  <span className="w-8 text-center font-black">{numChildren}</span>
-                 <Button variant="outline" size="icon" className="rounded-xl" onClick={() => setNumChildren(Math.min(Math.min(20, totalCapacity) - numAdults, numChildren + 1))}>
+                 <Button variant="outline" size="icon" className="rounded-xl" onClick={() => setNumChildren(Math.min(Math.min(20, totalCapacity) - numAdults, numChildren + 1))} disabled={(numAdults + numChildren) >= 20}>
                    <Plus className="h-4 w-4" />
                  </Button>
                </div>
@@ -697,9 +732,21 @@ const CORAL = "#FF7F50";
                                 <span>{dateConflictWarning}</span>
                               </div>
                             )}
-                            {selected?.startDate && selected?.endDate && (
-                              <div className="text-sm font-bold" style={{ color: TEAL }}>
-                                {Math.max(1, Math.ceil((new Date(selected.endDate).getTime() - new Date(selected.startDate).getTime()) / (1000 * 60 * 60 * 24)))} nights — {formatPrice(facility.price * Math.max(1, Math.ceil((new Date(selected.endDate).getTime() - new Date(selected.startDate).getTime()) / (1000 * 60 * 60 * 24))))}
+                            {selected?.startDate && selected?.endDate && selected.endDate > selected.startDate && isFacilityRangeAvailable(facility.name, selected.startDate, selected.endDate) && (
+                              <>
+                                <div className="flex items-center gap-2 text-xs text-green-600 bg-green-50 p-2 rounded-xl">
+                                  <Check className="h-3 w-3 flex-shrink-0" />
+                                  <span>Available for selected dates</span>
+                                </div>
+                                <div className="text-sm font-bold" style={{ color: TEAL }}>
+                                  {Math.max(1, Math.ceil((new Date(selected.endDate).getTime() - new Date(selected.startDate).getTime()) / (1000 * 60 * 60 * 24)))} nights — {formatPrice(facility.price * Math.max(1, Math.ceil((new Date(selected.endDate).getTime() - new Date(selected.startDate).getTime()) / (1000 * 60 * 60 * 24))))}
+                                </div>
+                              </>
+                            )}
+                            {selected?.startDate && selected?.endDate && selected.endDate > selected.startDate && !isFacilityRangeAvailable(facility.name, selected.startDate, selected.endDate) && (
+                              <div className="flex items-center gap-2 text-xs text-red-500 bg-red-50 p-2 rounded-xl">
+                                <AlertCircle className="h-3 w-3 flex-shrink-0" />
+                                <span>Not available for selected dates. Please choose different dates.</span>
                               </div>
                             )}
                           </div>
